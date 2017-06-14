@@ -1,10 +1,79 @@
-<!DOCTYPE html>
+<!Doctype html>
 <html>
-<head>
-  <title>LHL - Final</title>
-</head>
-<body>
-<h1>Hello World!</h1>
-<script type="text/javascript" src="scripts/app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <title>BabylonJS Demo</title>
+    <script src="http://cdn.babylonjs.com/2-5/babylon.max.js"></script>
+    <style>
+    #canvas {
+      width: 100%;
+      height: 100%;
+    }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script>
+      window.addEventListener('DOMContentLoaded', function() {
+        var canvas = document.getElementById('canvas');
+        var engine = new BABYLON.Engine(canvas, true);
+
+        var createScene = function () {
+          var scene = new BABYLON.Scene(engine);
+          scene.clearColor = new BABYLON.Color3.White();
+          var box = BABYLON.Mesh.CreateBox("Box", 4.0, scene);
+
+          // Create a second box so that witness the movement
+          var box2 = BABYLON.Mesh.CreateBox("Box2", 4.0, scene);
+          var material = new BABYLON.StandardMaterial("material1", scene);
+          // material.diffuseColor = BABYLON.Color3.Blue();
+          // material.emissiveColor = BABYLON.Color3.Red();
+          // material.specularColor = BABYLON.Color3.Red();
+          material.diffuseTexture = new BABYLON.Texture("gfs.png", scene);
+          // material.alpha = 0.1;
+          box.material = material;
+
+          // Follow Camera
+          var camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
+          camera.lockedTarget = box;
+          // Distance from target
+          camera.radius = 50;
+          // Distance above
+          camera.heightOffset = 0;
+          camera.attachControl(canvas,true);
+          scene.activeCamera = camera;
+
+          var light = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0,10,0), scene);
+          light.parent = camera;
+          light.diffuse = new BABYLON.Color3(1,1,1);
+
+          return scene;
+        }
+
+        window.addEventListener("keydown", function() {
+           if (event.key == "w") {
+            scene.getMeshByName("Box2").position.z += 1.0;
+             console.log("move forward")
+           }
+           if (event.key == "s") {
+            console.log("move backward")
+             scene.getMeshByName("Box2").position.z -= 1.0;
+           }
+           if (event.key == "d") {
+             console.log("move left")
+             scene.getMeshByName("Box2").position.x -= 1.0;
+          }
+          if (event.key == "a") {
+             console.log("move right")
+             scene.getMeshByName("Box2").position.x += 1.0;
+           }
+         });
+
+        var scene = createScene();
+        engine.runRenderLoop(function(){
+          scene.render();
+        });
+      });
+    </script>
+  </body>
 </html>
