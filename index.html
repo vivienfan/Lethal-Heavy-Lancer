@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>BabylonJS Demo</title>
     <script src="http://cdn.babylonjs.com/2-5/babylon.max.js"></script>
+    <!-- <script src="https://raw.githubusercontent.com/schteppe/cannon.js/master/build/cannon.js"></script> -->
     <style>
     #canvas {
       width: 100%;
@@ -21,52 +22,44 @@
         var createScene = function () {
           var scene = new BABYLON.Scene(engine);
           scene.clearColor = new BABYLON.Color3.White();
-          // Free Camera
-          // var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0,0,-10),scene);
           var box = BABYLON.Mesh.CreateBox("Box", 4.0, scene);
 
-          // Create a second object so that we can actually witness the movement
-          // Make this one wireframe to distinguish the difference.
           var box2 = BABYLON.Mesh.CreateBox("Box2", 4.0, scene);
           var material = new BABYLON.StandardMaterial("material1", scene);
           material.wireframe = true;
           box2.material = material;
 
-          box2.position = new BABYLON.Vector3(0,5,0);
-
-          // Orbit Camera
-          // var camera = new BABYLON.ArcRotateCamera("arcCamera", BABYLON.Tools.ToRadians(45), BABYLON.Tools.ToRadians(45), 10.0, box.position, scene);
-          // camera.setTarget(BABYLON.Vector3.Zero());
-
           // Follow Camera
           var camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
           camera.lockedTarget = box;
-          // Distance from target
           camera.radius = 50;
-          // Distance above
-          camera.heightOffset = 0;
+          camera.heightOffset = 20;
           camera.attachControl(canvas, true);
-
           scene.activeCamera = camera;
-
-          // To each we pass the appropriate key scancode for the each key in the WASD combination.
-
-          // Press W (Up)
-          // camera.keysUp.push(87);
-          // Press D (down)
-          // camera.keysDown.push(83);
-          // Press A (left)
-          // camera.keysLeft.push(65);
-          // Press S (left)
-          // camera.keysRight.push(68);
-
-
           return scene;
         }
 
+        window.addEventListener("keydown", function() {
+          if (event.key == "w") {
+            scene.getMeshByName("Box2").position.z += 0.3;
+            console.log("move forward")
+          }
+          if (event.key == "s") {
+            console.log("move backward")
+            scene.getMeshByName("Box2").position.z -= 0.3;
+          }
+          if (event.key == "a") {
+            console.log("move left")
+            scene.getMeshByName("Box2").position.x -= 0.3;
+          }
+          if (event.key == "d") {
+            console.log("move right")
+            scene.getMeshByName("Box2").position.x += 0.3;
+          }
+        });
+
         var scene = createScene();
         engine.runRenderLoop(function(){
-          scene.getMeshByName("Box").position.z -= 0.1;
           scene.render();
         });
       });
