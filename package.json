@@ -25,6 +25,9 @@
   "homepage": "https://github.com/vivienfan/LHL-Final#readme",
   "dependencies": {
     "bcrypt": "^1.0.2",
-    "express": "^4.15.3"
+    "express": "^4.15.3",
+    "node-uuid": "^1.4.8",
+    "uuid": "^3.0.1",
+    "ws": "^3.0.0"
   }
 }
