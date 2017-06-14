@@ -1,4 +1,4 @@
-"use strict";
+n"use strict";
 
 const PORT            = 8080;
 // const MONGODB_URI     = "mongodb://localhost:27017/tweeter";
