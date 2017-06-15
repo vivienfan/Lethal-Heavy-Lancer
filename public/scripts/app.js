@@ -28,6 +28,30 @@ window.onload = function() {
     // }
     // socket.send(JSON.stringify(obj));
     // console.log(obj);
+
+    var onPointerDown = function (e) {
+    // check if we clicked on a mesh
+    var pickInfo = scene.pick(scene.pointerX, scene.pointerY);
+    if (pickInfo.hit) {
+        currentMesh = pickInfo.pickedMesh;
+        rotationInit = currentMesh.rotation.y;
+    }
+};
+
+var onPointerMove = function (e) {
+
+    dragDiff = {
+        x: e.x - dragInit.x,
+        y: e.y - dragInit.y
+    }
+
+    var newRotation = rotationInit;
+    newRotation.x = rotationInit.x - dragDiff.x /70
+    newRotation.y = rotationInit.y - dragDiff.y /70
+
+    currentMesh.rotation = newRotation;
+    return true;
+};
   });
 
   window.addEventListener("keydown", function() {
@@ -47,12 +71,14 @@ window.onload = function() {
       console.log("move left")
       player.forEach(function(element) {
         element.position.x += 0.3;
+        element.rotation.y += Math.PI/10;
       });
     }
     if (event.key == "d") {
       console.log("move right")
       player.forEach(function(element) {
         element.position.x -= 0.3;
+        // element.rotation.y += Math.PI/10;
       });
     }
   });
@@ -66,8 +92,25 @@ window.onload = function() {
     material.wireframe = true;
     origin.material = material;
 
+    var indicator = BABYLON.MeshBuilder.CreateCylinder("indicator", { height: 1, diameterTop: 0, diameterBottom: 0.5 }, scene);
+    indicator.rotation.x = -Math.PI / 2;
+    indicator.bakeCurrentTransformIntoVertices();
+    indicator.position.y = 1;
+
     BABYLON.SceneLoader.ImportMesh("","", "batman.babylon", scene, function (newMeshes, particleSystems) {
       player = newMeshes;
+      player[0].rotation.x = -Math.PI / 2;
+      player[0].bakeCurrentTransformIntoVertices();
+      // player[0].position.y = 1;
+      // console.log('Player', player);
+      // player[0].rotation.x = -Math.PI / 20;
+      // player[0].bakeCurrentTransformIntoVertices();
+      // player[0].position.y = 1;
+      // player.forEach(function(element) {
+      //   element.rotation.x = -Math.PI / 2;
+      //   element.bakeCurrentTransformIntoVertices();
+      //   element.position.y = 1;
+      // });
 
       camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
       camera.lockedTarget = player[0];
@@ -76,6 +119,24 @@ window.onload = function() {
       camera.attachControl(canvas, true);
       scene.activeCamera = camera;
       view = true;
+
+      window.addEventListener("mousemove", function(event) {
+        // We try to pick an object
+      var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+      if (pickResult.hit) {
+        var targetPoint = pickResult.pickedPoint;
+        targetPoint.y = 1;
+        player[0].lookAt(targetPoint);
+      }
+          // player[0].rotation.y -= Math.PI/10;
+//          diff event.position.x > range
+//          player[0].lookAt
+    //    var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+    //    if (pickResult.hit) {
+    //      player[0].lookAt(pickResult.pickedPoint);
+    //      console.log('Indicator', indicator);
+  //      }
+      });
     });
 
 
