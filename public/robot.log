@@ -1,0 +1,66 @@
+	Exporter version: 4.6.1, Blender version: 2.76 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used:
+		selected layers only:  false
+		flat shading entire scene:  false
+		inline textures:  false
+		texture directory:  /home/vivien/Desktop/Lighthouse/final/public/
+	Python World class constructor completed
+	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
+	processing begun of skeleton:  Armature, id:  0
+		processing begun of bone:  ik.l, index:  0
+		processing begun of bone:  knee.l, index:  1
+		processing begun of bone:  ik.r, index:  2
+		processing begun of bone:  knee.r, index:  3
+		processing begun of bone:  Pelvis, index:  4
+		processing begun of bone:  Spine, index:  5
+		processing begun of bone:  Abdomen, index:  6
+		processing begun of bone:  Chest, index:  7
+		processing begun of bone:  Neck, index:  8
+		processing begun of bone:  Head, index:  9
+		processing begun of bone:  collar.l, index:  10
+		processing begun of bone:  Upperarm.l, index:  11
+		processing begun of bone:  lowerarm.l, index:  12
+		processing begun of bone:  palm.l, index:  13
+		processing begun of bone:  index.l, index:  14
+		processing begun of bone:  thumb.l, index:  15
+		processing begun of bone:  middle.l, index:  16
+		processing begun of bone:  little.l, index:  17
+		processing begun of bone:  collar.r, index:  18
+		processing begun of bone:  Upperarm.r, index:  19
+		processing begun of bone:  lowerarm.r, index:  20
+		processing begun of bone:  palm.r, index:  21
+		processing begun of bone:  index.r, index:  22
+		processing begun of bone:  thumb.r, index:  23
+		processing begun of bone:  middle.r, index:  24
+		processing begun of bone:  little.r, index:  25
+		processing begun of bone:  thigh.l, index:  26
+		processing begun of bone:  calf.l, index:  27
+		processing begun of bone:  leg.l, index:  28
+		processing begun of bone:  thigh.r, index:  29
+		processing begun of bone:  calf.r, index:  30
+		processing begun of bone:  leg.r, index:  31
+		processing action Idle:  in[1 - 2], out[0 - 2]
+		processing action Walk:  in[1 - 35], out[10 - 45]
+	processing begun of mesh:  Cylinder
+		animation processing begun
+			processing action Idle:  in[1 - 1], out[0 - 1]
+			processing action Walk:  in[1 - 35], out[10 - 45]
+		processing begun of baked material:  Cylinder
+			Cycles baking texture, type: DIFFUSE_COLOR, mapped using: BakingUV
+		num positions      :  15922
+		num normals        :  15922
+		num uvs            :  31844
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  58164
+		Skeleton stats:  
+			Total Influencers:  40302
+			Avg # of influencers per vertex:  2.5312
+			Highest # of influencers observed:  8, num vertices with this:  21
+			exported as 8 influencers
+			num skeletonWeights and skeletonIndices:  127376
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 12.6937 secs

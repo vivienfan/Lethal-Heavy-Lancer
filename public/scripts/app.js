@@ -5,11 +5,15 @@ window.onload = function() {
 
   var canvas = document.getElementById("canvas");
   var engine = new BABYLON.Engine(canvas, true);
+  var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
+  var physicsPlugin = new BABYLON.CannonJSPlugin();
   var scene, player, origin, camera;
   var view = false;
+  var walk = false;
+  var walkingAnimation;
 
   socket.onopen = function (event) {
-    // console.log('connected to server');
+    console.log('connected to server');
   }
 
   socket.onmessage = (event) => {
@@ -22,56 +26,55 @@ window.onload = function() {
     if (view) {
       scene.render();
     }
-    // var obj = {
-    //   type: "user movement",
-    //   data: scene.getMeshByName("Player").position
-    // }
-    // socket.send(JSON.stringify(obj));
-    // console.log(obj);
   });
+
+  window.addEventListener("resieze", function() {
+    engine.resize();
+  })
 
   window.addEventListener("keydown", function() {
     if (event.key == "w") {
-      console.log("move forward")
-      player.forEach(function(element) {
-        element.position.z -= 0.3;
-      });
+      if (walk) {
+        walk = false
+      } else {
+        console.log("move forward")
+        walk = true;
+        walkingAnimation = player[0].skeleton.beginAnimation("walk", false, 2);
+        player[0].position.z -= 5;
+        var obj = {
+          type: "position",
+          position: player[0].position
+        };
+        socket.send(JSON.stringify(obj));
+      }
     }
-    if (event.key == "s") {
-      console.log("move backward")
-      player.forEach(function(element) {
-        element.position.z += 0.3;
-      });
-    }
-    if (event.key == "a") {
-      console.log("move left")
-      player.forEach(function(element) {
-        element.position.x += 0.3;
-      });
-    }
-    if (event.key == "d") {
-      console.log("move right")
-      player.forEach(function(element) {
-        element.position.x -= 0.3;
-      });
-    }
+  });
+
+  window.addEventListener("keyup", function() {
+    walkingAnimation.pause();
   });
 
   function createScene() {
     scene = new BABYLON.Scene(engine);
     scene.clearColor = new BABYLON.Color3.White();
+    scene.enablePhysics(gravityVector, physicsPlugin);
 
     origin = BABYLON.Mesh.CreateBox("Origin", 4.0, scene);
     var material = new BABYLON.StandardMaterial("material1", scene);
     material.wireframe = true;
     origin.material = material;
 
-    BABYLON.SceneLoader.ImportMesh("","", "batman.babylon", scene, function (newMeshes, particleSystems) {
+    BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       player = newMeshes;
+      player[0].setPhysicsState({impostor: BABYLON.PhysicsEngine.MeshImpostor, mass: 0, friction: 0.5, restitution: 0.7});
+      skeleton = skeletons[0];
+
+      player[0].skeleton = skeleton;
+      player[0].skeleton.createAnimationRange("walk", 0, 30);
 
       camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
       camera.lockedTarget = player[0];
-      camera.radius = 20;
+      camera.radius = 15;
       camera.heightOffset = 10;
       camera.attachControl(canvas, true);
       scene.activeCamera = camera;
