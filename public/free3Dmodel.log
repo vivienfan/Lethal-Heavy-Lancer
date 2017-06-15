@@ -1,0 +1,80 @@
+Exporter version: 5.3.-1, Blender version: 2.78 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used:
+		selected layers only:  false
+		flat shading entire scene:  false
+		inline textures:  false
+		texture directory:  /Users/cdhu/lighthouse/LHL-Final/
+	Python World class constructor completed
+	WARNING: No active camera has been assigned, or is not in a currently selected Blender layer
+	processing begun of skeleton:  free3dmodel_skeleton, id:  0
+		processing begun of bone:  hips, index:  0
+		processing begun of bone:  abdomen, index:  1
+		processing begun of bone:  abdomen2, index:  2
+		processing begun of bone:  chest, index:  3
+		processing begun of bone:  neck, index:  4
+		processing begun of bone:  head, index:  5
+		processing begun of bone:  shoulder.L, index:  6
+		processing begun of bone:  upper_arm.L, index:  7
+		processing begun of bone:  forearm.L, index:  8
+		processing begun of bone:  hand.L, index:  9
+		processing begun of bone:  f_index.01.L, index:  10
+		processing begun of bone:  f_index.02.L, index:  11
+		processing begun of bone:  f_index.03.L, index:  12
+		processing begun of bone:  thumb.01.L, index:  13
+		processing begun of bone:  thumb.02.L, index:  14
+		processing begun of bone:  thumb.03.L, index:  15
+		processing begun of bone:  f_middle.01.L, index:  16
+		processing begun of bone:  f_middle.02.L, index:  17
+		processing begun of bone:  f_middle.03.L, index:  18
+		processing begun of bone:  f_ring.01.L, index:  19
+		processing begun of bone:  f_ring.02.L, index:  20
+		processing begun of bone:  f_ring.03.L, index:  21
+		processing begun of bone:  f_pinky.01.L, index:  22
+		processing begun of bone:  f_pinky.02.L, index:  23
+		processing begun of bone:  f_pinky.03.L, index:  24
+		processing begun of bone:  shoulder.R, index:  25
+		processing begun of bone:  upper_arm.R, index:  26
+		processing begun of bone:  forearm.R, index:  27
+		processing begun of bone:  hand.R, index:  28
+		processing begun of bone:  f_index.01.R, index:  29
+		processing begun of bone:  f_index.02.R, index:  30
+		processing begun of bone:  f_index.03.R, index:  31
+		processing begun of bone:  thumb.01.R, index:  32
+		processing begun of bone:  thumb.02.R, index:  33
+		processing begun of bone:  thumb.03.R, index:  34
+		processing begun of bone:  f_middle.01.R, index:  35
+		processing begun of bone:  f_middle.02.R, index:  36
+		processing begun of bone:  f_middle.03.R, index:  37
+		processing begun of bone:  f_ring.01.R, index:  38
+		processing begun of bone:  f_ring.02.R, index:  39
+		processing begun of bone:  f_ring.03.R, index:  40
+		processing begun of bone:  f_pinky.01.R, index:  41
+		processing begun of bone:  f_pinky.02.R, index:  42
+		processing begun of bone:  f_pinky.03.R, index:  43
+		processing begun of bone:  thigh.L, index:  44
+		processing begun of bone:  shin.L, index:  45
+		processing begun of bone:  foot.L, index:  46
+		processing begun of bone:  toe.L, index:  47
+		processing begun of bone:  thigh.R, index:  48
+		processing begun of bone:  shin.R, index:  49
+		processing begun of bone:  foot.R, index:  50
+		processing begun of bone:  toe.R, index:  51
+	processing begun of mesh:  free3dmodel.001
+		WARNING: No materials have been assigned: 
+		num positions      :  9748
+		num normals        :  9748
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  33102
+		Skeleton stats:  
+			Total Influencers:  9901
+			Avg # of influencers per vertex:  1.0157
+			Highest # of influencers observed:  3, num vertices with this:  44
+			exported as 3 influencers
+			num skeletonWeights and skeletonIndices:  38992
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 2.6214 secs
