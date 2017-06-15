@@ -19,6 +19,12 @@ window.onload = function() {
   createScene();
   engine.runRenderLoop(function(){
     scene.render();
+    var obj = {
+      type: "user movement",
+      data: scene.getMeshByName("Player").position
+    }
+    // socket.send(JSON.stringify(obj));
+    console.log(obj);
   });
 
   window.addEventListener("keydown", function() {
