@@ -28,32 +28,6 @@ window.onload = function() {
     }
   });
 
-  window.addEventListener("resieze", function() {
-    engine.resize();
-  })
-
-  window.addEventListener("keydown", function() {
-    if (event.key == "w") {
-      if (walk) {
-        walk = false
-      } else {
-        console.log("move forward")
-        walk = true;
-        walkingAnimation = player[0].skeleton.beginAnimation("walk", false, 2);
-        player[0].position.z -= 5;
-        var obj = {
-          type: "position",
-          position: player[0].position
-        };
-        socket.send(JSON.stringify(obj));
-      }
-    }
-  });
-
-  window.addEventListener("keyup", function() {
-    walkingAnimation.pause();
-  });
-
   function createScene() {
     scene = new BABYLON.Scene(engine);
     scene.clearColor = new BABYLON.Color3.White();
@@ -92,4 +66,47 @@ window.onload = function() {
     // console.log(data);
     scene.getMeshByName("NPC").position.x = data.count * 5;
   }
+
+  window.addEventListener("resieze", function() {
+    engine.resize();
+  })
+
+  window.addEventListener("keydown", function() {
+    if (event.key == "w") {
+      if (walk) {
+        walk = false
+      } else {
+        console.log("move forward")
+        walk = true;
+        walkingAnimation = player[0].skeleton.beginAnimation("walk", false, 2);
+        player[0].position.z -= 5;
+        var obj = {
+          type: "position",
+          position: player[0].position
+        };
+        socket.send(JSON.stringify(obj));
+      }
+    }
+  });
+
+  window.addEventListener("keyup", function() {
+    walkingAnimation.pause();
+  });
+
+  var prevX;
+  window.addEventListener("mousemove", function(event) {
+    if (!prevX) {
+      prevX = event.clientX;
+    } else {
+      if (prevX - event.clientX > 20) {
+        prevX = event.clientX;
+        player[0].rotation.y -= Math.PI/12;
+      }
+
+      if (event.clientX - prevX > 20) {
+        prevX = event.clientX;
+        player[0].rotation.y += Math.PI/12;
+      }
+    }
+  });
 }
