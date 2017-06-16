@@ -7,10 +7,12 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, player, origin, camera;
+  var scene, player, npc, cross, origin, camera;
   var view = false;
-  var walk = false;
-  var walkingAnimation;
+
+  var ANGLE = Math.PI/180;
+  var CAM_OFFSET = 5;
+  var SPEED = 2;
 
   socket.onopen = function (event) {
     console.log('connected to server');
@@ -60,35 +62,27 @@ window.onload = function() {
     extraGround.position.y = -2.05;
     extraGround.material = extraGroundMaterial;
 
-    BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
-      player = newMeshes;
-      player[0].rotation.y = Math.PI;
-      player.scaling = new BABYLON.Vector3(0.05,0.05,0.05);
-      player.position = new BABYLON.Vector3(0, 0, 0);
-      player[0].setPhysicsState({impostor: BABYLON.PhysicsEngine.MeshImpostor, mass: 0, friction: 0.5, restitution: 0.7});
-      skeleton = skeletons[0];
-
-      player[0].skeleton = skeleton;
-      player[0].skeleton.createAnimationRange("walk", 0, 30);
-
-      camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
-      camera.lockedTarget = player[0];
-      camera.radius = 15;
-      camera.heightOffset = 10;
-      camera.attachControl(canvas, true);
-      scene.activeCamera = camera;
-      view = true;
-    });
-
-
     npm = BABYLON.Mesh.CreateSphere("NPC", 10, 1.0, scene);
-    npm.position.z = -20;
+    npm.position.z = 20;
+
+    cross = BABYLON.Mesh.CreateTorus("torus", 2, 0.1, 10, scene, false);
+    cross.rotation.y = Math.PI;
+    cross.rotation.x = Math.PI / 2;
+    cross.position.z = 30;
+    cross.position.y = 8;
+
+    camera = new BABYLON.FollowCamera("followCam", BABYLON.Vector3.Zero(), scene);
+    camera.lockedTarget = cross;
+    camera.radius = 33;
+    camera.heightOffset = -3.5;
+    camera.attachControl(canvas, true);
+    scene.activeCamera = camera;
+    view = true;
 
     console.log(scene);
   }
 
   function updateScene(data) {
-    // console.log(data);
     scene.getMeshByName("NPC").position.x = data.count * 5;
   }
 
@@ -96,42 +90,82 @@ window.onload = function() {
     engine.resize();
   })
 
-  window.addEventListener("keydown", function() {
+  window.addEventListener("keydown", function(event) {
+    console.log(event.key)
     if (event.key == "w") {
-      if (walk) {
-        walk = false
-      } else {
-        console.log("move forward")
-        walk = true;
-        walkingAnimation = player[0].skeleton.beginAnimation("walk", false, 2);
-        player[0].position.z -= 5;
-        var obj = {
-          type: "position",
-          position: player[0].position
-        };
-        socket.send(JSON.stringify(obj));
+      cross.position.x += SPEED * Math.sin(cross.rotation.y + Math.PI);
+      cross.position.z += SPEED * Math.cos(cross.rotation.y + Math.PI);
+    }
+
+    // left arrow
+    if (event.key == "ArrowLeft") {
+      cross.rotation.y -= ANGLE
+    }
+
+    // right arrow
+    if (event.key == "ArrowRight") {
+      cross.rotation.y += ANGLE
+    }
+
+    // up arrow
+    if (event.key == "ArrowUp") {
+      if (cross.position.y < 30) {
+        cross.position.y += 1
+      }
+    }
+
+    // down arrow
+    if (event.key == "ArrowDown") {
+      if (cross.position.y > 3) {
+       cross.position.y -= 1
       }
     }
   });
 
-  window.addEventListener("keyup", function() {
-    walkingAnimation.pause();
-  });
+  // var prevX, prevY;
+  // window.addEventListener("mousemove", function(event) {
+  //   if (!prevX) {
+  //     prevX = event.clientX;
+  //   } else {
+  //     if (prevX - event.clientX > 1) {
+  //       prevX = event.clientX;
+  //       cross.rotation.y -= ANGLE
+  //       // player[0].rotation.y -= ANGLE;
+  //       // player[0].position.x = cross.position.x + 30 * Math.sin(cross.rotation.y);
+  //       // player[0].position.z = cross.position.z + 30 * Math.cos(cross.rotation.y);
+  //       // console.log(player[0].position);
+  //     } else if (event.clientX - prevX > 1) {
+  //       prevX = event.clientX;
+  //       cross.rotation.y += ANGLE
+  //       // player[0].rotation.y += ANGLE;
+  //       // player[0].position.x = cross.position.x + 30 * Math.sin(cross.rotation.y);
+  //       // player[0].position.z = cross.position.z + 30 * Math.cos(cross.rotation.y);
+  //       // console.log(player[0].position);
+  //     }
+  //   }
 
-  var prevX;
-  window.addEventListener("mousemove", function(event) {
-    if (!prevX) {
-      prevX = event.clientX;
-    } else {
-      if (prevX - event.clientX > 20) {
-        prevX = event.clientX;
-        player[0].rotation.y -= Math.PI/12;
-      }
-
-      if (event.clientX - prevX > 20) {
-        prevX = event.clientX;
-        player[0].rotation.y += Math.PI/12;
-      }
-    }
-  });
+  //   if (!prevY) {
+  //     prevY = event.clientY;
+  //   } else {
+  //     if (prevY - event.clientY > 30) {
+  //       prevY = event.clientY;
+  //       if (cross.position.y < 30) {
+  //         cross.position.y += 1
+  //       }
+  //       // player[0].rotation.x -= ANGLE;
+  //       // player[0].position.x = cross.position.x + 30 * Math.sin(cross.rotation.x);
+  //       // player[0].position.z = cross.position.z + 30 * Math.cos(cross.rotation.x);
+  //       // console.log(player[0].position);
+  //     } else if (event.clientY - prevY > 30) {
+  //       prevY = event.clientY;
+  //       if (cross.position.y > 3) {
+  //        cross.position.y -= 1
+  //       }
+  //       // player[0].rotation.x += ANGLE;
+  //       // player[0].position.x = cross.position.x + 30 * Math.sin(cross.rotation.x);
+  //       // player[0].position.z = cross.position.z + 30 * Math.cos(cross.rotation.x);
+  //       // console.log(player[0].position);
+  //     }
+  //   }
+  // });
 }
