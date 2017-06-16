@@ -28,32 +28,6 @@ window.onload = function() {
     }
   });
 
-  window.addEventListener("resieze", function() {
-    engine.resize();
-  })
-
-  window.addEventListener("keydown", function() {
-    if (event.key == "w") {
-      if (walk) {
-        walk = false
-      } else {
-        console.log("move forward")
-        walk = true;
-        walkingAnimation = player[0].skeleton.beginAnimation("walk", false, 2);
-        player[0].position.z -= 5;
-        var obj = {
-          type: "position",
-          position: player[0].position
-        };
-        socket.send(JSON.stringify(obj));
-      }
-    }
-  });
-
-  window.addEventListener("keyup", function() {
-    walkingAnimation.pause();
-  });
-
   function createScene() {
     scene = new BABYLON.Scene(engine);
     // Changes the background color
@@ -79,6 +53,9 @@ window.onload = function() {
 
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       player = newMeshes;
+      player[0].rotation.y = Math.PI;
+      player.scaling = new BABYLON.Vector3(0.05,0.05,0.05);
+      player.position = new BABYLON.Vector3(0, 0, 0);
       player[0].setPhysicsState({impostor: BABYLON.PhysicsEngine.MeshImpostor, mass: 0, friction: 0.5, restitution: 0.7});
       skeleton = skeletons[0];
 
@@ -105,4 +82,47 @@ window.onload = function() {
     // console.log(data);
     scene.getMeshByName("NPC").position.x = data.count * 5;
   }
+
+  window.addEventListener("resieze", function() {
+    engine.resize();
+  })
+
+  window.addEventListener("keydown", function() {
+    if (event.key == "w") {
+      if (walk) {
+        walk = false
+      } else {
+        console.log("move forward")
+        walk = true;
+        walkingAnimation = player[0].skeleton.beginAnimation("walk", false, 2);
+        player[0].position.z -= 5;
+        var obj = {
+          type: "position",
+          position: player[0].position
+        };
+        socket.send(JSON.stringify(obj));
+      }
+    }
+  });
+
+  window.addEventListener("keyup", function() {
+    walkingAnimation.pause();
+  });
+
+  var prevX;
+  window.addEventListener("mousemove", function(event) {
+    if (!prevX) {
+      prevX = event.clientX;
+    } else {
+      if (prevX - event.clientX > 20) {
+        prevX = event.clientX;
+        player[0].rotation.y -= Math.PI/12;
+      }
+
+      if (event.clientX - prevX > 20) {
+        prevX = event.clientX;
+        player[0].rotation.y += Math.PI/12;
+      }
+    }
+  });
 }
