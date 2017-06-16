@@ -36,7 +36,8 @@ window.onload = function() {
     scene.enablePhysics(gravityVector, physicsPlugin);
 
     origin = BABYLON.Mesh.CreateBox("Origin", 4.0, scene);
-    var material = new BABYLON.StandardMaterial("material1", scene);
+    var material = new BABYL
+    ON.StandardMaterial("material1", scene);
     material.wireframe = true;
     origin.material = material;
 
