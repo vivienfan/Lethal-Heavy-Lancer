@@ -7,7 +7,7 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, player, npc, cross, origin, camera;
+  var scene, ui, player, npc, cross, origin, camera;
   var view = false;
 
   var ANGLE = Math.PI/180;
@@ -21,14 +21,25 @@ window.onload = function() {
   socket.onmessage = (event) => {
     var data = JSON.parse(event.data);
     updateScene(data);
-  }
+    console.log(data)
+;  }
 
+  createUI();
   createScene();
   engine.runRenderLoop(function(){
     if (view) {
       scene.render();
     }
   });
+
+  function createUI() {
+    var ui = new BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+    var snipper = new BABYLON.GUI.Image("Snipper", "snipper.png");
+    snipper.width = 0.2;
+    snipper.height = "40px";
+    ui.addControl(snipper);
+  }
 
   function createScene() {
     scene = new BABYLON.Scene(engine);
@@ -74,7 +85,7 @@ window.onload = function() {
   }
 
   function updateScene(data) {
-    scene.getMeshByName("NPC").position.x = data.count * 5;
+    // scene.getMeshByName("NPC").position.x = data.count * 5;
   }
 
   window.addEventListener("resieze", function() {
