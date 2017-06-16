@@ -56,13 +56,26 @@ window.onload = function() {
 
   function createScene() {
     scene = new BABYLON.Scene(engine);
+    // Changes the background color
     scene.clearColor = new BABYLON.Color3.White();
+    var sun = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(60, 100, 10), scene);
     scene.enablePhysics(gravityVector, physicsPlugin);
 
     origin = BABYLON.Mesh.CreateBox("Origin", 4.0, scene);
     var material = new BABYLON.StandardMaterial("material1", scene);
     material.wireframe = true;
     origin.material = material;
+
+    // Create skybox
+    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
+    var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("CNTower/", scene);
+    console.log('reflection texture', skyboxMaterial.reflectionTexture);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    skybox.material = skyboxMaterial;
 
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       player = newMeshes;
