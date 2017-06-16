@@ -7,8 +7,7 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, ui, player, npc, cross, origin, camera;
-  var view = false;
+  var scene, player, npc, origin, camera;
 
   var ANGLE = Math.PI/180;
   var CAM_OFFSET = 5;
@@ -23,36 +22,12 @@ window.onload = function() {
     updateScene(data);
   }
 
-  createUI();
   createScene();
   engine.runRenderLoop(function(){
-    if (view) {
+    if (scene.activeCamera) {
       scene.render();
     }
   });
-
-  function createUI() {
-    // var ui = new BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-    // var snipper = new BABYLON.GUI.Image("Snipper", "snipper.png");
-    // snipper.width = 0.2;
-    // snipper.height = "40px";
-    // ui.addControl(snipper);
-    // var canvas = new BABYLON.ScreenSpaceCanvas2D(scene, {
-    //     id: "ScreenCanvas",
-    //     size: new BABYLON.Size(300, 100),
-    //     backgroundFill: "#4040408F",
-    //     backgroundRoundRadius: 50,
-    //     children: [
-    //         new BABYLON.Text2D("Hello World!", {
-    //             id: "text",
-    //             marginAlignment: "h: center, v:center",
-    //             fontName: "20pt Arial",
-    //         })
-    //     ]
-    // });
-    // return canvas;
-  }
 
   function createScene() {
     scene = new BABYLON.Scene(engine);
@@ -92,9 +67,6 @@ window.onload = function() {
     camera = new BABYLON.FollowCamera("followCam", BABYLON.Vector3.Zero(), scene);
     camera.attachControl(canvas, true);
     scene.activeCamera = camera;
-    view = true;
-
-    console.log(scene);
   }
 
   function updateScene(data) {
