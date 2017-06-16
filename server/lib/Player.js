@@ -46,7 +46,7 @@ class Player {
 
     let player_char_stats = this.messageFormat
     console.log("player type: ", player_char_stats.type = this.type)
-    return this._currentMission.addCharacter(new Character(player_char_stats))
+    // return this._currentMission.addCharacter(new Character(player_char_stats))
   }
 
   messageFormat() {

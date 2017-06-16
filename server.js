@@ -35,12 +35,15 @@ let mission = new Mission()
 mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY, x: 10, y: 10})
 
 const timer = setInterval(function() {
-  let message = {
+
+  // testing character updates
+  mission._characters[0]._x += 5
+  mission._characters[0]._x %= 30
+  let message = JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
-    'data': mission.messageFormat()
-  }
-  wss.broadcast(JSON.stringify(message));
-  console.log('sending message:', message)
+    'mission': mission.messageFormat()
+  })
+  wss.broadcast(message);
 }, 1000);
 
 wss.on('connection', (ws) => {
@@ -52,6 +55,8 @@ wss.on('connection', (ws) => {
 
   player.joinMission(mission)
   // mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
+
+  // send player their player data after connection
   ws.send(JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.PLAYER_INFO,
     'data': player.messageFormat
@@ -59,13 +64,6 @@ wss.on('connection', (ws) => {
 
   console.log("player char:", player_character.messageFormat)
   console.log("mission: ", mission)
-
-  // let timer = setInterval(function() {
-  //   count %= 5;
-  //   count++;
-  //   ws.send(JSON.stringify({'count': count}));
-  //   console.log('sending count:', count)
-  // }, 2000);
 
   ws.on('message', function incoming(message) {
     message = JSON.parse(message)
@@ -83,6 +81,6 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('Client disconnected')
     // userCount--
-    clearInterval(timer)
+    // clearInterval(timer)
   });
 });

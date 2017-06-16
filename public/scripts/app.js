@@ -10,6 +10,7 @@ window.onload = function() {
 
   socket.onmessage = (event) => {
     let data = JSON.parse(event.data);
+    // console.log(data.mission.characters[0].x);
   }
 
   console.log("app.js loaded");
