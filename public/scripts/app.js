@@ -21,8 +21,7 @@ window.onload = function() {
   socket.onmessage = (event) => {
     var data = JSON.parse(event.data);
     updateScene(data);
-    console.log(data)
-;  }
+  }
 
   createUI();
   createScene();
@@ -33,12 +32,26 @@ window.onload = function() {
   });
 
   function createUI() {
-    var ui = new BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+    // var ui = new BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-    var snipper = new BABYLON.GUI.Image("Snipper", "snipper.png");
-    snipper.width = 0.2;
-    snipper.height = "40px";
-    ui.addControl(snipper);
+    // var snipper = new BABYLON.GUI.Image("Snipper", "snipper.png");
+    // snipper.width = 0.2;
+    // snipper.height = "40px";
+    // ui.addControl(snipper);
+    // var canvas = new BABYLON.ScreenSpaceCanvas2D(scene, {
+    //     id: "ScreenCanvas",
+    //     size: new BABYLON.Size(300, 100),
+    //     backgroundFill: "#4040408F",
+    //     backgroundRoundRadius: 50,
+    //     children: [
+    //         new BABYLON.Text2D("Hello World!", {
+    //             id: "text",
+    //             marginAlignment: "h: center, v:center",
+    //             fontName: "20pt Arial",
+    //         })
+    //     ]
+    // });
+    // return canvas;
   }
 
   function createScene() {
