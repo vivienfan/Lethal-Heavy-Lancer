@@ -40,6 +40,9 @@ window.onload = function() {
 
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       player = newMeshes;
+      player[0].rotation.y = Math.PI;
+      player.scaling = new BABYLON.Vector3(0.05,0.05,0.05);
+      player.position = new BABYLON.Vector3(0, 0, 0);
       player[0].setPhysicsState({impostor: BABYLON.PhysicsEngine.MeshImpostor, mass: 0, friction: 0.5, restitution: 0.7});
       skeleton = skeletons[0];
 
