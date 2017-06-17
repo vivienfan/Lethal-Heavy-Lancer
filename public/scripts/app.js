@@ -7,7 +7,7 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, origin, camera;
+  var scene, camera;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
   var npm = [];
   var inputManager = new InputManager()
@@ -28,36 +28,29 @@ window.onload = function() {
     var data = JSON.parse(event.data);
     switch(data.type) {
       case CONSTANTS.MESSAGE_TYPE.PLAYER_INFO:
-        initPlayerInfo(data.data);
+        initWorld(data.data, data.mission);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        updateScene(data);
+        updateScene(data.mission.characters);
         break;
       default:
         break;
     }
   }
 
-  createScene();
   engine.runRenderLoop(function(){
-    if (scene.activeCamera) {
+    if (scene && scene.activeCamera) {
       updateScene();
       scene.render();
     }
   });
 
-  function createScene() {
-    scene = new BABYLON.Scene(engine);
-    // Changes the background color
-    scene.clearColor = new BABYLON.Color3.White();
-    var sun = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(60, 100, 10), scene);
-    scene.enablePhysics(gravityVector, physicsPlugin);
+  function initWorld(player, mission) {
+    playerStatus = new Player(player, mission);
+    createScene(mission.characters);
+  }
 
-    origin = BABYLON.Mesh.CreateBox("Origin", 4.0, scene);
-    var material = new BABYLON.StandardMaterial("material1", scene);
-    material.wireframe = true;
-    origin.material = material;
-
+  function createSkybox() {
     // Create skybox
     var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
@@ -68,7 +61,9 @@ window.onload = function() {
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     skybox.material = skyboxMaterial;
+  }
 
+  function createGround() {
     // Create ground
     var extraGround = BABYLON.Mesh.CreateGround("extraGround", 1000, 1000, 1, scene, false);
     var extraGroundMaterial = new BABYLON.StandardMaterial("extraGround", scene);
@@ -77,26 +72,41 @@ window.onload = function() {
     extraGroundMaterial.diffuseTexture.vScale = 60;
     extraGround.position.y = -2.05;
     extraGround.material = extraGroundMaterial;
+  }
 
-    npm = BABYLON.Mesh.CreateSphere("NPC", 10, 1.0, scene);
-    npm.position.z = 20;
+  function createCharacters(characters) {
 
+  }
+
+  function createAvatar() {
     camera = new BABYLON.FollowCamera("followCam", BABYLON.Vector3.Zero(), scene);
     camera.attachControl(canvas, true);
     scene.activeCamera = camera;
-
-    console.log(scene);
   }
 
-  function initPlayerInfo(data) {
-    playerStatus = new Player(data.id, data.totalHealth, data.currentHealth);
+  function createScene(characters) {
+    scene = new BABYLON.Scene(engine);
+    // Changes the background color
+    scene.clearColor = new BABYLON.Color3.White();
+    var sun = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(60, 100, 10), scene);
+    scene.enablePhysics(gravityVector, physicsPlugin);
+
+    createSkybox();
+    createGround();
+    createCharacters(characters);
+    createAvatar();
   }
 
-  function updateScene(data) {
-    if ( data && data.mission ){
-      scene.getMeshByName("NPC").position.x = data.mission * 5;
+  function updateCharacters(characters) {
+
+  }
+
+  function updateScene(characters) {
+    if ( characters ){
+      updateCharacters(characters);
+      // scene.getMeshByName("NPC").position.x = data.mission * 5;
     }
-    if (scene.getAnimationRatio()) {
+    if (scene && scene.getAnimationRatio()) {
       camera.rotation.y += player.rotationY
       camera.rotation.y += player.rotYSpeed * scene.getAnimationRatio()
       player.rotationY = 0
