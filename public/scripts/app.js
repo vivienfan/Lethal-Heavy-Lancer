@@ -7,9 +7,8 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, camera;
+  var scene, camera, avatar, cameraTarge;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
-  var npm = [];
   var inputManager = new InputManager()
 
   var ANGLE = Math.PI/180;
@@ -91,9 +90,35 @@ window.onload = function() {
   }
 
   function createAvatar() {
-    camera = new BABYLON.FollowCamera("followCam", BABYLON.Vector3.Zero(), scene);
-    camera.attachControl(canvas, true);
-    scene.activeCamera = camera;
+    BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+      avatar = newMeshes[0];
+
+      avatar.setPhysicsState({impostor: BABYLON.PhysicsEngine.MeshImpostor, mass: 0, friction: 0.5, restitution: 0.7});
+
+      avatar.skeleton = skeletons[0];
+      avatar.skeleton.createAnimationRange("walk", 0, 30);
+      avatar.position.x = playerStatus.position.x;
+      avatar.position.y = playerStatus.position.y;
+      avatar.position.z = playerStatus.position.z;
+      avatar.rotation.x = playerStatus.rotation.x;
+      avatar.rotation.y = playerStatus.rotation.y + Math.PI;
+      avatar.rotation.z = playerStatus.rotation.z;
+
+      cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", -1, 1.0, scene);
+      cameraTarget.position.x = playerStatus.position.x;
+      cameraTarget.position.y = playerStatus.position.y + 4.5;
+      cameraTarget.position.z = playerStatus.position.z;
+      cameraTarget.rotation.x = playerStatus.rotation.x;
+      cameraTarget.rotation.y = playerStatus.rotation.y;
+      cameraTarget.rotation.z = playerStatus.rotation.z;
+
+      camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
+      camera.lockedTarget = cameraTarget;
+      camera.radius = 3;
+      camera.heightOffset = 0;
+      camera.attachControl(canvas, true);
+      scene.activeCamera = camera;
+    });
   }
 
   function createScene(characters) {
@@ -113,6 +138,7 @@ window.onload = function() {
     characters.forEach(function(character) {
       if (character.id !== playerStatus.id) {
         scene.getMeshByName(character.id).position = character.position;
+        scene.getMeshByName(character.id).rotation = character.rotation;
       }
     });
   }
