@@ -1,6 +1,6 @@
 // constants.js
 
-module.exports = {
+var CONSTANTS = {
 
 // Character types
   CHAR_TYPE: {
@@ -27,3 +27,6 @@ module.exports = {
   }
 }
 
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = CONSTANTS;
+}
