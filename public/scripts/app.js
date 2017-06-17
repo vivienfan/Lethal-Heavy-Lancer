@@ -134,15 +134,19 @@ window.onload = function() {
       camera.position.x -= player.sideSpeed * -Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
       camera.position.z -= player.sideSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
 
-      // var msg = {
-      //   type: CONSTANTS.MESSAGE_TYPE.UPDATE,
-      //   player: {
-      //     id:
-      //   }
-      // };
+      if( playerStatus ) {
+        var msg = {
+          type: CONSTANTS.MESSAGE_TYPE.UPDATE,
+          player: player
+        };
+        msg.player.position = camera.position;
+        msg.player.rotation = camera.rotation;
+        msg.player.id = playerStatus.id;
 
-      // // Send the msg object as a JSON-formatted string.
-      // socket.send(JSON.stringify(msg));
+        // Send the msg object as a JSON-formatted string.
+        console.log(msg);
+        socket.send(JSON.stringify(msg));
+      }
     }
   }
 

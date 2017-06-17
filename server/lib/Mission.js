@@ -37,10 +37,14 @@ class Mission {
     return result;
   }
 
+  get characters() {
+    return this._characters
+  }
+
   update(dt) {
     this._characters.forEach((character, i) => {
       if (character.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-        console.log("character", i, "is not player, processing", character)
+        // console.log("character", i, "is not player, processing", character)
         character.process(dt)
       }
     })

@@ -46,7 +46,7 @@ const timer = setInterval(function() {
     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
     'mission': mission.messageFormat()
   })
-  console.log(mission._characters)
+  // console.log(mission._characters)
   wss.broadcast(message);
 }, DT);
 
@@ -73,8 +73,14 @@ wss.on('connection', (ws) => {
   ws.on('message', function incoming(message) {
     message = JSON.parse(message)
 
-    if ( message.type === CONSTANTS.MESSAGE_TYPE.UPDATE ) {
-
+    if ( mission && message.type === CONSTANTS.MESSAGE_TYPE.UPDATE ) {
+      let player = mission.characters.find(function(element) {
+        return element._id === message.player.id;
+      });
+      if (player) {
+        player.update(message.player);
+      }
+      // console.log(mission.characters)
     }
 
   });
