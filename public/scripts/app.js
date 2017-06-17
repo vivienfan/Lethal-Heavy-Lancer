@@ -103,7 +103,6 @@ window.onload = function() {
 
   function updateScene(data) {
     if ( data && data.mission ){
-      console.log("found mission", data.mission.characters[0].position.x)
       scene.getMeshByName("NPC").position.x = data.mission.characters[0].position.x;
       scene.getMeshByName("NPC").position.z = data.mission.characters[0].position.z;
     }
@@ -208,7 +207,6 @@ window.onload = function() {
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.rotYSpeed = -(ANGLE)
-              console.log("Set rotspeed")
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotYSpeed = 0
@@ -227,7 +225,6 @@ window.onload = function() {
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.rotXSpeed = -(ANGLE)
-              console.log("Set rotspeed")
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotXSpeed = 0
