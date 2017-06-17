@@ -23,6 +23,10 @@ class Character {
     return this._id;
   }
 
+  get type() {
+    return this._type;
+  }
+
   get messageFormat() {
     return {
       'id': this._id,
@@ -53,6 +57,18 @@ class Character {
     this._sideSpeed = props.sideSpeed || this._sideSpeed;
     this._totalHealth = props.totalHealth || this._totalHealth;
     this._currentHealth = props.currentHealth || this._currentHealth;
+  }
+
+  process(dt) {
+    this._rotation.y += 0.002 * dt
+    // camera.rotation.x += 1.0 * DT
+    // camera.rotation.x = Math.min(Math.max(camera.rotation.x, -Math.PI/2), Math.PI/2)
+    this._fwdSpeed = 0.01;
+    this._position.x -= this._fwdSpeed * Math.sin(this._rotation.y + Math.PI) * dt;
+    this._position.z -= this._fwdSpeed * Math.cos(this._rotation.y + Math.PI) * dt;
+    this._position.x -= this._sideSpeed * -Math.cos(this._rotation.y + Math.PI) * dt;
+    this._position.z -= this._sideSpeed * Math.sin(this._rotation.y + Math.PI) * dt;
+
   }
 
 }

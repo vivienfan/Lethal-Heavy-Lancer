@@ -75,18 +75,21 @@ window.onload = function() {
   }
 
   function createCharacters(characters) {
+    console.log("here we create characters:", characters);
     characters.forEach(function (character) {
       if (character.id !== playerStatus.id) {
-        switch(character.type) {
-          case CONSTANTS.CHAR_TYPE.ENEMY:
+        // switch(character.type) {
+          // case CONSTANTS.CHAR_TYPE.ENEMY:
             var enemy = BABYLON.MeshBuilder.CreateTorusKnot(character.id, {}, scene);
-            break;
-          case CONSTANTS.CHAR_TYPE.ALLY:
-            var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
-            break;
-        }
+            // console.log("!!!!!!!!!!!!!!!!!!")
+            // break;
+          // case CONSTANTS.CHAR_TYPE.ALLY:
+            // var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
+            // break;
+        // }
       }
     });
+    console.log(scene);
   }
 
   function createAvatar() {
@@ -109,13 +112,19 @@ window.onload = function() {
   }
 
   function updateCharacters(characters) {
-
+    console.log(characters);
+    characters.forEach(function(character) {
+      if (character.id !== playerStatus.id) {
+        console.log(character.id);
+        console.log(scene.getMeshByName(character.id));
+        scene.getMeshByName(character.id).position = character.position;
+      }
+    });
   }
 
   function updateScene(characters) {
     if ( characters ){
       updateCharacters(characters);
-      // scene.getMeshByName("NPC").position.x = data.mission * 5;
     }
     if (scene && scene.getAnimationRatio()) {
       camera.rotation.y += player.rotationY
@@ -129,6 +138,7 @@ window.onload = function() {
       camera.position.z -= player.fwdSpeed * Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
       camera.position.x -= player.sideSpeed * -Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
       camera.position.z -= player.sideSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
+
     }
   }
 

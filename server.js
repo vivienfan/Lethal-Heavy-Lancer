@@ -9,9 +9,10 @@ const uuidV4        = require('uuid/v4');
 const app           = express();
 const bcrypt        = require("bcrypt");
 const CONSTANTS     = require("./public/scripts/lib/constants");
-const Mission = require('./server/lib/Mission.js');
-const Player = require('./server/lib/Player');
-const Character = require('./server/lib/Character');
+const Mission       = require('./server/lib/Mission.js');
+const Player        = require('./server/lib/Player');
+const Character     = require('./server/lib/Character');
+const DT            = 33;
 
 
 app.use(express.static("public"));
@@ -37,14 +38,16 @@ mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY, x: 10, y: 10})
 const timer = setInterval(function() {
 
   // testing character updates
-  mission._characters[0]._rotation.x += 5
-  mission._characters[0]._rotation.x %= 30
+  // mission._characters[0]._position.x += 5
+  // mission._characters[0]._position.x %= 30
+  mission.update(DT)
   let message = JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
     'mission': mission.messageFormat()
   })
+  console.log(mission._characters)
   wss.broadcast(message);
-}, 1000);
+}, DT);
 
 wss.on('connection', (ws) => {
   console.log('Client connected')
