@@ -30,7 +30,7 @@ class Mission {
       'id': this._id,
       'type': this._type,
       'characters': this._characters.map(character => {
-        return character.messageFormat;
+        return character.messageFormat();
       })
     }
 

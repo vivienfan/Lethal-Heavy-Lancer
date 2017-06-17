@@ -119,6 +119,15 @@ window.onload = function() {
       camera.position.x -= player.sideSpeed * -Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
       camera.position.z -= player.sideSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
 
+      // var msg = {
+      //   type: CONSTANTS.MESSAGE_TYPE.UPDATE,
+      //   player: {
+      //     id:
+      //   }
+      // };
+
+      // // Send the msg object as a JSON-formatted string.
+      // socket.send(JSON.stringify(msg));
     }
   }
 

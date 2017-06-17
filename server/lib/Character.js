@@ -28,7 +28,7 @@ class Character {
     return this._type;
   }
 
-  get messageFormat() {
+  messageFormat() {
     return {
       'id': this._id,
       'type': this._type,
@@ -52,9 +52,9 @@ class Character {
       this._position.z = props.position.z || this._position.z;
     }
     if ( props.rotation ) {
-      this._rotation.x = props.rotation.x || this._rotation.x;
-      this._rotation.y = props.rotation.y || this._rotation.y;
-      this._rotation.z = props.rotation.z || this._rotation.z;
+      this._rotation.x = (props.rotation.x || this._rotation.x);
+      this._rotation.y = (props.rotation.y || this._rotation.y);
+      this._rotation.z = (props.rotation.z || this._rotation.z);
     }
     this._fwdSpeed = props.fwdSpeed || this._fwdSpeed;
     this._rotYSpeed = props.rotYSpeed || this._rotYSpeed;
@@ -65,7 +65,8 @@ class Character {
 
   process(dt) {
     this._rotYSpeed = 0.002;
-    this._rotation.y += this._rotYSpeed * dt
+    this._rotation.y -= (this._rotYSpeed * dt)
+    this._rotation.y %= Math.PI * 2
     // camera.rotation.x += 1.0 * DT
     // camera.rotation.x = Math.min(Math.max(camera.rotation.x, -Math.PI/2), Math.PI/2)
     this._fwdSpeed = 0.01;
