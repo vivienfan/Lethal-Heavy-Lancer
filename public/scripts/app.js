@@ -222,7 +222,6 @@ window.onload = function() {
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.rotYSpeed = -(ANGLE)
-              // console.log("Set rotspeed")
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotYSpeed = 0
