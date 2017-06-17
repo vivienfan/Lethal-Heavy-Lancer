@@ -30,6 +30,7 @@ class Character {
   get messageFormat() {
     return {
       'id': this._id,
+      'type': this._type,
       'position': this._position,
       'rotation': this._rotation,
       'fwdSpeed': this._fwdSpeed,

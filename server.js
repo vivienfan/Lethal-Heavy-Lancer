@@ -12,7 +12,8 @@ const CONSTANTS     = require("./public/scripts/lib/constants");
 const Mission       = require('./server/lib/Mission.js');
 const Player        = require('./server/lib/Player');
 const Character     = require('./server/lib/Character');
-const DT            = 33;
+require('dotenv').config()
+const DT            = process.env.DT || 33;
 
 
 app.use(express.static("public"));
