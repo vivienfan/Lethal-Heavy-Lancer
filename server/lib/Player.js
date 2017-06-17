@@ -13,8 +13,8 @@ class Player {
     props = props || {}
     this._id = props.id || uuidV4();
     this._currentMission = props.currentMission || null;
-    this._totalHealth = props.totalHealth || 100;
-    this._currentHealth = props.currentHealth || 100;
+    this._totalHealth = props.totalHealth || 200;
+    this._currentHealth = props.currentHealth || 150;
   }
 
   get id() {
@@ -44,9 +44,9 @@ class Player {
       this._currentMission = new Mission(mission)
     }
 
-    let player_char_stats = this.messageFormat
+    let player_char_stats = this.messageFormat()
     console.log("player type: ", player_char_stats.type = this.type)
-    // return this._currentMission.addCharacter(new Character(player_char_stats))
+    return this._currentMission.addCharacter(new Character(player_char_stats))
   }
 
   messageFormat() {

@@ -22,6 +22,7 @@ window.onload = function() {
 
   socket.onmessage = (event) => {
     var data = JSON.parse(event.data);
+    console.log(data);
     updateScene(data);
   }
 
@@ -102,7 +103,9 @@ window.onload = function() {
 
   function updateScene(data) {
     if ( data && data.mission ){
-      scene.getMeshByName("NPC").position.x = data.mission * 5;
+      console.log("found mission", data.mission.characters[0].position.x)
+      scene.getMeshByName("NPC").position.x = data.mission.characters[0].position.x;
+      scene.getMeshByName("NPC").position.z = data.mission.characters[0].position.z;
     }
     if (scene.getAnimationRatio()) {
       camera.rotation.y += player.rotationY
@@ -116,6 +119,7 @@ window.onload = function() {
       camera.position.z -= player.fwdSpeed * Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
       camera.position.x -= player.sideSpeed * -Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
       camera.position.z -= player.sideSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
+
     }
   }
 

@@ -36,6 +36,15 @@ class Mission {
 
     return result;
   }
+
+  update(dt) {
+    this._characters.forEach((character, i) => {
+      if (character.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
+        console.log("character", i, "is not player, processing", character)
+        character.process(dt)
+      }
+    })
+  }
 }
 
 module.exports = Mission;
