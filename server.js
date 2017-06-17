@@ -59,7 +59,7 @@ wss.on('connection', (ws) => {
   // send player their player data after connection
   ws.send(JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.PLAYER_INFO,
-    'data': player.messageFormat
+    'data': player.messageFormat()
   }))
 
   console.log("player char:", player_character.messageFormat)

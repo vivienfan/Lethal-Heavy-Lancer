@@ -1,0 +1,10 @@
+#snipper {
+  width: 40px;
+  height: auto;
+  left: 50%;
+  top: 35%;
+}
+
+.overlay {
+  position: absolute;
+}

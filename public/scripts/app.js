@@ -7,14 +7,18 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, ui, npc, cross, origin, camera;
-  var view = false;
+  var scene, origin, camera;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
+  var npm = [];
   var inputManager = new InputManager()
 
   var ANGLE = Math.PI/180;
+  var UP_ANGLE_MAX = -Math.PI/3
+  var DOWN_ANGLE_MAX =  Math.PI/10;
   var CAM_OFFSET = 5;
   var SPEED = 2;
+
+  var playerStatus;
 
   socket.onopen = function (event) {
     console.log('connected to server');
@@ -22,40 +26,25 @@ window.onload = function() {
 
   socket.onmessage = (event) => {
     var data = JSON.parse(event.data);
-    updateScene(data);
+    switch(data.type) {
+      case CONSTANTS.MESSAGE_TYPE.PLAYER_INFO:
+        initPlayerInfo(data.data);
+        break;
+      case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
+        updateScene(data);
+        break;
+      default:
+        break;
+    }
   }
 
-  createUI();
   createScene();
   engine.runRenderLoop(function(){
-    if (view) {
+    if (scene.activeCamera) {
       updateScene();
       scene.render();
     }
   });
-
-  function createUI() {
-    // var ui = new BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-    // var snipper = new BABYLON.GUI.Image("Snipper", "snipper.png");
-    // snipper.width = 0.2;
-    // snipper.height = "40px";
-    // ui.addControl(snipper);
-    // var canvas = new BABYLON.ScreenSpaceCanvas2D(scene, {
-    //     id: "ScreenCanvas",
-    //     size: new BABYLON.Size(300, 100),
-    //     backgroundFill: "#4040408F",
-    //     backgroundRoundRadius: 50,
-    //     children: [
-    //         new BABYLON.Text2D("Hello World!", {
-    //             id: "text",
-    //             marginAlignment: "h: center, v:center",
-    //             fontName: "20pt Arial",
-    //         })
-    //     ]
-    // });
-    // return canvas;
-  }
 
   function createScene() {
     scene = new BABYLON.Scene(engine);
@@ -95,9 +84,12 @@ window.onload = function() {
     camera = new BABYLON.FollowCamera("followCam", BABYLON.Vector3.Zero(), scene);
     camera.attachControl(canvas, true);
     scene.activeCamera = camera;
-    view = true;
 
     console.log(scene);
+  }
+
+  function initPlayerInfo(data) {
+    playerStatus = new Player(data.id, data.totalHealth, data.currentHealth);
   }
 
   function updateScene(data) {
@@ -110,7 +102,7 @@ window.onload = function() {
       player.rotationY = 0
       camera.rotation.x += player.rotationX
       camera.rotation.x += player.rotXSpeed * scene.getAnimationRatio()
-      camera.rotation.x = Math.min(Math.max(camera.rotation.x, -Math.PI/2), Math.PI/2)
+      camera.rotation.x = Math.min(Math.max(camera.rotation.x, UP_ANGLE_MAX), DOWN_ANGLE_MAX)
       player.rotationX = 0
       camera.position.x -= player.fwdSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
       camera.position.z -= player.fwdSpeed * Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
@@ -148,8 +140,8 @@ window.onload = function() {
     this.process = function(type, event) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" ) {
-        player.rotationY += event.movementX * ANGLE
-        player.rotationX += event.movementY * ANGLE
+        // player.rotationY += event.movementX * ANGLE
+        // player.rotationX += event.movementY * ANGLE
       } else {
         // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
         // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
@@ -213,7 +205,8 @@ window.onload = function() {
           case "ArrowUp":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.rotXSpeed = ANGLE
+              player.rotXSpeed = -(ANGLE)
+              console.log("Set rotspeed")
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotXSpeed = 0
@@ -222,8 +215,7 @@ window.onload = function() {
           case "ArrowDown":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.rotXSpeed = -(ANGLE)
-              console.log("Set rotspeed")
+              player.rotXSpeed = ANGLE
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotXSpeed = 0
