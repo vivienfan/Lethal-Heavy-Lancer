@@ -75,7 +75,18 @@ window.onload = function() {
   }
 
   function createCharacters(characters) {
-
+    characters.forEach(function (character) {
+      if (character.id !== playerStatus.id) {
+        switch(character.type) {
+          case CONSTANTS.CHAR_TYPE.ENEMY:
+            var enemy = BABYLON.MeshBuilder.CreateTorusKnot(character.id, {}, scene);
+            break;
+          case CONSTANTS.CHAR_TYPE.ALLY:
+            var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
+            break;
+        }
+      }
+    });
   }
 
   function createAvatar() {
