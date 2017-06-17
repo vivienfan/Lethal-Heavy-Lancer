@@ -13,6 +13,7 @@ class Character {
     this._position = { x: 0, y: 0, z: 0 };
     this._rotation = { x: 0, y: 0, z: 0 };
     this._fwdSpeed = 0;
+    this._rotYSpeed = 0;
     this._sideSpeed = 0;
     this._totalHealth = 100;
     this._currentHealth = 100;
@@ -34,6 +35,7 @@ class Character {
       'position': this._position,
       'rotation': this._rotation,
       'fwdSpeed': this._fwdSpeed,
+      'rotYSpeed': this._rotYSpeed,
       'sideSpeed': this._sideSpeed,
       'totalHealth': this._totalHealth,
       'currentHealth': this._currentHealth
@@ -55,13 +57,15 @@ class Character {
       this._rotation.z = props.rotation.z || this._rotation.z;
     }
     this._fwdSpeed = props.fwdSpeed || this._fwdSpeed;
+    this._rotYSpeed = props.rotYSpeed || this._rotYSpeed;
     this._sideSpeed = props.sideSpeed || this._sideSpeed;
     this._totalHealth = props.totalHealth || this._totalHealth;
     this._currentHealth = props.currentHealth || this._currentHealth;
   }
 
   process(dt) {
-    this._rotation.y += 0.002 * dt
+    this._rotYSpeed = 0.002;
+    this._rotation.y += this._rotYSpeed * dt
     // camera.rotation.x += 1.0 * DT
     // camera.rotation.x = Math.min(Math.max(camera.rotation.x, -Math.PI/2), Math.PI/2)
     this._fwdSpeed = 0.01;
