@@ -7,8 +7,10 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, ui, player, npc, cross, origin, camera;
+  var scene, ui, npc, cross, origin, camera;
   var view = false;
+  var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
+  var inputManager = new InputManager()
 
   var ANGLE = Math.PI/180;
   var CAM_OFFSET = 5;
@@ -27,6 +29,7 @@ window.onload = function() {
   createScene();
   engine.runRenderLoop(function(){
     if (view) {
+      updateScene();
       scene.render();
     }
   });
@@ -98,46 +101,137 @@ window.onload = function() {
   }
 
   function updateScene(data) {
-    // scene.getMeshByName("NPC").position.x = data.count * 5;
+    if ( data && data.mission ){
+      scene.getMeshByName("NPC").position.x = data.mission * 5;
+    }
+    if (scene.getAnimationRatio()) {
+      camera.rotation.y += player.rotationY
+      camera.rotation.y += player.rotYSpeed * scene.getAnimationRatio()
+      player.rotationY = 0
+      camera.rotation.x += player.rotationX
+      camera.rotation.x += player.rotXSpeed * scene.getAnimationRatio()
+      camera.rotation.x = Math.min(Math.max(camera.rotation.x, -Math.PI/2), Math.PI/2)
+      player.rotationX = 0
+      camera.position.x -= player.fwdSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
+      camera.position.z -= player.fwdSpeed * Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
+      camera.position.x -= player.sideSpeed * -Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
+      camera.position.z -= player.sideSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
+    }
   }
 
-  window.addEventListener("resieze", function() {
+  window.addEventListener("resize", function() {
     engine.resize();
   })
 
+  canvas.addEventListener("click", function() {
+    canvas.requestPointerLock()
+    console.log("pointer should be locked")
+  })
+
+  canvas.addEventListener("mousemove", function(event) {
+    inputManager.process("mousemove", event)
+  })
+
+  window.addEventListener("keyup", function(event) {
+    inputManager.process("keyup", event)
+  })
+
   window.addEventListener("keydown", function(event) {
-    console.log(event.key)
-    if (event.key == "w") {
-      camera.position.x -= SPEED * Math.sin(camera.rotation.y + Math.PI);
-      camera.position.z -= SPEED * Math.cos(camera.rotation.y + Math.PI);
-    }
-
-    // left arrow
-    if (event.key == "ArrowLeft") {
-      // cross.rotation.y -= ANGLE
-      camera.rotation.y -= 2 * ANGLE
-    }
-
-    // right arrow
-    if (event.key == "ArrowRight") {
-      // cross.rotation.y += ANGLE
-      camera.rotation.y += 2 * ANGLE
-    }
-
-    // up arrow
-    if (event.key == "ArrowUp") {
-      console.log(camera.rotation.x);
-      if (camera.rotation.x > 0 - Math.PI / 8) {
-      camera.rotation.x -= ANGLE;
-      }
-    }
-
-    // down arrow
-    if (event.key == "ArrowDown") {
-      console.log(camera.rotation.x);
-      if (camera.rotation.x < Math.PI / 10) {
-        camera.rotation.x += ANGLE;
-      }
-    }
+    inputManager.process("keydown", event)
   });
+
+  function InputManager() {
+
+    this.isPressed = {}
+    this.lastY = 0
+
+    this.process = function(type, event) {
+      // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
+      if ( type === "mousemove" ) {
+        player.rotationY += event.movementX * ANGLE
+        player.rotationX += event.movementY * ANGLE
+      } else {
+        // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
+        // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
+        // and input frequency
+        switch ( event.key ) {
+          case "w":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.fwdSpeed = SPEED
+            } else if ( type === "keyup" ){
+              this.isPressed[event.key] = false
+              player.fwdSpeed = 0
+            }
+            break;
+          case "s":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.fwdSpeed = -(SPEED)
+            } else if ( type === "keyup" ){
+              this.isPressed[event.key] = false
+              player.fwdSpeed = 0
+            }
+            break;
+          case "a":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.sideSpeed = SPEED
+            } else if ( type === "keyup" ){
+              this.isPressed[event.key] = false
+              player.sideSpeed = 0
+            }
+            break;
+          case "d":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.sideSpeed = -SPEED
+            } else if ( type === "keyup" ){
+              this.isPressed[event.key] = false
+              player.sideSpeed = 0
+            }
+            break;
+          case "ArrowRight":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.rotYSpeed = ANGLE
+            } else if ( type === "keyup" ){
+              this.isPressed[event.key] = false
+              player.rotYSpeed = 0
+            }
+            break;
+          case "ArrowLeft":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.rotYSpeed = -(ANGLE)
+              console.log("Set rotspeed")
+            } else if ( type === "keyup" ){
+              this.isPressed[event.key] = false
+              player.rotYSpeed = 0
+            }
+            break;
+          case "ArrowUp":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.rotXSpeed = ANGLE
+            } else if ( type === "keyup" ){
+              this.isPressed[event.key] = false
+              player.rotXSpeed = 0
+            }
+            break;
+          case "ArrowDown":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.rotXSpeed = -(ANGLE)
+              console.log("Set rotspeed")
+            } else if ( type === "keyup" ){
+              this.isPressed[event.key] = false
+              player.rotXSpeed = 0
+            }
+            break;
+          } // end of switch statement
+        }
+      } // end of process method
+  } // end of InputManager class
+
 }
