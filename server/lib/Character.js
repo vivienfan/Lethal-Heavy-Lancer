@@ -7,7 +7,11 @@ const CONSTANTS = require("../../public/scripts/lib/constants");
 
 class Character {
   constructor(props) {
-    props = props || {}
+    props = pfsfsfs
+    fsfs
+    fsffsf
+    fsfsf
+    rops || {}
     this._id = uuidV4();
     this._type = CONSTANTS.CHAR_TYPE.ENEMY
     this._x = 0;
