@@ -10,9 +10,8 @@ class Character {
     props = props || {}
     this._id = uuidV4();
     this._type = CONSTANTS.CHAR_TYPE.ENEMY
-    this._x = 0;
-    this._y = 0;
-    this._z = 0;
+    this._position = { x: 0, y: 0, z: 0 };
+    this._rotation = { x: 0, y: 0, z: 0 };
     this._totalHealth = 100;
     this._currentHealth = 100;
     this.update(props);
@@ -25,9 +24,8 @@ class Character {
   get messageFormat() {
     return {
       'id': this._id,
-      'x': this._x,
-      'y': this._y,
-      'z': this._z,
+      'position': this._position,
+      'rotation': this._rotation,
       'totalHealth': this._totalHealth,
       'currentHealth': this._currentHealth
     }
@@ -37,9 +35,16 @@ class Character {
     props = props || {}
     this._id = props.id || this._id;
     this._type = props.type || this._type
-    this._x = props.x || this._x;
-    this._y = props.y || this._y;
-    this._z = props.z || this._z;
+    if ( props.position ) {
+      this._position.x = props.position.x || this._position.x;
+      this._position.y = props.position.y || this._position.y;
+      this._position.z = props.position.z || this._position.z;
+    }
+    if ( props.rotation ) {
+      this._rotation.x = props.rotation.x || this._rotation.x;
+      this._rotation.y = props.rotation.y || this._rotation.y;
+      this._rotation.z = props.rotation.z || this._rotation.z;
+    }
     this._totalHealth = props.totalHealth || this._totalHealth;
     this._currentHealth = props.currentHealth || this._currentHealth;
   }
