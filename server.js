@@ -12,7 +12,7 @@ const CONSTANTS     = require("./public/scripts/lib/constants");
 const Mission       = require('./server/lib/Mission.js');
 const Player        = require('./server/lib/Player');
 const Character     = require('./server/lib/Character');
-require('dotenv').config()
+// require('dotenv').config()
 const DT            = process.env.DT || 33;
 
 

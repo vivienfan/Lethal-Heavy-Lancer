@@ -56,7 +56,6 @@ window.onload = function() {
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("CNTower/", scene);
-    console.log('reflection texture', skyboxMaterial.reflectionTexture);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -78,18 +77,17 @@ window.onload = function() {
     console.log("here we create characters:", characters);
     characters.forEach(function (character) {
       if (character.id !== playerStatus.id) {
-        // switch(character.type) {
-          // case CONSTANTS.CHAR_TYPE.ENEMY:
+        switch(character.type) {
+          case CONSTANTS.CHAR_TYPE.ENEMY:
             var enemy = BABYLON.MeshBuilder.CreateTorusKnot(character.id, {}, scene);
-            // console.log("!!!!!!!!!!!!!!!!!!")
-            // break;
-          // case CONSTANTS.CHAR_TYPE.ALLY:
-            // var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
-            // break;
-        // }
+            break;
+          case CONSTANTS.CHAR_TYPE.PLAYER:
+            var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
+            break;
+        }
       }
     });
-    console.log(scene);
+    console.log(scene.meshes);
   }
 
   function createAvatar() {
@@ -112,11 +110,8 @@ window.onload = function() {
   }
 
   function updateCharacters(characters) {
-    console.log(characters);
     characters.forEach(function(character) {
       if (character.id !== playerStatus.id) {
-        console.log(character.id);
-        console.log(scene.getMeshByName(character.id));
         scene.getMeshByName(character.id).position = character.position;
       }
     });
@@ -227,7 +222,7 @@ window.onload = function() {
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.rotYSpeed = -(ANGLE)
-              console.log("Set rotspeed")
+              // console.log("Set rotspeed")
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotYSpeed = 0
@@ -237,7 +232,7 @@ window.onload = function() {
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.rotXSpeed = -(ANGLE)
-              console.log("Set rotspeed")
+              // console.log("Set rotspeed")
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotXSpeed = 0

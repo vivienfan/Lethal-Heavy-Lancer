@@ -3,7 +3,7 @@ function Player(player, mission) {
   this.totalHealth = player.totalHealth;
   this.currentHealth = player.currentHealth;
   var character = mission.characters.find(function(element) {
-    return element.id = player.id;
+    return element.id === player.id;
   });
   this.position = character.position;
   this.rotation = character.rotation;
