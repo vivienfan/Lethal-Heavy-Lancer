@@ -37,8 +37,8 @@ mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY, x: 10, y: 10})
 const timer = setInterval(function() {
 
   // testing character updates
-  mission._characters[0]._x += 5
-  mission._characters[0]._x %= 30
+  mission._characters[0]._rotation.x += 5
+  mission._characters[0]._rotation.x %= 30
   let message = JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
     'mission': mission.messageFormat()
@@ -59,7 +59,8 @@ wss.on('connection', (ws) => {
   // send player their player data after connection
   ws.send(JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.PLAYER_INFO,
-    'data': player.messageFormat
+    'data': player.messageFormat(),
+    'mission': mission.messageFormat()
   }))
 
   console.log("player char:", player_character.messageFormat)
@@ -68,12 +69,9 @@ wss.on('connection', (ws) => {
   ws.on('message', function incoming(message) {
     message = JSON.parse(message)
 
-    // wss.clients.forEach( (c) => {
-    //   if (c.readyState === WebSocket.OPEN) {
+    if ( message.type === CONSTANTS.MESSAGE_TYPE.UPDATE ) {
 
-    //     c.send(JSON.stringify(message));
-    //   }
-    // })
+    }
 
   });
 
