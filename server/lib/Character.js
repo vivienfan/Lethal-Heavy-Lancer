@@ -12,6 +12,8 @@ class Character {
     this._type = CONSTANTS.CHAR_TYPE.ENEMY
     this._position = { x: 0, y: 0, z: 0 };
     this._rotation = { x: 0, y: 0, z: 0 };
+    this._fwdSpeed = 0;
+    this._sideSpeed = 0;
     this._totalHealth = 100;
     this._currentHealth = 100;
     this.update(props);
@@ -26,6 +28,8 @@ class Character {
       'id': this._id,
       'position': this._position,
       'rotation': this._rotation,
+      'fwdSpeed': this._fwdSpeed,
+      'sideSpeed': this._sideSpeed,
       'totalHealth': this._totalHealth,
       'currentHealth': this._currentHealth
     }
@@ -45,6 +49,8 @@ class Character {
       this._rotation.y = props.rotation.y || this._rotation.y;
       this._rotation.z = props.rotation.z || this._rotation.z;
     }
+    this._fwdSpeed = props.fwdSpeed || this._fwdSpeed;
+    this._sideSpeed = props.sideSpeed || this._sideSpeed;
     this._totalHealth = props.totalHealth || this._totalHealth;
     this._currentHealth = props.currentHealth || this._currentHealth;
   }
