@@ -1,6 +1,5 @@
 var FPS_VIEW = true;
 
-
 // app.js
 window.onload = function() {
   console.log("attempting to connect WebSocket");
@@ -16,8 +15,10 @@ window.onload = function() {
   var inputManager = new InputManager()
 
   var ANGLE = Math.PI/180;
-  var UP_ANGLE_MAX = 10;
-  var DOWN_ANGLE_MAX = 3.5;
+  var UP_ANGLE_MAX = -Math.PI/3;
+  var DOWN_ANGLE_MAX = Math.PI/10;
+  var UP_POSITION_MAX = 10;
+  var DOWN_POSITION_MAX = 3.5;
   var CAM_OFFSET = 5;
   var SPEED = 2;
 
@@ -136,7 +137,7 @@ window.onload = function() {
         avatar.skeleton = skeletons[0];
         avatar.skeleton.createAnimationRange("walk", 0, 30);
 
-        cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
+        cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", -1, 0.1, scene);
         camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
         camera.lockedTarget = cameraTarget;
         camera.radius = 3;
@@ -191,7 +192,7 @@ window.onload = function() {
         player.rotationY = 0
         camera.rotation.x += player.rotationX
         camera.rotation.x += player.rotXSpeed * scene.getAnimationRatio()
-        camera.rotation.x = Math.min(Math.max(camera.rotation.x, -Math.PI/2), Math.PI/2)
+        camera.rotation.x = Math.min(Math.max(camera.rotation.x, UP_ANGLE_MAX), DOWN_ANGLE_MAX)
         player.rotationX = 0
         camera.position.x -= player.fwdSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
         camera.position.z -= player.fwdSpeed * Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
@@ -210,7 +211,7 @@ window.onload = function() {
         cameraTarget.position.y -= player.rotXSpeed * scene.getAnimationRatio();
         camera.heightOffset += player.rotXSpeed * scene.getAnimationRatio();
         // set range
-        cameraTarget.position.y = Math.max(Math.min(cameraTarget.position.y, UP_ANGLE_MAX), DOWN_ANGLE_MAX);
+        cameraTarget.position.y = Math.max(Math.min(cameraTarget.position.y, UP_POSITION_MAX), DOWN_POSITION_MAX);
         camera.heightOffset = -(cameraTarget.position.y - 4.5);
         if (camera.heightOffset > 0) {
           camera.radius = 3 - camera.heightOffset;
