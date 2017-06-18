@@ -167,14 +167,17 @@ window.onload = function() {
       updateCharacters(characters);
     }
     if (scene && scene.getAnimationRatio()) {
+      playerStatus.rotation.y += player.rotationY;
+      player.rotationY = 0;
       playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio();
       playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
-
       avatar.rotation.y = playerStatus.rotation.y;
       cameraTarget.rotation.y = playerStatus.rotation.y;
       camera.alpha = - (playerStatus.rotation.y + Math.PI/2);
 
       // // rotation on x-axis
+      camera.beta -= player.rotationX;
+      player.rotationX = 0;
       camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
 
       // move forward/backward
@@ -235,8 +238,8 @@ window.onload = function() {
     this.process = function(type, event) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" ) {
-        // player.rotationY += event.movementX * ANGLE
-        // player.rotationX += event.movementY * ANGLE
+        player.rotationY += event.movementX * ANGLE
+        player.rotationX += event.movementY * ANGLE
       } else {
         // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
         // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
