@@ -28,7 +28,7 @@ class Character {
     return this._type;
   }
 
-  get messageFormat() {
+  messageFormat() {
     return {
       'id': this._id,
       'type': this._type,
@@ -45,27 +45,28 @@ class Character {
   update(props) {
     props = props || {}
     this._id = props.id || this._id;
-    this._type = props.type || this._type
+    this._type = props.type === undefined ? this._type : props.type
     if ( props.position ) {
-      this._position.x = props.position.x || this._position.x;
-      this._position.y = props.position.y || this._position.y;
-      this._position.z = props.position.z || this._position.z;
+      this._position.x = props.position.x === undefined ? this._position.x : props.position.x
+      this._position.y = props.position.y === undefined ? this._position.y : props.position.y
+      this._position.z = props.position.z === undefined ? this._position.z : props.position.z
     }
     if ( props.rotation ) {
-      this._rotation.x = props.rotation.x || this._rotation.x;
-      this._rotation.y = props.rotation.y || this._rotation.y;
-      this._rotation.z = props.rotation.z || this._rotation.z;
+      this._rotation.x = (props.rotation.x === undefined ? this._rotation.x : props.rotation.x)
+      this._rotation.y = (props.rotation.y === undefined ? this._rotation.y : props.rotation.y)
+      this._rotation.z = (props.rotation.z === undefined ? this._rotation.z : props.rotation.z)
     }
-    this._fwdSpeed = props.fwdSpeed || this._fwdSpeed;
-    this._rotYSpeed = props.rotYSpeed || this._rotYSpeed;
-    this._sideSpeed = props.sideSpeed || this._sideSpeed;
-    this._totalHealth = props.totalHealth || this._totalHealth;
-    this._currentHealth = props.currentHealth || this._currentHealth;
+    this._fwdSpeed = props.fwdSpeed === undefined ? this._fwdSpeed : props.fwdSpeed
+    this._rotYSpeed = props.rotYSpeed === undefined ? this._rotYSpeed : props.rotYSpeed
+    this._sideSpeed = props.sideSpeed === undefined ? this._sideSpeed : props.sideSpeed
+    this._totalHealth = props.totalHealth === undefined ? this._totalHealth : props.totalHealth
+    this._currentHealth = props.currentHealth === undefined ? this._currentHealth : props.currentHealth
   }
 
   process(dt) {
     this._rotYSpeed = 0.002;
-    this._rotation.y += this._rotYSpeed * dt
+    this._rotation.y -= (this._rotYSpeed * dt)
+    this._rotation.y %= Math.PI * 2
     // camera.rotation.x += 1.0 * DT
     // camera.rotation.x = Math.min(Math.max(camera.rotation.x, -Math.PI/2), Math.PI/2)
     this._fwdSpeed = 0.01;

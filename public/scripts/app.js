@@ -167,6 +167,7 @@ window.onload = function() {
 
       updateFocus();
 
+//<<<<<<< HEAD
       // if (tmp.rotation !== playerStatus.rotation
       //   || tmp.position !== playerStatus.position) {
       //   playerStatus.rotation.x = tmp.rotation.x;
@@ -177,6 +178,21 @@ window.onload = function() {
       //   playerStatus.position.z = tmp.position.z;
       //   updateFocus();
       // }
+//=======
+      if( playerStatus ) {
+        var msg = {
+          type: CONSTANTS.MESSAGE_TYPE.UPDATE,
+          player: player
+        };
+        msg.player.position = camera.position;
+        msg.player.rotation = camera.rotation;
+        msg.player.id = playerStatus.id;
+
+        // Send the msg object as a JSON-formatted string.
+        console.log(msg);
+        socket.send(JSON.stringify(msg));
+      }
+//>>>>>>> master
     }
   }
 

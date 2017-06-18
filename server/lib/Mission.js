@@ -30,17 +30,21 @@ class Mission {
       'id': this._id,
       'type': this._type,
       'characters': this._characters.map(character => {
-        return character.messageFormat;
+        return character.messageFormat();
       })
     }
 
     return result;
   }
 
+  get characters() {
+    return this._characters
+  }
+
   update(dt) {
     this._characters.forEach((character, i) => {
       if (character.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-        console.log("character", i, "is not player, processing", character)
+        // console.log("character", i, "is not player, processing", character)
         character.process(dt)
       }
     })
