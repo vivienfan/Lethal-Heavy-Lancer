@@ -17,7 +17,7 @@ window.onload = function() {
   var CAM_OFFSET = 5;
   var SPEED = 2;
 
-  var playerStatus;
+  var playerStatus = {};
 
   socket.onopen = function (event) {
     console.log('connected to server');
@@ -89,6 +89,22 @@ window.onload = function() {
     console.log(scene.meshes);
   }
 
+  function updateFocus() {
+    avatar.position.x = playerStatus.position.x;
+    avatar.position.y = playerStatus.position.y;
+    avatar.position.z = playerStatus.position.z;
+    avatar.rotation.x = playerStatus.rotation.x;
+    avatar.rotation.y = playerStatus.rotation.y;// + Math.PI;
+    avatar.rotation.z = playerStatus.rotation.z;
+
+    cameraTarget.position.x = playerStatus.position.x;
+    cameraTarget.position.y = playerStatus.position.y + 4.5;
+    cameraTarget.position.z = playerStatus.position.z;
+    cameraTarget.rotation.x = playerStatus.rotation.x;
+    cameraTarget.rotation.y = playerStatus.rotation.y;
+    cameraTarget.rotation.z = playerStatus.rotation.z;
+  }
+
   function createAvatar() {
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       avatar = newMeshes[0];
@@ -97,20 +113,7 @@ window.onload = function() {
 
       avatar.skeleton = skeletons[0];
       avatar.skeleton.createAnimationRange("walk", 0, 30);
-      avatar.position.x = playerStatus.position.x;
-      avatar.position.y = playerStatus.position.y;
-      avatar.position.z = playerStatus.position.z;
-      avatar.rotation.x = playerStatus.rotation.x;
-      avatar.rotation.y = playerStatus.rotation.y + Math.PI;
-      avatar.rotation.z = playerStatus.rotation.z;
-
-      cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", -1, 1.0, scene);
-      cameraTarget.position.x = playerStatus.position.x;
-      cameraTarget.position.y = playerStatus.position.y + 4.5;
-      cameraTarget.position.z = playerStatus.position.z;
-      cameraTarget.rotation.x = playerStatus.rotation.x;
-      cameraTarget.rotation.y = playerStatus.rotation.y;
-      cameraTarget.rotation.z = playerStatus.rotation.z;
+      cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
 
       camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
       camera.lockedTarget = cameraTarget;
@@ -118,6 +121,8 @@ window.onload = function() {
       camera.heightOffset = 0;
       camera.attachControl(canvas, true);
       scene.activeCamera = camera;
+
+      updateFocus();
     });
   }
 
@@ -148,18 +153,30 @@ window.onload = function() {
       updateCharacters(characters);
     }
     if (scene && scene.getAnimationRatio()) {
-      camera.rotation.y += player.rotationY
-      camera.rotation.y += player.rotYSpeed * scene.getAnimationRatio()
+      playerStatus.rotation.y += player.rotationY
+      playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio()
       player.rotationY = 0
-      camera.rotation.x += player.rotationX
-      camera.rotation.x += player.rotXSpeed * scene.getAnimationRatio()
-      camera.rotation.x = Math.min(Math.max(camera.rotation.x, UP_ANGLE_MAX), DOWN_ANGLE_MAX)
+      playerStatus.rotation.x += player.rotationX
+      playerStatus.rotation.x += player.rotXSpeed * scene.getAnimationRatio()
+      playerStatus.rotation.x = Math.min(Math.max(playerStatus.rotation.x, UP_ANGLE_MAX), DOWN_ANGLE_MAX)
       player.rotationX = 0
-      camera.position.x -= player.fwdSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
-      camera.position.z -= player.fwdSpeed * Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
-      camera.position.x -= player.sideSpeed * -Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
-      camera.position.z -= player.sideSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
+      playerStatus.position.x -= player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+      playerStatus.position.z -= player.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+      playerStatus.position.x -= player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+      playerStatus.position.z -= player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
+      updateFocus();
+
+      // if (tmp.rotation !== playerStatus.rotation
+      //   || tmp.position !== playerStatus.position) {
+      //   playerStatus.rotation.x = tmp.rotation.x;
+      //   playerStatus.rotation.y = tmp.rotation.y;
+      //   playerStatus.rotation.z = tmp.rotation.z;
+      //   playerStatus.position.x = tmp.position.x;
+      //   playerStatus.position.y = tmp.position.y;
+      //   playerStatus.position.z = tmp.position.z;
+      //   updateFocus();
+      // }
     }
   }
 
