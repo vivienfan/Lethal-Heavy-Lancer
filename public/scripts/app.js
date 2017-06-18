@@ -7,13 +7,14 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, camera, avatar, cameraTarge;
+  var scene, camera;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
+  var npm = [];
   var inputManager = new InputManager()
 
   var ANGLE = Math.PI/180;
-  var UP_ANGLE_MAX = -Math.PI/3
-  var DOWN_ANGLE_MAX =  Math.PI/10;
+  var UP_ANGLE_MAX = 10;
+  var DOWN_ANGLE_MAX = 3.5;
   var CAM_OFFSET = 5;
   var SPEED = 2;
 
@@ -68,8 +69,18 @@ window.onload = function() {
     extraGroundMaterial.diffuseTexture = new BABYLON.Texture("ground.jpg", scene);
     extraGroundMaterial.diffuseTexture.uScale = 60;
     extraGroundMaterial.diffuseTexture.vScale = 60;
-    extraGround.position.y = -2.05;
+    extraGround.position.y = 0;
     extraGround.material = extraGroundMaterial;
+  }
+
+  function createPlayer(id) {
+    var ally = BABYLON.MeshBuilder.CreateCylinder(id, {diameterTop: 0, tessellation: 4}, scene);
+    // BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+    //   var ally = newMeshes[0];
+    //   ally.name = id;
+    //   ally.skeleton = skeletons[0];
+    //   ally.skeleton.createAnimationRange("walk", 0, 30);
+    // });
   }
 
   function createCharacters(characters) {
@@ -81,7 +92,7 @@ window.onload = function() {
             var enemy = BABYLON.MeshBuilder.CreateTorusKnot(character.id, {}, scene);
             break;
           case CONSTANTS.CHAR_TYPE.PLAYER:
-            var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
+            createPlayer(character.id);
             break;
         }
       }
@@ -89,12 +100,12 @@ window.onload = function() {
     console.log(scene.meshes);
   }
 
-  function updateFocus() {
+  function initFocus() {
     avatar.position.x = playerStatus.position.x;
     avatar.position.y = playerStatus.position.y;
     avatar.position.z = playerStatus.position.z;
     avatar.rotation.x = playerStatus.rotation.x;
-    avatar.rotation.y = playerStatus.rotation.y;// + Math.PI;
+    avatar.rotation.y = playerStatus.rotation.y;
     avatar.rotation.z = playerStatus.rotation.z;
 
     cameraTarget.position.x = playerStatus.position.x;
@@ -105,24 +116,26 @@ window.onload = function() {
     cameraTarget.rotation.z = playerStatus.rotation.z;
   }
 
+
   function createAvatar() {
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       avatar = newMeshes[0];
-
-      avatar.setPhysicsState({impostor: BABYLON.PhysicsEngine.MeshImpostor, mass: 0, friction: 0.5, restitution: 0.7});
-
+      avatar.name = playerStatus.id;
       avatar.skeleton = skeletons[0];
       avatar.skeleton.createAnimationRange("walk", 0, 30);
+
       cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
 
       camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
       camera.lockedTarget = cameraTarget;
       camera.radius = 3;
       camera.heightOffset = 0;
+      camera.cameraAcceleration = 0.5;
+      camera.rotationOffset = 180;
       camera.attachControl(canvas, true);
       scene.activeCamera = camera;
 
-      updateFocus();
+      initFocus();
     });
   }
 
@@ -142,8 +155,12 @@ window.onload = function() {
   function updateCharacters(characters) {
     characters.forEach(function(character) {
       if (character.id !== playerStatus.id) {
-        scene.getMeshByName(character.id).position = character.position;
-        scene.getMeshByName(character.id).rotation = character.rotation;
+        if (scene.getMeshByName(character.id)){
+          scene.getMeshByName(character.id).position = character.position;
+          scene.getMeshByName(character.id).rotation = character.rotation;
+        } else {
+          createPlayer(character.id);
+        }
       }
     });
   }
@@ -153,46 +170,48 @@ window.onload = function() {
       updateCharacters(characters);
     }
     if (scene && scene.getAnimationRatio()) {
-      playerStatus.rotation.y += player.rotationY
-      playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio()
-      player.rotationY = 0
-      playerStatus.rotation.x += player.rotationX
-      playerStatus.rotation.x += player.rotXSpeed * scene.getAnimationRatio()
-      playerStatus.rotation.x = Math.min(Math.max(playerStatus.rotation.x, UP_ANGLE_MAX), DOWN_ANGLE_MAX)
-      player.rotationX = 0
+      // rotation on y-axis
+      playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio();
+      playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
+
+      avatar.rotation.y = playerStatus.rotation.y;
+      cameraTarget.rotation.y = playerStatus.rotation.y;
+
+      // rotation on x-axis
+      cameraTarget.position.y -= player.rotXSpeed * scene.getAnimationRatio();
+      camera.heightOffset += player.rotXSpeed * scene.getAnimationRatio();
+      // set range
+      cameraTarget.position.y = Math.max(Math.min(cameraTarget.position.y, UP_ANGLE_MAX), DOWN_ANGLE_MAX);
+      camera.heightOffset = -(cameraTarget.position.y - 4.5);
+      if (camera.heightOffset > 0) {
+        camera.radius = 3 - camera.heightOffset;
+      }
+
+      // move forward/backward
       playerStatus.position.x -= player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
       playerStatus.position.z -= player.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+
       playerStatus.position.x -= player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
       playerStatus.position.z -= player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
-      updateFocus();
+      avatar.position.x = playerStatus.position.x;
+      avatar.position.z = playerStatus.position.z;
+      cameraTarget.position.x = playerStatus.position.x;
+      cameraTarget.position.z = playerStatus.position.z;
 
-//<<<<<<< HEAD
-      // if (tmp.rotation !== playerStatus.rotation
-      //   || tmp.position !== playerStatus.position) {
-      //   playerStatus.rotation.x = tmp.rotation.x;
-      //   playerStatus.rotation.y = tmp.rotation.y;
-      //   playerStatus.rotation.z = tmp.rotation.z;
-      //   playerStatus.position.x = tmp.position.x;
-      //   playerStatus.position.y = tmp.position.y;
-      //   playerStatus.position.z = tmp.position.z;
-      //   updateFocus();
-      // }
-//=======
       if( playerStatus ) {
         var msg = {
           type: CONSTANTS.MESSAGE_TYPE.UPDATE,
           player: player
         };
-        msg.player.position = camera.position;
-        msg.player.rotation = camera.rotation;
+        msg.player.position = playerStatus.position;
+        msg.player.rotation = playerStatus.rotation;
         msg.player.id = playerStatus.id;
 
         // Send the msg object as a JSON-formatted string.
-        console.log(msg);
+        // console.log(msg);
         socket.send(JSON.stringify(msg));
       }
-//>>>>>>> master
     }
   }
 
@@ -309,5 +328,4 @@ window.onload = function() {
         }
       } // end of process method
   } // end of InputManager class
-
 }
