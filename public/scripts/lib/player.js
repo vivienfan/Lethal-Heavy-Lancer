@@ -7,6 +7,7 @@ function Player(player, mission) {
   });
   this.position = character.position;
   this.rotation = character.rotation;
+  this.rotYSpeed = character.rotYSpeed;
   this.fwdSpeed = character.fwdSpeed;
   this.sideSpeed = character.sideSpeed;
   console.log(this);
