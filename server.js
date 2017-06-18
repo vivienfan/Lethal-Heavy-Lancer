@@ -67,7 +67,7 @@ wss.on('connection', (ws) => {
     'mission': mission.messageFormat()
   }))
 
-  console.log("player char:", player_character.messageFormat)
+  console.log("player char:", player_character.messageFormat())
   console.log("mission: ", mission)
 
   ws.on('message', function incoming(message) {
@@ -88,7 +88,6 @@ wss.on('connection', (ws) => {
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => {
     console.log('Client disconnected')
-    // userCount--
-    // clearInterval(timer)
+    mission.removeCharacter(player)
   });
 });

@@ -23,6 +23,19 @@ class Mission {
     return this
   }
 
+  removeCharacter(character) {
+    console.log("remove char called")
+    let index = this._characters.findIndex(function(element) {
+      return element.id === character.id;
+    });
+
+    console.log("index is", index)
+    if (index > -1) {
+     this._characters.splice(index, 1)
+    }
+    return this
+  }
+
   messageFormat(playerId) {
     let foundUser = this._characters[playerId]
     // console.log(foundUser)
