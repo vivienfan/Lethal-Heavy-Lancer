@@ -1,4 +1,4 @@
-var FPS_VIEW = true;
+// var FPS_VIEW = false;
 
 // app.js
 window.onload = function() {
@@ -17,8 +17,6 @@ window.onload = function() {
   var ANGLE = Math.PI/180;
   var UP_ANGLE_MAX = -Math.PI/3;
   var DOWN_ANGLE_MAX = Math.PI/10;
-  var UP_POSITION_MAX = 10;
-  var DOWN_POSITION_MAX = 3.5;
   var CAM_OFFSET = 5;
   var SPEED = 2;
 
@@ -121,35 +119,19 @@ window.onload = function() {
 
 
   function createAvatar() {
+    BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+      avatar = newMeshes[0];
+      avatar.name = playerStatus.id;
+      avatar.skeleton = skeletons[0];
+      avatar.skeleton.createAnimationRange("walk", 0, 30);
 
-    if (FPS_VIEW) {
-      // First person version
-      camera = new BABYLON.FreeCamera("freeCam", BABYLON.Vector3.Zero(), scene);
-      camera.position.x = playerStatus.position.x;
-      camera.position.z = playerStatus.position.z;
-      camera.attachControl(canvas, true);
+      cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", -1, 0.1, scene);
+      camera = new BABYLON.ArcRotateCamera("arcCam", -Math.PI/2, Math.PI/2, 3, cameraTarget, scene);
       scene.activeCamera = camera;
-    } else {
-      // Third person version
-      BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
-        avatar = newMeshes[0];
-        avatar.name = playerStatus.id;
-        avatar.skeleton = skeletons[0];
-        avatar.skeleton.createAnimationRange("walk", 0, 30);
 
-        cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", -1, 0.1, scene);
-        camera = new BABYLON.FollowCamera("followCam",BABYLON.Vector3.Zero(),scene);
-        camera.lockedTarget = cameraTarget;
-        camera.radius = 3;
-        camera.heightOffset = 0;
-        camera.rotationOffset = 180;
+      initFocus();
 
-        camera.attachControl(canvas, true);
-        scene.activeCamera = camera;
-
-        initFocus();
-      });
-    }
+    });
   }
 
   function createScene(characters) {
@@ -162,22 +144,22 @@ window.onload = function() {
 
     createSkybox();
     createGround();
-    createCharacters(characters);
+    // createCharacters(characters);
     createAvatar();
   }
 
   function updateCharacters(characters) {
-    characters.forEach(function(character) {
-      if (character.id !== playerStatus.id) {
-        if (scene.getMeshByName(character.id)){
-          scene.getMeshByName(character.id).position = character.position;
-          scene.getMeshByName(character.id).rotation = character.rotation;
-        } else {
-          var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
-          // createPlayer(character.id);
-        }
-      }
-    });
+    // characters.forEach(function(character) {
+    //   if (character.id !== playerStatus.id) {
+    //     if (scene.getMeshByName(character.id)){
+    //       scene.getMeshByName(character.id).position = character.position;
+    //       scene.getMeshByName(character.id).rotation = character.rotation;
+    //     } else {
+    //       var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
+    //       // createPlayer(character.id);
+    //     }
+    //   }
+    // });
   }
 
   function updateScene(characters) {
@@ -185,51 +167,28 @@ window.onload = function() {
       updateCharacters(characters);
     }
     if (scene && scene.getAnimationRatio()) {
-      if (FPS_VIEW) {
-        // First person version
-        camera.rotation.y += player.rotationY
-        camera.rotation.y += player.rotYSpeed * scene.getAnimationRatio()
-        player.rotationY = 0
-        camera.rotation.x += player.rotationX
-        camera.rotation.x += player.rotXSpeed * scene.getAnimationRatio()
-        camera.rotation.x = Math.min(Math.max(camera.rotation.x, UP_ANGLE_MAX), DOWN_ANGLE_MAX)
-        player.rotationX = 0
-        camera.position.x -= player.fwdSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
-        camera.position.z -= player.fwdSpeed * Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
-        camera.position.x -= player.sideSpeed * -Math.cos(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
-        camera.position.z -= player.sideSpeed * Math.sin(camera.rotation.y + Math.PI) * scene.getAnimationRatio();
-      } else {
-        // Third person version
-        // rotation on y-axis
-        playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio();
-        playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
+      playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio();
+      playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
 
-        avatar.rotation.y = playerStatus.rotation.y;
-        cameraTarget.rotation.y = playerStatus.rotation.y;
+      avatar.rotation.y = playerStatus.rotation.y;
+      cameraTarget.rotation.y = playerStatus.rotation.y;
+      camera.alpha = - (playerStatus.rotation.y + Math.PI/2);
 
-        // rotation on x-axis
-        cameraTarget.position.y -= player.rotXSpeed * scene.getAnimationRatio();
-        camera.heightOffset += player.rotXSpeed * scene.getAnimationRatio();
-        // set range
-        cameraTarget.position.y = Math.max(Math.min(cameraTarget.position.y, UP_POSITION_MAX), DOWN_POSITION_MAX);
-        camera.heightOffset = -(cameraTarget.position.y - 4.5);
-        if (camera.heightOffset > 0) {
-          camera.radius = 3 - camera.heightOffset;
-        }
+      // // rotation on x-axis
+      camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
 
-        // move forward/backward
-        playerStatus.position.x -= player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-        playerStatus.position.z -= player.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+      // move forward/backward
+      playerStatus.position.x -= player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+      playerStatus.position.z -= player.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
-        // move left/right
-        playerStatus.position.x -= player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-        playerStatus.position.z -= player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+      // move left/right
+      playerStatus.position.x -= player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+      playerStatus.position.z -= player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
-        avatar.position.x = playerStatus.position.x;
-        avatar.position.z = playerStatus.position.z;
-        cameraTarget.position.x = playerStatus.position.x;
-        cameraTarget.position.z = playerStatus.position.z;
-      }
+      avatar.position.x = playerStatus.position.x;
+      avatar.position.z = playerStatus.position.z;
+      cameraTarget.position.x = playerStatus.position.x;
+      cameraTarget.position.z = playerStatus.position.z;
 
       if( playerStatus ) {
         var msg = {
