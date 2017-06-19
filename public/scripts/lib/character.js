@@ -11,27 +11,28 @@ function Character(props) {
   this.sideSpeed = 0;
   this.totalHealth = 100;
   this.currentHealth = 100;
+  return update(props, this);
 
-  function update() {
-    props = props || {}
-    this.id = props.id || this.id;
-    this.type = props.type === undefined ? this.type : props.type
+  function update(props, that) {
+    var props = props || {}
+    that.id = props.id || that.id;
+    that.type = props.type === undefined ? that.type : props.type
     if ( props.position ) {
-      this.position.x = props.position.x === undefined ? this.position.x : props.position.x
-      this.position.y = props.position.y === undefined ? this.position.y : props.position.y
-      this.position.z = props.position.z === undefined ? this.position.z : props.position.z
+      that.position.x = props.position.x === undefined ? that.position.x : props.position.x
+      that.position.y = props.position.y === undefined ? that.position.y : props.position.y
+      that.position.z = props.position.z === undefined ? that.position.z : props.position.z
     }
     if ( props.rotation ) {
-      this.rotation.x = (props.rotation.x === undefined ? this.rotation.x : props.rotation.x)
-      this.rotation.y = (props.rotation.y === undefined ? this.rotation.y : props.rotation.y)
-      this.rotation.z = (props.rotation.z === undefined ? this.rotation.z : props.rotation.z)
+      that.rotation.x = (props.rotation.x === undefined ? that.rotation.x : props.rotation.x)
+      that.rotation.y = (props.rotation.y === undefined ? that.rotation.y : props.rotation.y)
+      that.rotation.z = (props.rotation.z === undefined ? that.rotation.z : props.rotation.z)
     }
-    this.fwdSpeed = props.fwdSpeed === undefined ? this.fwdSpeed : props.fwdSpeed
-    this.rotYSpeed = props.rotYSpeed === undefined ? this.rotYSpeed : props.rotYSpeed
-    this.sideSpeed = props.sideSpeed === undefined ? this.sideSpeed : props.sideSpeed
-    this.totalHealth = props.totalHealth === undefined ? this.totalHealth : props.totalHealth
-    this.currentHealth = props.currentHealth === undefined ? this.currentHealth : props.currentHealth
-  }(props);
+    that.fwdSpeed = props.fwdSpeed === undefined ? that.fwdSpeed : props.fwdSpeed
+    that.rotYSpeed = props.rotYSpeed === undefined ? that.rotYSpeed : props.rotYSpeed
+    that.sideSpeed = props.sideSpeed === undefined ? that.sideSpeed : props.sideSpeed
+    that.totalHealth = props.totalHealth === undefined ? that.totalHealth : props.totalHealth
+    that.currentHealth = props.currentHealth === undefined ? that.currentHealth : props.currentHealth
+  }
 }
 
 if (typeof module !== "undefined" && module.exports) {

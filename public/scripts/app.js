@@ -18,9 +18,10 @@ window.onload = function() {
   var ALPHA_OFFSET = Math.PI/2;
   var BETA_OFFSET = Math.PI/2;
   var RADIUS = 3;
-
   var SPEED = 0.5;
+
   var playerStatus = {};
+  var characterStatus = [];
 
   var HEALTH_COLOR_FULL = "#86e01e";
   var HEALTH_COLOR_HIGH = "#f2d31b";
@@ -59,6 +60,7 @@ window.onload = function() {
 
   function removeCharacter(character) {
     scene.getMeshByName(character.id).dispose();
+    // TODO remove character from arr
   }
 
   function initWorld(player, mission) {
@@ -96,7 +98,7 @@ window.onload = function() {
       playerMesh.position.y = -100;
       players.forEach(function(player, index) {
         if (scene.getMeshByName(player.id)){
-          var newPlayer = playerMesh.createInstance(player.id);//, index);
+          var newPlayer = playerMesh.createInstance(player.id);
           newPlayer.id = player.id;
           newPlayer.name = player.name;
           newPlayer.position.x = player.position.x + index * 5 + 2;
@@ -114,7 +116,7 @@ window.onload = function() {
       npcMesh.position.y = -100;
       npcs.forEach(function(npc, index) {
         if (scene.getMeshByName(npc.id)){
-          var newNpc = npcMesh.createInstance(npc.id);//, index);
+          console.log("other npc", npc);
           newNPC.id = npc.id;
           newNPC.name = npc.id;
           newNPC.position.x = npc.position.x - index * 5 + 2;
@@ -182,7 +184,7 @@ window.onload = function() {
 
     var direction = new BABYLON.Vector3(
       -Math.sin(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
-      Math.sin(camera.beta - BETA_OFFSET),// + CAM_OFFSET,
+      Math.sin(camera.beta - BETA_OFFSET),
       Math.cos(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
 
     var length = 100;
@@ -218,11 +220,13 @@ window.onload = function() {
   }
 
   function updateCharacters(characters) {
+    characterStatus = [];
     characters.forEach(function(character, index) {
+      characterStatus.push(new Character(character));
       if (character.id !== playerStatus.id) {
         if (scene.getMeshByName(character.id)){
-          scene.getMeshByName(character.id).position = character.position;
-          scene.getMeshByName(character.id).rotation = character.rotation;
+          // scene.getMeshByName(character.id).position = character.position;
+          // scene.getMeshByName(character.id).rotation = character.rotation;
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
             var newNPC = npcMesh.createInstance(character.id);
@@ -263,8 +267,7 @@ window.onload = function() {
     }
   }
 
-  function updateScene() {
-    if (scene && scene.getAnimationRatio()) {
+  function updatePlayerOrientation() {
       playerStatus.rotation.y += player.rotationY;
       player.rotationY = 0;
       playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio();
@@ -290,19 +293,43 @@ window.onload = function() {
       avatar.position.z = playerStatus.position.z;
       cameraTarget.position.x = playerStatus.position.x;
       cameraTarget.position.z = playerStatus.position.z;
+  }
 
-      if( playerStatus && socket.readyState === socket.OPEN ) {
-        var msg = {
-          type: CONSTANTS.MESSAGE_TYPE.UPDATE,
-          player: player
-        };
-        msg.player.position = playerStatus.position;
-        msg.player.rotation = playerStatus.rotation;
-        msg.player.id = playerStatus.id;
+  function sendPlayerState() {
+    if( playerStatus && socket.readyState === socket.OPEN ) {
+      var msg = {
+        type: CONSTANTS.MESSAGE_TYPE.UPDATE,
+        player: player
+      };
+      msg.player.position = playerStatus.position;
+      msg.player.rotation = playerStatus.rotation;
+      msg.player.id = playerStatus.id;
 
-        // Send the msg object as a JSON-formatted string.
-        socket.send(JSON.stringify(msg));
-      }
+      // Send the msg object as a JSON-formatted string.
+      socket.send(JSON.stringify(msg));
+    }
+  }
+
+  function updateCharacterOriendtation() {
+    characterStatus.forEach(function(character) {
+      if (character.id !== playerStatus.id) {
+        var char = scene.getMeshByName(character.id);
+          if (char) {
+            char.rotation = character.rotation;
+            char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.z += character.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.x += character.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.z += character.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+          }
+        }
+    });
+  }
+
+  function updateScene() {
+    if (scene && scene.getAnimationRatio()) {
+      updatePlayerOrientation();
+      updateCharacterOriendtation();
+      sendPlayerState();
     }
   }
 
