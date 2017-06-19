@@ -11,9 +11,8 @@ function Character(props) {
   this.sideSpeed = 0;
   this.totalHealth = 100;
   this.currentHealth = 100;
-  this.update(props);
 
-  this.update = function(props) {
+  function update() {
     props = props || {}
     this.id = props.id || this.id;
     this.type = props.type === undefined ? this.type : props.type
@@ -32,7 +31,9 @@ function Character(props) {
     this.sideSpeed = props.sideSpeed === undefined ? this.sideSpeed : props.sideSpeed
     this.totalHealth = props.totalHealth === undefined ? this.totalHealth : props.totalHealth
     this.currentHealth = props.currentHealth === undefined ? this.currentHealth : props.currentHealth
-  }
+  }(props);
 }
 
-module.exports = Character;
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = Character;
+}

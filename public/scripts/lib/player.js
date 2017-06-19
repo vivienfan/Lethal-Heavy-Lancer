@@ -10,6 +10,4 @@ function Player(player, mission) {
   this.rotYSpeed = character.rotYSpeed;
   this.fwdSpeed = character.fwdSpeed;
   this.sideSpeed = character.sideSpeed;
-  console.log(this);
-  console.log(mission);
 }
