@@ -35,6 +35,9 @@ window.onload = function() {
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
         updateCharacters(data.mission.characters);
         break;
+      case CONSTANTS.MESSAGE_TYPE.REMOVE:
+        removeCharacter(data.character);
+        break;
       default:
         break;
     }
@@ -47,6 +50,10 @@ window.onload = function() {
       scene.render();
     }
   });
+
+  function removeCharacter(character) {
+    scene.getMeshByName(character.id).dispose();
+  }
 
   function initWorld(player, mission) {
     playerStatus = new Player(player, mission);
