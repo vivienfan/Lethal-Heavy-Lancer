@@ -1,5 +1,3 @@
-// var FPS_VIEW = false;
-
 // app.js
 window.onload = function() {
   console.log("attempting to connect WebSocket");
@@ -9,15 +7,14 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, camera;
+  var scene, camera, playerMesh, npcMesh;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
-  var npm = [];
   var inputManager = new InputManager()
 
   var ANGLE = Math.PI/180;
   var UP_ANGLE_MAX = -Math.PI/3;
   var DOWN_ANGLE_MAX = Math.PI/10;
-  var CAM_OFFSET = 5;
+  var CAM_OFFSET = 4.5;
   var SPEED = 2;
 
   var playerStatus = {};
@@ -33,7 +30,7 @@ window.onload = function() {
         initWorld(data.data, data.mission);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        updateScene(data.mission.characters);
+        updateCharacters(data.mission.characters);
         break;
       default:
         break;
@@ -75,30 +72,50 @@ window.onload = function() {
     extraGround.material = extraGroundMaterial;
   }
 
-  function createPlayer(id) {
+  function createPlayers(players) {
+    console.log(players);
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
-      var ally = newMeshes[0];
-      ally.name = id;
-      ally.skeleton = skeletons[0];
-      ally.skeleton.createAnimationRange("walk", 0, 30);
+      playerMesh = newMeshes[0];
+      players.forEach(function(player, index) {
+        var newPlayer = playerMesh.createInstance(player.id);//, index);
+        newPlayer.id = player.id;
+        newPlayer.name = player.name;
+        newPlayer.position = player.position;
+        newPlayer.rotation = player.rotation;
+      })
+    });
+    console.log(scene.meshes);
+  }
+
+  function createNPCs(npcs) {
+    console.log(npcs);
+    BABYLON.SceneLoader.ImportMesh("", "", "robot.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+      npcMesh = newMeshes[0];
+      npcs.forEach(function(npc, index) {
+        var newNpc = npcMesh.createInstance(npc.id);//, index);
+        newNPC.id = npc.id;
+        newNPC.name = npc.id;
+        newNPC.position = npc.position;
+        newNPC.rotation = npc.rotation;
+      })
+      console.log(scene.meshes);
     });
   }
 
   function createCharacters(characters) {
     console.log("here we create characters:", characters);
+    var playerArr = [];
+    var npcArr = [];
     characters.forEach(function (character) {
-      if (character.id !== playerStatus.id) {
-        switch(character.type) {
-          case CONSTANTS.CHAR_TYPE.ENEMY:
-            var enemy = BABYLON.MeshBuilder.CreateTorusKnot(character.id, {}, scene);
-            break;
-          case CONSTANTS.CHAR_TYPE.PLAYER:
-            createPlayer(character.id);
-            break;
-        }
+      if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
+        npcArr.push(character);
+      } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER
+              && character.id !== playerStatus.id) {
+        playerArr.push(character);
       }
     });
-    console.log(scene.meshes);
+    createNPCs(npcArr);
+    createPlayers(playerArr);
   }
 
   function initFocus() {
@@ -110,7 +127,7 @@ window.onload = function() {
     avatar.rotation.z = playerStatus.rotation.z;
 
     cameraTarget.position.x = playerStatus.position.x;
-    cameraTarget.position.y = playerStatus.position.y + 4.5;
+    cameraTarget.position.y = playerStatus.position.y + CAM_OFFSET;
     cameraTarget.position.z = playerStatus.position.z;
     cameraTarget.rotation.x = playerStatus.rotation.x;
     cameraTarget.rotation.y = playerStatus.rotation.y;
@@ -121,6 +138,7 @@ window.onload = function() {
   function createAvatar() {
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       avatar = newMeshes[0];
+      avatar.id = playerStatus.id;
       avatar.name = playerStatus.id;
       avatar.skeleton = skeletons[0];
       avatar.skeleton.createAnimationRange("walk", 0, 30);
@@ -130,7 +148,6 @@ window.onload = function() {
       scene.activeCamera = camera;
 
       initFocus();
-
     });
   }
 
@@ -144,28 +161,36 @@ window.onload = function() {
 
     createSkybox();
     createGround();
-    // createCharacters(characters);
+    createCharacters(characters);
     createAvatar();
   }
 
   function updateCharacters(characters) {
-    // characters.forEach(function(character) {
-    //   if (character.id !== playerStatus.id) {
-    //     if (scene.getMeshByName(character.id)){
-    //       scene.getMeshByName(character.id).position = character.position;
-    //       scene.getMeshByName(character.id).rotation = character.rotation;
-    //     } else {
-    //       var ally = BABYLON.MeshBuilder.CreateCylinder(character.id, {diameterTop: 0, tessellation: 4}, scene);
-    //       // createPlayer(character.id);
-    //     }
-    //   }
-    // });
+    characters.forEach(function(character, index) {
+      if (character.id !== playerStatus.id) {
+        if (scene.getMeshByName(character.id)){
+          scene.getMeshByName(character.id).position = character.position;
+          scene.getMeshByName(character.id).rotation = character.rotation;
+        } else {
+          if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
+            var newNpc = npcMesh.createInstance(character.id);//, index);
+            newNPC.id = character.id;
+            newNPC.name = character.id;
+            newNPC.position = character.position;
+            newNPC.rotation = character.rotation;
+          } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER && playerMesh) {
+            var newPlayer = playerMesh.createInstance(character.id);//, index);
+            newPlayer.id = character.id;
+            newPlayer.name = character.id;
+            newPlayer.position = character.position;
+            newPlayer.rotation = character.rotation;
+          }
+        }
+      }
+    });
   }
 
   function updateScene(characters) {
-    if ( characters ){
-      updateCharacters(characters);
-    }
     if (scene && scene.getAnimationRatio()) {
       playerStatus.rotation.y += player.rotationY;
       player.rotationY = 0;
@@ -238,8 +263,8 @@ window.onload = function() {
     this.process = function(type, event) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" ) {
-        player.rotationY += event.movementX * ANGLE
-        player.rotationX += event.movementY * ANGLE
+        // player.rotationY += event.movementX * ANGLE
+        // player.rotationX += event.movementY * ANGLE
       } else {
         // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
         // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
