@@ -81,6 +81,8 @@ wss.on('connection', (ws) => {
         player.update(message.player);
       }
       // console.log(mission.characters)
+    } else if ( mission && message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
+
     }
 
   });
