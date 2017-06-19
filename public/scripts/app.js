@@ -22,6 +22,12 @@ window.onload = function() {
   var SPEED = 0.5;
   var playerStatus = {};
 
+  var HEALTH_COLOR_FULL = "#86e01e";
+  var HEALTH_COLOR_HIGH = "#f2d31b";
+  var HEALTH_COLOR_HALF = "#f2b01e";
+  var HEALTH_COLOR_LOW = "#f27011";
+  var HEALTH_COLOR_VERY_LOW = "#f63a0f";
+
   socket.onopen = function (event) {
     console.log('connected to server');
   }
@@ -182,7 +188,6 @@ window.onload = function() {
     var length = 100;
 
     var ray = new BABYLON.Ray(origin, direction, length);
-    ray.show(scene, new BABYLON.Color3(1, 1, 0.1));
 
     var hit = scene.pickWithRay(ray);
 
@@ -232,6 +237,21 @@ window.onload = function() {
             newPlayer.position = character.position;
             newPlayer.rotation = character.rotation;
           }
+        }
+      } else {
+        var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
+        var health = document.getElementById("health-bar");
+        health.style.width = healthPercent + "%";
+        if (healthPercent >= 80) {
+          health.style.backgroundColor = HEALTH_COLOR_FULL;
+        } else if (healthPercent >= 60) {
+          health.style.backgroundColor = HEALTH_COLOR_HIGH;
+        } else if (healthPercent >= 40) {
+          health.style.backgroundColor = HEALTH_COLOR_HALF;
+        } else if (healthPercent >= 20) {
+          health.style.backgroundColor = HEALTH_COLOR_LOW;
+        } else {
+          health.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
         }
       }
     });
