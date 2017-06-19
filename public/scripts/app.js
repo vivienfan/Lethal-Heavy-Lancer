@@ -15,8 +15,11 @@ window.onload = function() {
   var UP_ANGLE_MAX = -Math.PI/3;
   var DOWN_ANGLE_MAX = Math.PI/10;
   var CAM_OFFSET = 4.5;
-  var SPEED = 2;
+  var ALPHA_OFFSET = Math.PI/2;
+  var BETA_OFFSET = Math.PI/2;
+  var RADIUS = 3;
 
+  var SPEED = 0.5;
   var playerStatus = {};
 
   socket.onopen = function (event) {
@@ -76,6 +79,7 @@ window.onload = function() {
     console.log(players);
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       playerMesh = newMeshes[0];
+      playerMesh.isPickable = false;
       players.forEach(function(player, index) {
         var newPlayer = playerMesh.createInstance(player.id);//, index);
         newPlayer.id = player.id;
@@ -142,13 +146,40 @@ window.onload = function() {
       avatar.name = playerStatus.id;
       avatar.skeleton = skeletons[0];
       avatar.skeleton.createAnimationRange("walk", 0, 30);
+      avatar.isPickable = false;
 
-      cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", -1, 0.1, scene);
-      camera = new BABYLON.ArcRotateCamera("arcCam", -Math.PI/2, Math.PI/2, 3, cameraTarget, scene);
+      cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
+      cameraTarget.isPickable = false;
+
+      camera = new BABYLON.ArcRotateCamera("arcCam", ALPHA_OFFSET, BETA_OFFSET, RADIUS, cameraTarget, scene);
       scene.activeCamera = camera;
 
       initFocus();
     });
+  }
+
+  function castRay(){
+    var origin = cameraTarget.position;
+
+    // var direction = new BABYLON.Vector3(0, -Math.sin(camera.beta + BETA_OFFSET), 0);
+
+    var direction = new BABYLON.Vector3(
+      -Math.sin(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
+      Math.sin(camera.beta - BETA_OFFSET),// + CAM_OFFSET,
+      Math.cos(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
+
+    // console.log(direction);
+
+    var length = 100;
+
+    var ray = new BABYLON.Ray(origin, direction, length);
+    ray.show(scene, new BABYLON.Color3(1, 1, 0.1));
+
+    var hit = scene.pickWithRay(ray);
+
+    if (hit.pickedMesh){
+      hit.pickedMesh.scaling.y += 0.01;
+    }
   }
 
   function createScene(characters) {
@@ -163,6 +194,12 @@ window.onload = function() {
     createGround();
     createCharacters(characters);
     createAvatar();
+
+    scene.registerBeforeRender(function() {
+      castRay();
+    });
+
+    return scene;
   }
 
   function updateCharacters(characters) {
@@ -198,7 +235,7 @@ window.onload = function() {
       playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
       avatar.rotation.y = playerStatus.rotation.y;
       cameraTarget.rotation.y = playerStatus.rotation.y;
-      camera.alpha = - (playerStatus.rotation.y + Math.PI/2);
+      camera.alpha = - (playerStatus.rotation.y + ALPHA_OFFSET);
 
       // // rotation on x-axis
       camera.beta -= player.rotationX;
