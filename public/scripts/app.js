@@ -9,7 +9,7 @@ window.onload = function() {
   var physicsPlugin = new BABYLON.CannonJSPlugin();
   var scene, camera, playerMesh, npcMesh;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
-  var inputManager = new InputManager()
+  var inputManager = new InputManager(player)
 
   var ANGLE = Math.PI/180;
   var UP_ANGLE_MAX = -Math.PI/3;
@@ -255,7 +255,7 @@ window.onload = function() {
       cameraTarget.position.x = playerStatus.position.x;
       cameraTarget.position.z = playerStatus.position.z;
 
-      if( playerStatus ) {
+      if( playerStatus && socket.readyState === socket.OPEN ) {
         var msg = {
           type: CONSTANTS.MESSAGE_TYPE.UPDATE,
           player: player
@@ -292,96 +292,96 @@ window.onload = function() {
     inputManager.process("keydown", event)
   });
 
-  function InputManager() {
+  // function InputManager() {
 
-    this.isPressed = {}
-    this.lastY = 0
+  //   this.isPressed = {}
+  //   this.lastY = 0
 
-    this.process = function(type, event) {
-      // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
-      if ( type === "mousemove" ) {
-        // player.rotationY += event.movementX * ANGLE
-        // player.rotationX += event.movementY * ANGLE
-      } else {
-        // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
-        // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
-        // and input frequency
-        switch ( event.key ) {
-          case "w":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.fwdSpeed = SPEED
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.fwdSpeed = 0
-            }
-            break;
-          case "s":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.fwdSpeed = -(SPEED)
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.fwdSpeed = 0
-            }
-            break;
-          case "a":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.sideSpeed = SPEED
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.sideSpeed = 0
-            }
-            break;
-          case "d":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.sideSpeed = -SPEED
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.sideSpeed = 0
-            }
-            break;
-          case "ArrowRight":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.rotYSpeed = ANGLE
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.rotYSpeed = 0
-            }
-            break;
-          case "ArrowLeft":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.rotYSpeed = -(ANGLE)
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.rotYSpeed = 0
-            }
-            break;
-          case "ArrowUp":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.rotXSpeed = -(ANGLE)
-              // console.log("Set rotspeed")
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.rotXSpeed = 0
-            }
-            break;
-          case "ArrowDown":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.rotXSpeed = ANGLE
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.rotXSpeed = 0
-            }
-            break;
-          } // end of switch statement
-        }
-      } // end of process method
-  } // end of InputManager class
+  //   this.process = function(type, event) {
+  //     // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
+  //     if ( type === "mousemove" ) {
+  //       // player.rotationY += event.movementX * ANGLE
+  //       // player.rotationX += event.movementY * ANGLE
+  //     } else {
+  //       // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
+  //       // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
+  //       // and input frequency
+  //       switch ( event.key ) {
+  //         case "w":
+  //           if ( type === "keydown" && !this.isPressed[event.key] ) {
+  //             this.isPressed[event.key] = true
+  //             player.fwdSpeed = SPEED
+  //           } else if ( type === "keyup" ){
+  //             this.isPressed[event.key] = false
+  //             player.fwdSpeed = 0
+  //           }
+  //           break;
+  //         case "s":
+  //           if ( type === "keydown" && !this.isPressed[event.key] ) {
+  //             this.isPressed[event.key] = true
+  //             player.fwdSpeed = -(SPEED)
+  //           } else if ( type === "keyup" ){
+  //             this.isPressed[event.key] = false
+  //             player.fwdSpeed = 0
+  //           }
+  //           break;
+  //         case "a":
+  //           if ( type === "keydown" && !this.isPressed[event.key] ) {
+  //             this.isPressed[event.key] = true
+  //             player.sideSpeed = SPEED
+  //           } else if ( type === "keyup" ){
+  //             this.isPressed[event.key] = false
+  //             player.sideSpeed = 0
+  //           }
+  //           break;
+  //         case "d":
+  //           if ( type === "keydown" && !this.isPressed[event.key] ) {
+  //             this.isPressed[event.key] = true
+  //             player.sideSpeed = -SPEED
+  //           } else if ( type === "keyup" ){
+  //             this.isPressed[event.key] = false
+  //             player.sideSpeed = 0
+  //           }
+  //           break;
+  //         case "ArrowRight":
+  //           if ( type === "keydown" && !this.isPressed[event.key] ) {
+  //             this.isPressed[event.key] = true
+  //             player.rotYSpeed = ANGLE
+  //           } else if ( type === "keyup" ){
+  //             this.isPressed[event.key] = false
+  //             player.rotYSpeed = 0
+  //           }
+  //           break;
+  //         case "ArrowLeft":
+  //           if ( type === "keydown" && !this.isPressed[event.key] ) {
+  //             this.isPressed[event.key] = true
+  //             player.rotYSpeed = -(ANGLE)
+  //           } else if ( type === "keyup" ){
+  //             this.isPressed[event.key] = false
+  //             player.rotYSpeed = 0
+  //           }
+  //           break;
+  //         case "ArrowUp":
+  //           if ( type === "keydown" && !this.isPressed[event.key] ) {
+  //             this.isPressed[event.key] = true
+  //             player.rotXSpeed = -(ANGLE)
+  //             // console.log("Set rotspeed")
+  //           } else if ( type === "keyup" ){
+  //             this.isPressed[event.key] = false
+  //             player.rotXSpeed = 0
+  //           }
+  //           break;
+  //         case "ArrowDown":
+  //           if ( type === "keydown" && !this.isPressed[event.key] ) {
+  //             this.isPressed[event.key] = true
+  //             player.rotXSpeed = ANGLE
+  //           } else if ( type === "keyup" ){
+  //             this.isPressed[event.key] = false
+  //             player.rotXSpeed = 0
+  //           }
+  //           break;
+  //         } // end of switch statement
+  //       }
+  //     } // end of process method
+  // } // end of InputManager class
 }
