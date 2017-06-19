@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test:player": "mocha test/test_player",
+    "test:character": "mocha test/test_character"
   },
   "repository": {
     "type": "git",
