@@ -15,11 +15,11 @@ window.onload = function() {
   var UP_ANGLE_MAX = -Math.PI/3;
   var DOWN_ANGLE_MAX = Math.PI/10;
   var CAM_OFFSET = 4.5;
-  var SPEED = 2;
   var ALPHA_OFFSET = Math.PI/2;
   var BETA_OFFSET = Math.PI/2;
   var RADIUS = 3;
 
+  var SPEED = 0.5;
   var playerStatus = {};
 
   socket.onopen = function (event) {
@@ -163,18 +163,12 @@ window.onload = function() {
 
     // var direction = new BABYLON.Vector3(0, -Math.sin(camera.beta + BETA_OFFSET), 0);
 
-    var direction = new BABYLON.Vector3(Math.sin(camera.alpha - ALPHA_OFFSET),
-      -Math.sin(camera.beta + BETA_OFFSET),
-      -Math.cos(camera.alpha - ALPHA_OFFSET));
+    var direction = new BABYLON.Vector3(
+      -Math.sin(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
+      Math.sin(camera.beta - BETA_OFFSET),// + CAM_OFFSET,
+      Math.cos(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
 
-    // var direction = new BABYLON.Vector3(Math.sin(camera.alpha + ALPHA_OFFSET), 0, 0;
-
-    // var direction = new BABYLON.Vector3(0, 0, Math.cos(camera.alpha + ALPHA_OFFSET));
-
-
-    // var direction = new BABYLON.Vector3(-(camera.alpha + ALPHA_OFFSET)/2, -(camera.beta + BETA_OFFSET), 0);
-
-    // var direction = new BABYLON.Vector3(0, 10, 0);
+    // console.log(direction);
 
     var length = 100;
 
