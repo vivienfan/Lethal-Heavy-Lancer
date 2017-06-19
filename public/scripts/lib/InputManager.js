@@ -4,12 +4,10 @@ var ANGLE = Math.PI/180;
 var SPEED = 2;
 
 function InputManager(player) {
-    console.log("input player", player)
     this.isPressed = {}
     this.lastY = 0
 
     this.process = function(type, event) {
-      console.log("process player", player)
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" ) {
         // player.rotationY += event.movementX * ANGLE
