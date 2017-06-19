@@ -13,7 +13,8 @@ var CONSTANTS = {
   MESSAGE_TYPE: {
     GAME_STATE: 0,
     UPDATE: 1,
-    PLAYER_INFO: 2
+    PLAYER_INFO: 2,
+    FIRE: 3
   },
 
 // Types of missions
