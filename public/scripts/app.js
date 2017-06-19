@@ -179,10 +179,14 @@ window.onload = function() {
 
     var hit = scene.pickWithRay(ray);
 
-    if (hit.pickedMesh){
-      hit.pickedMesh.scaling.y += 1;
-      console.log(hit.pickedMesh);
+    var msg = {
+      type: CONSTANTS.MESSAGE_TYPE.FIRE,
+      target: {}
     }
+    if (hit.pickedMesh){
+      msg.target.id = hit.pickedMesh.id;
+    }
+    socket.send(JSON.stringify(msg));
   }
 
   function createScene(characters) {
