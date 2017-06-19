@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles/index.css" type="text/css">
     <script src="http://cdn.babylonjs.com/2-5/babylon.js"></script>
     <script type="text/javascript" src="scripts/cannon.js"></script>
-    <script type="text/javascript" src="scripts/babylon.gui.js"></script>
+    <!-- <script type="text/javascript" src="scripts/babylon.gui.js"></script> -->
     <style>
     html, body, div, #canvas {
       width: 100%;
@@ -20,7 +20,11 @@
   </head>
   <body>
     <!-- <img id="snipper" class="overlay" src="https://www.shareicon.net/download/2016/09/21/830972_aim_512x512.png"> -->
+    <div id="health" class="overlay">
+      <div id="health-bar"></div>
+    </div>
     <canvas id="canvas"></canvas>
+
     <script type="text/javascript" src="scripts/lib/constants.js"></script>
     <script type="text/javascript" src="scripts/lib/player.js"></script>
     <script type="text/javascript" src="scripts/lib/InputManager.js"></script>
