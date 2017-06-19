@@ -8,7 +8,7 @@ window.onload = function() {
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
   var scene, camera, playerMesh, npcMesh;
-  var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
+  var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0, fire: false}
   var inputManager = new InputManager()
 
   var ANGLE = Math.PI/180;
@@ -43,6 +43,7 @@ window.onload = function() {
   engine.runRenderLoop(function(){
     if (scene && scene.activeCamera) {
       updateScene();
+      checkForKills();
       scene.render();
     }
   });
@@ -76,38 +77,43 @@ window.onload = function() {
   }
 
   function createPlayers(players) {
-    console.log(players);
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       playerMesh = newMeshes[0];
       playerMesh.isPickable = false;
+      playerMesh.position.y = -100;
       players.forEach(function(player, index) {
-        var newPlayer = playerMesh.createInstance(player.id);//, index);
-        newPlayer.id = player.id;
-        newPlayer.name = player.name;
-        newPlayer.position = player.position;
-        newPlayer.rotation = player.rotation;
-      })
+        if (scene.getMeshByName(player.id)){
+          var newPlayer = playerMesh.createInstance(player.id);//, index);
+          newPlayer.id = player.id;
+          newPlayer.name = player.name;
+          newPlayer.position.x = player.position.x + index * 5 + 2;
+          newPlayer.position.y = player.position.y;
+          newPlayer.position.z = player.position.z;
+          newPlayer.rotation = player.rotation;
+        }
+      });
     });
-    console.log(scene.meshes);
   }
 
   function createNPCs(npcs) {
-    console.log(npcs);
     BABYLON.SceneLoader.ImportMesh("", "", "robot.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       npcMesh = newMeshes[0];
+      npcMesh.position.y = -100;
       npcs.forEach(function(npc, index) {
-        var newNpc = npcMesh.createInstance(npc.id);//, index);
-        newNPC.id = npc.id;
-        newNPC.name = npc.id;
-        newNPC.position = npc.position;
-        newNPC.rotation = npc.rotation;
-      })
-      console.log(scene.meshes);
+        if (scene.getMeshByName(npc.id)){
+          var newNpc = npcMesh.createInstance(npc.id);//, index);
+          newNPC.id = npc.id;
+          newNPC.name = npc.id;
+          newNPC.position.x = npc.position.x - index * 5 + 2;
+          newNPC.position.y = npc.position.y;
+          newNPC.position.z = npc.position.z;
+          newNPC.rotation = npc.rotation;
+        }
+      });
     });
   }
 
   function createCharacters(characters) {
-    console.log("here we create characters:", characters);
     var playerArr = [];
     var npcArr = [];
     characters.forEach(function (character) {
@@ -161,14 +167,10 @@ window.onload = function() {
   function castRay(){
     var origin = cameraTarget.position;
 
-    // var direction = new BABYLON.Vector3(0, -Math.sin(camera.beta + BETA_OFFSET), 0);
-
     var direction = new BABYLON.Vector3(
       -Math.sin(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
       Math.sin(camera.beta - BETA_OFFSET),// + CAM_OFFSET,
       Math.cos(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
-
-    // console.log(direction);
 
     var length = 100;
 
@@ -178,7 +180,8 @@ window.onload = function() {
     var hit = scene.pickWithRay(ray);
 
     if (hit.pickedMesh){
-      hit.pickedMesh.scaling.y += 0.01;
+      hit.pickedMesh.scaling.y += 1;
+      console.log(hit.pickedMesh);
     }
   }
 
@@ -195,10 +198,6 @@ window.onload = function() {
     createCharacters(characters);
     createAvatar();
 
-    scene.registerBeforeRender(function() {
-      castRay();
-    });
-
     return scene;
   }
 
@@ -210,13 +209,13 @@ window.onload = function() {
           scene.getMeshByName(character.id).rotation = character.rotation;
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
-            var newNpc = npcMesh.createInstance(character.id);//, index);
+            var newNPC = npcMesh.createInstance(character.id);
             newNPC.id = character.id;
             newNPC.name = character.id;
             newNPC.position = character.position;
             newNPC.rotation = character.rotation;
           } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER && playerMesh) {
-            var newPlayer = playerMesh.createInstance(character.id);//, index);
+            var newPlayer = playerMesh.createInstance(character.id);
             newPlayer.id = character.id;
             newPlayer.name = character.id;
             newPlayer.position = character.position;
@@ -227,7 +226,13 @@ window.onload = function() {
     });
   }
 
-  function updateScene(characters) {
+  function checkForKills(){
+    if (player.fire) {
+      castRay();
+    }
+  }
+
+  function updateScene() {
     if (scene && scene.getAnimationRatio()) {
       playerStatus.rotation.y += player.rotationY;
       player.rotationY = 0;
@@ -265,7 +270,6 @@ window.onload = function() {
         msg.player.id = playerStatus.id;
 
         // Send the msg object as a JSON-formatted string.
-        // console.log(msg);
         socket.send(JSON.stringify(msg));
       }
     }
@@ -277,7 +281,6 @@ window.onload = function() {
 
   canvas.addEventListener("click", function() {
     canvas.requestPointerLock()
-    console.log("pointer should be locked")
   })
 
   canvas.addEventListener("mousemove", function(event) {
@@ -308,6 +311,7 @@ window.onload = function() {
         // and input frequency
         switch ( event.key ) {
           case "w":
+          case "W":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.fwdSpeed = SPEED
@@ -317,6 +321,7 @@ window.onload = function() {
             }
             break;
           case "s":
+          case "S":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.fwdSpeed = -(SPEED)
@@ -326,6 +331,7 @@ window.onload = function() {
             }
             break;
           case "a":
+          case "A":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.sideSpeed = SPEED
@@ -335,6 +341,7 @@ window.onload = function() {
             }
             break;
           case "d":
+          case "D":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.sideSpeed = -SPEED
@@ -378,6 +385,15 @@ window.onload = function() {
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotXSpeed = 0
+            }
+            break;
+          case " ":
+            if ( type === "keydown" && !this.isPressed[event.key] ) {
+              this.isPressed[event.key] = true
+              player.fire = true;
+            } else if (type === "keyup") {
+              this.isPressed[event.key] = false;
+              player.fire = false;
             }
             break;
           } // end of switch statement
