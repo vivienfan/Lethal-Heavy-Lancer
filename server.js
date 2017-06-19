@@ -37,10 +37,6 @@ let mission = new Mission()
 mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY, x: 10, y: 10})
 
 const timer = setInterval(function() {
-
-  // testing character updates
-  // mission._characters[0]._position.x += 5
-  // mission._characters[0]._position.x %= 30
   mission.update(DT)
   let message = JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
@@ -81,6 +77,8 @@ wss.on('connection', (ws) => {
         player.update(message.player);
       }
       // console.log(mission.characters)
+    } else if ( mission && message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
+
     }
 
   });
@@ -89,5 +87,11 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('Client disconnected')
     mission.removeCharacter(player)
+    let message = JSON.stringify({
+      'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
+      'character': player.messageFormat()
+    })
+    // console.log(mission._characters)
+    wss.broadcast(message);
   });
 });

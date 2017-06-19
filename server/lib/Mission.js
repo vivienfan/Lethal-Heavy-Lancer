@@ -24,7 +24,6 @@ class Mission {
   }
 
   removeCharacter(character) {
-    console.log("remove char called")
     let index = this._characters.findIndex(function(element) {
       return element.id === character.id;
     });

@@ -260,7 +260,7 @@ window.onload = function() {
       cameraTarget.position.x = playerStatus.position.x;
       cameraTarget.position.z = playerStatus.position.z;
 
-      if( playerStatus ) {
+      if( playerStatus && socket.readyState === socket.OPEN ) {
         var msg = {
           type: CONSTANTS.MESSAGE_TYPE.UPDATE,
           player: player
@@ -296,7 +296,6 @@ window.onload = function() {
   });
 
   function InputManager() {
-
     this.isPressed = {}
     this.lastY = 0
 
