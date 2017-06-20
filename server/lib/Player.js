@@ -11,49 +11,30 @@ const CONSTANTS = require("../../public/scripts/lib/constants");
 class Player {
   constructor(props) {
     props = props || {}
-    this._id = props.id || uuidV4();
-    this._currentMission = props.currentMission || null;
-    this._totalHealth = props.totalHealth || 200;
-    this._currentHealth = props.currentHealth || 150;
-  }
-
-  get id() {
-    return this._id;
-  }
-
-  get currentMission() {
-    return this._currentMission
-  }
-
-  get totalHealth() {
-    return this._totalHealth
-  }
-
-  get currentHealth() {
-    return this._currentHealth
-  }
-
-  get type() {
-    return CONSTANTS.CHAR_TYPE.PLAYER
+    this.id = props.id || uuidV4();
+    this.type = CONSTANTS.CHAR_TYPE.PLAYER
+    this.currentMission = props.currentMission || null;
+    this.totalHealth = props.totalHealth || 200;
+    this.currentHealth = props.currentHealth || 150;
   }
 
   joinMission(mission) {
     if (mission instanceof Mission) {
-      this._currentMission = mission;
+      this.currentMission = mission;
     } else {
-      this._currentMission = new Mission(mission)
+      this.currentMission = new Mission(mission)
     }
 
     let player_char_stats = this.messageFormat()
     console.log("player type: ", player_char_stats.type = this.type)
-    return this._currentMission.addCharacter(new Character(player_char_stats))
+    return this.currentMission.addCharacter(new Character(player_char_stats))
   }
 
   messageFormat() {
     return {
-      'id': this._id,
-      'totalHealth': this._totalHealth,
-      'currentHealth': this._currentHealth
+      'id': this.id,
+      'totalHealth': this.totalHealth,
+      'currentHealth': this.currentHealth
     }
   }
 

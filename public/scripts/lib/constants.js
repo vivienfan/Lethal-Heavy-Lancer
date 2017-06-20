@@ -20,7 +20,8 @@ var CONSTANTS = {
 
 // Types of missions
   MISSION_TYPE: {
-    KILL: 0
+    KILL: 0,
+    STEAL: 1
   },
 
 // Player attributes
