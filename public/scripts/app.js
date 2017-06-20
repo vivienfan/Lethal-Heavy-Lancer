@@ -18,7 +18,7 @@ window.onload = function() {
   var ALPHA_OFFSET = Math.PI/2;
   var BETA_OFFSET = Math.PI/2;
   var RADIUS = 3;
-  var SPEED = 0.25;
+  var SPEED = 0.5;
 
   var playerStatus = {};
   var characterStatus = [];
