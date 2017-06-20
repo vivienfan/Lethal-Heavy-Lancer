@@ -55,15 +55,17 @@ class Mission {
   }
 
   fireOn(origin, target) {
+    console.log("fire on!")
     if ( origin.id ) {
       if ( !(origin instanceof Character) ) {
         origin = this.findCharacter(origin)
       }
       origin.startFiring()
 
-      if ( target.id ) {
-        target = this.findCharacter(target)
+      target = this.findCharacter(target)
+      if ( target && target.id ) {
         if ( target && this.canHit(origin, target) ) {
+          console.log("hit!")
           target.takeDamage(origin.damage);
         }
         return target.isDead()
@@ -95,7 +97,7 @@ class Mission {
 
   update(dt) {
     this.characters.forEach((character, i) => {
-      if (character.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
+      if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
         character.process(dt)
       }
     })

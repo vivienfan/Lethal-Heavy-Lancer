@@ -85,12 +85,12 @@ wss.on('connection', (ws) => {
         }
       } else if ( message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
         let targetDied = mission.fireOn(player, message.target)
-        wss.broadcast(JSON.Stringify(message), ws)
+        wss.broadcast(JSON.stringify(message), ws)
         if (targetDied) {
-          mission.removeCharacter(player)
-          let deatMessage = JSON.stringify({
+          mission.removeCharacter(message.target)
+          let deathMessage = JSON.stringify({
             'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
-            'character': player.messageFormat()
+            'character': message.target
           })
           wss.broadcast(deathMessage);
         }

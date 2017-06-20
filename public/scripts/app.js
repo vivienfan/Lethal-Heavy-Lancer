@@ -268,8 +268,8 @@ window.onload = function() {
   }
 
   function updatePlayerOrientation() {
-      playerStatus.rotation.y += player.rotationY;
-      player.rotationY = 0;
+      // playerStatus.rotation.y += player.rotationY;
+      // player.rotationY = 0;
       playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio();
       playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
       avatar.rotation.y = playerStatus.rotation.y;
@@ -277,8 +277,8 @@ window.onload = function() {
       camera.alpha = - (playerStatus.rotation.y + ALPHA_OFFSET);
 
       // // rotation on x-axis
-      camera.beta -= player.rotationX;
-      player.rotationX = 0;
+      // camera.beta -= player.rotationX;
+      // player.rotationX = 0;
       camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
 
       // move forward/backward
@@ -316,10 +316,10 @@ window.onload = function() {
         var char = scene.getMeshByName(character.id);
           if (char) {
             char.rotation = character.rotation;
-            char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.z += character.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.x += character.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.z += character.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.x -= character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.z -= character.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.x -= character.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.z -= character.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
           }
         }
     });

@@ -96,10 +96,12 @@ class Character {
   // }
 
   process(dt) {
-    this.rotYSpeed = 0.002;
-    this.rotation.y -= (this.rotYSpeed * dt)
+    if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
+      this.rotYSpeed = 0.002;
+      this.fwdSpeed = 0.01;
+    }
+    this.rotation.y += (this.rotYSpeed * dt)
     this.rotation.y %= Math.PI * 2
-    this.fwdSpeed = 0.01;
     this.position.x -= this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
     this.position.z -= this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
     this.position.x -= this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
