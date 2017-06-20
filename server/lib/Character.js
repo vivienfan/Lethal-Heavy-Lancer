@@ -11,11 +11,12 @@ class Character {
     this.id = uuidV4();
     this.type = CONSTANTS.CHAR_TYPE.ENEMY
     this.firing = false;
-    this.range = 100;
+    this.range = 10;
     this.damage = 50;
     this.position = { x: 0, y: 0, z: 0 };
     this.rotation = { x: 0, y: 0, z: 0 };
     this.fwdSpeed = 0;
+    this.fwdSpeedMax = 0.5;
     this.rotYSpeedMax = 0.02;
     this.rotYSpeed = 0;
     this.sideSpeed = 0;
@@ -46,6 +47,26 @@ class Character {
     this.target = target
   }
 
+  moveTo(target) {
+    let diffPositionX = this.position.x - this.target.position.x
+    let diffPositionZ = this.position.z - this.target.position.z
+    let goalAngle = Math.atan2(diffPositionX, diffPositionZ)
+    let diffAngle = (goalAngle - this.rotation.y + 4 * Math.PI) % (2 * Math.PI)
+    if ( diffAngle > 0.08 && diffAngle <= Math.PI ) {
+      this.rotYSpeed = Math.min(this.rotYSpeedMax, (diffAngle - 0.04) / 0.16 * this.rotYSpeedMax);
+    } else if ( diffAngle < ( 2 * Math.PI - 0.08) && diffAngle > Math.PI){
+      this.rotYSpeed = -Math.min(this.rotYSpeedMax, (2 * Math.PI - diffAngle + 0.04) / 0.16 * this.rotYSpeedMax);
+    } else {
+      this.rotYSpeed = 0
+
+    }
+    if ( diffAngle < 0.16 && diffAngle <= Math.PI || diffAngle > ( 2 * Math.PI - 0.16) && diffAngle > Math.PI) {
+      let distSqr = diffPositionX * diffPositionX + diffPositionZ * diffPositionZ
+      let rangeSqr = this.range * this.range * .8
+      this.fwdSpeed = Math.max(0, Math.min(this.fwdSpeedMax, ( distSqr - rangeSqr ) / 4 * this.fwdSpeedMax))
+    }
+  }
+
   messageFormat() {
     return {
       'id': this.id,
@@ -66,28 +87,19 @@ class Character {
     if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
       // this.rotYSpeed = 0.02;
       // this.fwdSpeed = .5;
+      this.fwdSpeed = 0
       if (this.target) {
-        let diffPositionX = this.position.x - this.target.position.x
-        let diffPositionZ = this.position.z - this.target.position.z
-        let goalAngle = Math.atan2(diffPositionX, diffPositionZ)
-        let diffAngle = (goalAngle - this.rotation.y + 2 * Math.PI) % (2 * Math.PI)
-        if ( diffAngle > 0.08 && diffAngle <= Math.PI ) {
-          this.rotYSpeed = Math.min(this.rotYSpeedMax, (diffAngle - 0.04) / 0.16 * this.rotYSpeedMax);
-        } else if ( diffAngle < ( 2 * Math.PI - 0.08) && diffAngle > Math.PI){
-          this.rotYSpeed = -Math.min(this.rotYSpeedMax, (2 * Math.PI - diffAngle + 0.04) / 0.16 * this.rotYSpeedMax);
-        } else {
-          this.rotYSpeed = 0
-        }
+        this.moveTo(this.target)
       }
     } else {
       // console.log(this.fwdSpeed, this.sideSpeed)
     }
-    this.rotation.y += (this.rotYSpeed * dt)
-    // this.rotation.y %= Math.PI * 2
-    this.position.x -= this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-    this.position.z -= this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
-    this.position.x -= this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
-    this.position.z -= this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+    this.rotation.y += this.rotYSpeed * dt
+    this.rotation.y %= Math.PI * 2
+    this.position.x += this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+    this.position.z += this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
+    this.position.x += this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
+    this.position.z += this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
   }
 
   update(props) {

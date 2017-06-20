@@ -24,15 +24,13 @@ class Player {
     } else {
       this.currentMission = new Mission(mission)
     }
-
-    let player_char_stats = this.messageFormat()
-    console.log("player type: ", player_char_stats.type = this.type)
-    return this.currentMission.addCharacter(new Character(player_char_stats))
+    return this.currentMission.addCharacter(new Character(this))
   }
 
   messageFormat() {
     return {
       'id': this.id,
+      'type': this.type,
       'totalHealth': this.totalHealth,
       'currentHealth': this.currentHealth
     }

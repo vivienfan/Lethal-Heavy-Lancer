@@ -13,6 +13,8 @@ class Mission {
     this.id = props.id || uuidV4();
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
     this.characters = []
+    this.enemies = []
+    this.allies = []
     if ( Array.isArray(props.characters) ) {
       props.characters.forEach(character => {
         this.addCharacter(character)
@@ -26,6 +28,11 @@ class Mission {
       character = new Character(character);
     }
     this.characters.push(character);
+    if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
+      this.enemies.push(character)
+    } else {
+      this.allies.push(character)
+    }
     return this
   }
 
@@ -33,9 +40,25 @@ class Mission {
     let index = this.characters.findIndex(function(element) {
       return element.id === character.id;
     });
-
     if (index > -1) {
-     this.characters.splice(index, 1)
+      this.characters.splice(index, 1)
+
+      if ( character.type = CONSTANTS.CHAR_TYPE.ENEMY ) {
+        index = this.enemies.findIndex(function(element) {
+          return element.id === character.id;
+        });
+        if (index > -1) {
+          this.enemies.splice(index, 1)
+        }
+
+      } else {
+        index = this.allies.findIndex(function(element) {
+          return element.id === character.id;
+        });
+        if (index > -1) {
+          this.allies.splice(index, 1)
+        }
+      }
     }
     return this
   }
