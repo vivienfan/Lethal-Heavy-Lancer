@@ -16,10 +16,12 @@ class Character {
     this.position = { x: 0, y: 0, z: 0 };
     this.rotation = { x: 0, y: 0, z: 0 };
     this.fwdSpeed = 0;
+    this.rotYSpeedMax = 0.02;
     this.rotYSpeed = 0;
     this.sideSpeed = 0;
     this.totalHealth = 100;
     this.currentHealth = 100;
+    this.target = null;
     this.update(props);
   }
 
@@ -40,6 +42,10 @@ class Character {
     return this.currentHealth <= 0;
   }
 
+  setTarget(target) {
+    this.target = target
+  }
+
   messageFormat() {
     return {
       'id': this.id,
@@ -54,6 +60,34 @@ class Character {
       'totalHealth': this.totalHealth,
       'currentHealth': this.currentHealth
     }
+  }
+
+  process(dt) {
+    if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
+      // this.rotYSpeed = 0.02;
+      // this.fwdSpeed = .5;
+      if (this.target) {
+        let diffPositionX = this.position.x - this.target.position.x
+        let diffPositionZ = this.position.z - this.target.position.z
+        let goalAngle = Math.atan2(diffPositionX, diffPositionZ)
+        let diffAngle = (goalAngle - this.rotation.y + 2 * Math.PI) % (2 * Math.PI)
+        if ( diffAngle > 0.08 && diffAngle <= Math.PI ) {
+          this.rotYSpeed = Math.min(this.rotYSpeedMax, (diffAngle - 0.04) / 0.16 * this.rotYSpeedMax);
+        } else if ( diffAngle < ( 2 * Math.PI - 0.08) && diffAngle > Math.PI){
+          this.rotYSpeed = -Math.min(this.rotYSpeedMax, (2 * Math.PI - diffAngle + 0.04) / 0.16 * this.rotYSpeedMax);
+        } else {
+          this.rotYSpeed = 0
+        }
+      }
+    } else {
+      // console.log(this.fwdSpeed, this.sideSpeed)
+    }
+    this.rotation.y += (this.rotYSpeed * dt)
+    // this.rotation.y %= Math.PI * 2
+    this.position.x -= this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+    this.position.z -= this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
+    this.position.x -= this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
+    this.position.z -= this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
   }
 
   update(props) {
@@ -95,18 +129,6 @@ class Character {
   //   }
   // }
 
-  process(dt) {
-    if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-      this.rotYSpeed = 0.002;
-      this.fwdSpeed = 0.01;
-    }
-    this.rotation.y += (this.rotYSpeed * dt)
-    this.rotation.y %= Math.PI * 2
-    this.position.x -= this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-    this.position.z -= this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
-    this.position.x -= this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
-    this.position.z -= this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-  }
 
 }
 

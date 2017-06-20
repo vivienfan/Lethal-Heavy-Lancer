@@ -16,6 +16,7 @@ require('dotenv').config()
 const DT            = process.env.DT || 33;
 
 
+
 app.use(express.static("public"));
 
 const server = express()
@@ -36,9 +37,13 @@ wss.broadcast = function broadcast(data, except) {
 let mission = new Mission()
 mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY, x: 10, y: 10})
 
+let prevTime = Date.now()
 const timer = setInterval(function() {
   let triggers = []
-  mission.update(DT)
+  let currTime = Date.now()
+  let updateRatio = (currTime - prevTime) * 0.06 // following Babylon's definition of the animationRatio: dt * ( 60/1000 )
+  prevTime = currTime
+  mission.update(updateRatio)
   let message = JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
     'mission': mission.messageFormat(),
@@ -58,6 +63,7 @@ wss.on('connection', (ws) => {
 
 
   player.joinMission(mission)
+  mission.characters[0].setTarget(mission.characters[1])
 
   // send player their player data after connection
   ws.send(JSON.stringify({

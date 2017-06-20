@@ -20,6 +20,8 @@ window.onload = function() {
   var RADIUS = 3;
   var SPEED = 0.25;
 
+  var prevTime = Date.now()
+
   var playerStatus = {};
   var characterStatus = [];
 
@@ -304,6 +306,8 @@ window.onload = function() {
       msg.player.position = playerStatus.position;
       msg.player.rotation = playerStatus.rotation;
       msg.player.id = playerStatus.id;
+      msg.player.fwdSpeed = player.fwdSpeed
+      msg.player.sideSpeed = player.sideSpeed
 
       // Send the msg object as a JSON-formatted string.
       socket.send(JSON.stringify(msg));
@@ -315,7 +319,6 @@ window.onload = function() {
       if (character.id !== playerStatus.id) {
         var char = scene.getMeshByName(character.id);
           if (char) {
-            console.log(character, char);
             char.rotation.y += character.rotYSpeed * scene.getAnimationRatio();
             char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             char.position.z += character.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
@@ -328,6 +331,10 @@ window.onload = function() {
 
   function updateScene() {
     if (scene && scene.getAnimationRatio()) {
+      var nowTime = Date.now()
+      var dt = nowTime - prevTime
+      prevTime = nowTime
+
       updatePlayerOrientation();
       updateCharacterOriendtation();
       sendPlayerState();
