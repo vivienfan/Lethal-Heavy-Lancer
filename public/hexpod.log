@@ -1,0 +1,165 @@
+Exporter version: 5.3-beta, Blender version: 2.78 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Scene settings used:
+		selected layers only:  false
+		flat shading entire scene:  false
+		inline textures:  false
+		texture directory:  /Users/armelchesnais/Google Drive/School/Lighthouse Labs/final-project/LHL-Final/public/
+	Python World class constructor completed
+	processing begun of mesh:  pod_mesh p_pod left_rocket
+		processing begun of Standard material:  lambert3SG
+			Diffuse texture found "Kd"
+				Image texture found, type:  diffuseTexture, mapped using: "UVMap"
+			Bump texture found "Bump"
+				Image texture found, type:  bumpTexture, mapped using: "UVMap"
+	WARNING: Error encountered processing image file:  , Error:  [Errno 2] No such file or directory: '/Users/armelchesnais/Downloads/../../../1'
+			Specular texture found "Ks"
+				Image texture found, type:  specularTexture, mapped using: "UVMap"
+		num positions      :  448
+		num normals        :  448
+		num uvs            :  896
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1560
+	processing begun of mesh:  pod_mesh p_pod left_plasmaWelder
+		registered as also a user of material:  lambert3SG
+		num positions      :  827
+		num normals        :  827
+		num uvs            :  1654
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1776
+	processing begun of mesh:  glass pod_mesh p_pod
+		registered as also a user of material:  lambert3SG
+		num positions      :  81
+		num normals        :  81
+		num uvs            :  162
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  408
+	processing begun of mesh:  pod_mesh p_pod left_fin_mount
+		registered as also a user of material:  lambert3SG
+		num positions      :  428
+		num normals        :  428
+		num uvs            :  856
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1122
+	processing begun of mesh:  pod_mesh p_pod right_balance
+		registered as also a user of material:  lambert3SG
+		num positions      :  179
+		num normals        :  179
+		num uvs            :  358
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  360
+	processing begun of mesh:  pod_mesh p_pod chasis
+		registered as also a user of material:  lambert3SG
+		num positions      :  2590
+		num normals        :  2590
+		num uvs            :  5180
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  5934
+	processing begun of mesh:  pod_mesh p_pod left_balance
+		registered as also a user of material:  lambert3SG
+		num positions      :  178
+		num normals        :  178
+		num uvs            :  356
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  360
+	processing begun of mesh:  pod_mesh p_pod left_flakCannon
+		registered as also a user of material:  lambert3SG
+		num positions      :  848
+		num normals        :  848
+		num uvs            :  1696
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1698
+	processing begun of mesh:  pod_mesh p_pod right_balance_wheel
+		registered as also a user of material:  lambert3SG
+		num positions      :  148
+		num normals        :  148
+		num uvs            :  296
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  288
+	processing begun of mesh:  pod_mesh p_pod left_fin
+		registered as also a user of material:  lambert3SG
+		num positions      :  98
+		num normals        :  98
+		num uvs            :  196
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  180
+	processing begun of mesh:  pod_mesh p_pod right_flakCannon
+		registered as also a user of material:  lambert3SG
+		num positions      :  850
+		num normals        :  850
+		num uvs            :  1700
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1698
+	processing begun of mesh:  pod_mesh p_pod right_rocket
+		registered as also a user of material:  lambert3SG
+		num positions      :  460
+		num normals        :  460
+		num uvs            :  920
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1560
+	processing begun of mesh:  pod_mesh p_pod right_fin_mount
+		registered as also a user of material:  lambert3SG
+		num positions      :  431
+		num normals        :  431
+		num uvs            :  862
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1122
+	processing begun of mesh:  pod_mesh p_pod right_fin
+		registered as also a user of material:  lambert3SG
+		num positions      :  96
+		num normals        :  96
+		num uvs            :  192
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  180
+	processing begun of mesh:  pod_mesh p_pod right_plasmaWelder
+		registered as also a user of material:  lambert3SG
+		num positions      :  829
+		num normals        :  829
+		num uvs            :  1658
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  1776
+	processing begun of mesh:  pod_mesh p_pod left_balance_wheel
+		registered as also a user of material:  lambert3SG
+		num positions      :  149
+		num normals        :  149
+		num uvs            :  298
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  288
+	processing begun of mesh:  pod_mesh p_pod thruster
+		registered as also a user of material:  lambert3SG
+		num positions      :  138
+		num normals        :  138
+		num uvs            :  276
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  456
+	processing begun of mesh:  pod_mesh p_pod body
+		registered as also a user of material:  lambert3SG
+		num positions      :  1283
+		num normals        :  1283
+		num uvs            :  2566
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  4782
+	processing begun of camera (UniversalCamera):  Camera
+	processing begun of light (POINT):  Lamp
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========
+elapsed time:  0 min, 1.9517 secs
