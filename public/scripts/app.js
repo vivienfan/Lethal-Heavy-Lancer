@@ -225,8 +225,8 @@ window.onload = function() {
       characterStatus.push(new Character(character));
       if (character.id !== playerStatus.id) {
         if (scene.getMeshByName(character.id)){
-          // scene.getMeshByName(character.id).position = character.position;
-          // scene.getMeshByName(character.id).rotation = character.rotation;
+          scene.getMeshByName(character.id).position = character.position;
+          scene.getMeshByName(character.id).rotation = character.rotation;
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
             var newNPC = npcMesh.createInstance(character.id);
@@ -315,7 +315,8 @@ window.onload = function() {
       if (character.id !== playerStatus.id) {
         var char = scene.getMeshByName(character.id);
           if (char) {
-            char.rotation = character.rotation;
+            console.log(character, char);
+            char.rotation.y += character.rotYSpeed * scene.getAnimationRatio();
             char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             char.position.z += character.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
             char.position.x += character.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
