@@ -7,7 +7,8 @@
     "test": "mocha",
     "start": "node server.js",
     "test:player": "mocha test/test_player",
-    "test:character": "mocha test/test_character"
+    "test:character": "mocha test/test_character",
+    "test:mission": "mocha test/test_mission"
   },
   "repository": {
     "type": "git",

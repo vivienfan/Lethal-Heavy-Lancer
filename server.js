@@ -25,9 +25,9 @@ const server = express()
 
 const wss = new SocketServer({ server });
 // set up broacast function
-wss.broadcast = function broadcast(data) {
+wss.broadcast = function broadcast(data, except) {
   wss.clients.forEach(function each(client) {
-    if (client.readyState === WebSocket.OPEN) {
+    if (client.readyState === WebSocket.OPEN || client === except) {
       client.send(data);
     }
   });
@@ -37,10 +37,12 @@ let mission = new Mission()
 mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY, x: 10, y: 10})
 
 const timer = setInterval(function() {
+  let triggers = []
   mission.update(DT)
   let message = JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
-    'mission': mission.messageFormat()
+    'mission': mission.messageFormat(),
+    'triggers': triggers
   })
   // console.log(mission._characters)
   wss.broadcast(message);
@@ -50,11 +52,12 @@ wss.on('connection', (ws) => {
   console.log('Client connected')
   let count = 0
   const player = new Player()
-  const player_character = new Character(player)
+  console.log(player)
+  const playerCharacter = new Character(player)
+  // console.log(player.)
 
 
   player.joinMission(mission)
-  // mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
 
   // send player their player data after connection
   ws.send(JSON.stringify({
@@ -63,22 +66,35 @@ wss.on('connection', (ws) => {
     'mission': mission.messageFormat()
   }))
 
-  console.log("player char:", player_character.messageFormat())
-  console.log("mission: ", mission)
+  // console.log("player char:", playerCharacter.messageFormat())
+  // console.log("mission: ", mission)
 
   ws.on('message', function incoming(message) {
     message = JSON.parse(message)
 
-    if ( mission && message.type === CONSTANTS.MESSAGE_TYPE.UPDATE ) {
-      let player = mission.characters.find(function(element) {
-        return element._id === message.player.id;
-      });
-      if (player) {
-        player.update(message.player);
-      }
-      // console.log(mission.characters)
-    } else if ( mission && message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
+    if ( mission ) {
+      if ( message.type === CONSTANTS.MESSAGE_TYPE.UPDATE ) {
+        let player = mission.characters.find(function(element) {
+          // console.log("elem, char - ids",element.id, playerCharacter.id)
+          return element.id === playerCharacter.id;
+        });
 
+        // console.log("player, char", player, playerCharacter)
+        if (player) {
+          player.update(message.player);
+        }
+      } else if ( message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
+        let targetDied = mission.fireOn(player, message.target)
+        wss.broadcast(JSON.Stringify(message), ws)
+        if (targetDied) {
+          mission.removeCharacter(player)
+          let deatMessage = JSON.stringify({
+            'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
+            'character': player.messageFormat()
+          })
+          wss.broadcast(deathMessage);
+        }
+      }
     }
 
   });

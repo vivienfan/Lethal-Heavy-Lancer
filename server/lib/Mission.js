@@ -10,38 +10,82 @@ const CONSTANTS = require("../../public/scripts/lib/constants");
 class Mission {
   constructor(props) {
     props = props || {}
-    this._id = props.id || uuidV4();
-    this._type = props.type || CONSTANTS.MISSION_TYPE.KILL;
-    this._characters = props.characters || [];
+    this.id = props.id || uuidV4();
+    this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
+    this.characters = []
+    if ( Array.isArray(props.characters) ) {
+      props.characters.forEach(character => {
+        this.addCharacter(character)
+      })
+    }
+
   }
 
   addCharacter(character) {
     if (!(character instanceof Character)) {
       character = new Character(character);
     }
-    this._characters.push(character);
+    this.characters.push(character);
     return this
   }
 
   removeCharacter(character) {
-    let index = this._characters.findIndex(function(element) {
+    let index = this.characters.findIndex(function(element) {
       return element.id === character.id;
     });
 
-    console.log("index is", index)
     if (index > -1) {
-     this._characters.splice(index, 1)
+     this.characters.splice(index, 1)
     }
     return this
   }
 
+  findCharacter(character) {
+    let result = this.characters.find(function(element) {
+      return element.id === character.id;
+    });
+    return result
+  }
+
+  findCharacterIndex(character) {
+    let result = this.characters.findIndex(function(element) {
+      return element.id === message.player.id;
+    });
+    return result
+  }
+
+  fireOn(origin, target) {
+    if ( origin.id ) {
+      if ( !(origin instanceof Character) ) {
+        origin = this.findCharacter(origin)
+      }
+      origin.startFiring()
+
+      if ( target.id ) {
+        target = this.findCharacter(target)
+        if ( target && this.canHit(origin, target) ) {
+          target.takeDamage(origin.damage);
+        }
+        return target.isDead()
+      }
+    }
+  }
+
+  canHit(origin, target) {
+    let diff = {
+      x: target.position.x - origin.position.x,
+      y: target.position.y - origin.position.y,
+      z: target.position.z - origin.position.z}
+    let distSqr = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z
+    return (distSqr <= (origin.range * origin.range));
+  }
+
   messageFormat(playerId) {
-    let foundUser = this._characters[playerId]
-    // console.log(foundUser)
+    let foundUser = this.characters[playerId]
     let result = {
-      'id': this._id,
-      'type': this._type,
-      'characters': this._characters.map(character => {
+      'id': this.id,
+      'type': this.type,
+      'characters': this.characters.map(character => {
         return character.messageFormat();
       })
     }
@@ -49,14 +93,9 @@ class Mission {
     return result;
   }
 
-  get characters() {
-    return this._characters
-  }
-
   update(dt) {
-    this._characters.forEach((character, i) => {
+    this.characters.forEach((character, i) => {
       if (character.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-        // console.log("character", i, "is not player, processing", character)
         character.process(dt)
       }
     })

@@ -21,74 +21,137 @@ describe('Character',function(){
   describe('when created without parameters',function(){
     let character = new Character()
     it('Should return with default attributes', function() {
-      assert.equal(typeof character._id, 'string', 'character id should be a string.');
-      assert.notEqual(character._id, new Character().id, 'Id should be different from another new character instance.');
-      assert.equal(character._type, CONSTANTS.CHAR_TYPE.ENEMY, 'character type should that of an enemy');
-      assert.deepEqual(character._position, {x:0, y:0, z:0}, 'position should be at origin');
-      assert.deepEqual(character._rotation, {x:0, y:0, z:0}, 'rotation should be at origin');
-      assert.equal(character._fwdSpeed, 0, 'fwdSpeed should be 0');
-      assert.equal(character._rotYSpeed, 0, 'rotYSpeed should be 0');
-      assert.equal(character._sideSpeed, 0, 'sideSpeed should be 0');
-      assert.equal(character._totalHealth, 100, 'Total health should be 100');
-      assert.equal(character._currentHealth, 100, 'Current health should be 100');
+      assert.equal(typeof character.id, 'string', 'character id should be a string.');
+      assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');
+      assert.equal(character.type, CONSTANTS.CHAR_TYPE.ENEMY, 'character type should that of an enemy');
+      assert.deepEqual(character.position, {x:0, y:0, z:0}, 'position should be at origin');
+      assert.deepEqual(character.rotation, {x:0, y:0, z:0}, 'rotation should be at origin');
+      assert.equal(character.fwdSpeed, 0, 'fwdSpeed should be 0');
+      assert.equal(character.rotYSpeed, 0, 'rotYSpeed should be 0');
+      assert.equal(character.sideSpeed, 0, 'sideSpeed should be 0');
+      assert.equal(character.totalHealth, 100, 'Total health should be 100');
+      assert.equal(character.currentHealth, 100, 'Current health should be 100');
     });
   });
 
   describe('when created with full parameters',function(){
     let character = new Character(fullParams)
     it('Should return with attributes from parameters', function() {
-      assert.equal(character._id, fullParams.id, 'Id should be the same as passed in parameters');
-      assert.notEqual(character._id, new Character().id, 'Id should be different from another new character instance.');
-      assert.equal(character._type, fullParams.type, 'character type should be same as parameters');
-      assert.deepEqual(character._position, fullParams.position, 'position should be same as parameters');
-      assert.deepEqual(character._rotation, fullParams.rotation, 'rotation should be same as parameters');
-      assert.equal(character._fwdSpeed, fullParams.fwdSpeed, 'fwdSpeed should be same as parameters');
-      assert.equal(character._rotYSpeed, fullParams.rotYSpeed, 'rotYSpeed should be same as parameters');
-      assert.equal(character._sideSpeed, fullParams.sideSpeed, 'sideSpeed should be same as parameters');
-      assert.equal(character._totalHealth, fullParams.totalHealth, 'Total health should be same as parameters');
-      assert.equal(character._currentHealth, fullParams.currentHealth, 'Current health should be same as parameters');
+      assert.equal(character.id, fullParams.id, 'Id should be the same as passed in parameters');
+      assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');
+      assert.equal(character.type, fullParams.type, 'character type should be same as parameters');
+      assert.deepEqual(character.position, fullParams.position, 'position should be same as parameters');
+      assert.equal(character.position.x, fullParams.position.x, 'character position at x should be same as parameters');
+      assert.deepEqual(character.rotation, fullParams.rotation, 'rotation should be same as parameters');
+      assert.equal(character.fwdSpeed, fullParams.fwdSpeed, 'fwdSpeed should be same as parameters');
+      assert.equal(character.rotYSpeed, fullParams.rotYSpeed, 'rotYSpeed should be same as parameters');
+      assert.equal(character.sideSpeed, fullParams.sideSpeed, 'sideSpeed should be same as parameters');
+      assert.equal(character.totalHealth, fullParams.totalHealth, 'Total health should be same as parameters');
+      assert.equal(character.currentHealth, fullParams.currentHealth, 'Current health should be same as parameters');
     });
   });
 
-  // describe('When created with partial parameters',function(){
-  //   it('Should return correctly with only id parameter assigned', function() {
-  //     let params = {id: 'new-test-id'}
-  //     let character = new character(params);
-  //     assert.equal(character._id, params.id, 'Id should be the same as passed in parameters');
-  //     assert.notEqual(character._id, new character().id, 'Id should be different from another new character instance.');
-  //     assert.equal(character._currentMission, null, 'Mission should be null');
-  //     assert.equal(character._totalHealth, 200, 'Total health should be 200');
-  //     assert.equal(character._currentHealth, 150, 'Current health should be 150');
-  //   });
-  //   it('Should return correctly with only current mission parameter assigned', function() {
-  //     let params = { mission: {id:'test-mission-id'} }
-  //     let character = new character(params);
-  //     assert.equal(typeof character._id, 'string', 'character id should be a string.');
-  //     assert.notEqual(character._id, new character().id, 'Id should be different from another new character instance.');
-  //     assert.equal(character._currentMission, params.currentMission, 'Current mission should be the same as in parameters');
-  //     assert.equal(character._totalHealth, 200, 'Total health should be 200');
-  //     assert.equal(character._currentHealth, 150, 'Current health should be 150');
-  //   });
-  //   it('Should return correctly with only total health parameter assigned', function() {
-  //     let params = {totalHealth: 498}
-  //     let character = new character(params);
-  //     assert.equal(typeof character._id, 'string', 'character id should be a string.');
-  //     assert.notEqual(character._id, new character().id, 'Id should be different from another new character instance.');
-  //     assert.equal(character._currentMission, null, 'Mission should be null');
-  //     assert.equal(character._totalHealth, params.totalHealth, 'Total health should be same as in parameters');
-  //     assert.equal(character._currentHealth, 150, 'Current health should be 150');
-  //   });
-  //   it('Should return correctly with only id parameter assigned', function() {
-  //     let params = {currentHealth: 42}
-  //     let character = new character(params);
-  //     assert.equal(typeof character._id, 'string', 'character id should be a string.');
-  //     assert.notEqual(character._id, new character().id, 'Id should be different from another new character instance.');
-  //     assert.equal(character._currentMission, null, 'Mission should be null');
-  //     assert.equal(character._totalHealth, 200, 'Total health should be 200');
-  //     assert.equal(character._currentHealth, params.currentHealth, 'Current health should be the same as in parameters');
-  //   });
-  // });
 
+  describe('When created with partial parameters',function(){
+    it('Should return correctly with only id parameter assigned', function() {
+      let params = {id: 'new-test-id'}
+      let character = new Character(params);
+      assert.equal(character.id, params.id, 'Id should be the same as passed in parameters');
+      assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');
+      assert.equal(character.type, CONSTANTS.CHAR_TYPE.ENEMY, 'character type should that of an enemy');
+      assert.deepEqual(character.position, {x:0, y:0, z:0}, 'position should be at origin');
+      assert.deepEqual(character.rotation, {x:0, y:0, z:0}, 'rotation should be at origin');
+      assert.equal(character.fwdSpeed, 0, 'fwdSpeed should be 0');
+      assert.equal(character.rotYSpeed, 0, 'rotYSpeed should be 0');
+      assert.equal(character.sideSpeed, 0, 'sideSpeed should be 0');
+      assert.equal(character.totalHealth, 100, 'Total health should be 100');
+      assert.equal(character.currentHealth, 100, 'Current health should be 100');
+    });
+    it('Should return correctly with only total health parameter assigned', function() {
+      let params = {totalHealth: 498}
+      let character = new Character(params);
+      assert.equal(typeof character.id, 'string', 'character id should be a string.');
+      assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');
+      assert.equal(character.type, CONSTANTS.CHAR_TYPE.ENEMY, 'character type should that of an enemy');
+      assert.deepEqual(character.position, {x:0, y:0, z:0}, 'position should be at origin');
+      assert.deepEqual(character.rotation, {x:0, y:0, z:0}, 'rotation should be at origin');
+      assert.equal(character.fwdSpeed, 0, 'fwdSpeed should be 0');
+      assert.equal(character.rotYSpeed, 0, 'rotYSpeed should be 0');
+      assert.equal(character.sideSpeed, 0, 'sideSpeed should be 0');
+      assert.equal(character.totalHealth, params.totalHealth, 'Total health should be 100');
+      assert.equal(character.currentHealth, 100, 'Current health should be 100');
+    });
+    it('Should return correctly with only currentHealth parameter assigned', function() {
+      let params = {currentHealth: 42}
+      let character = new Character(params);
+      assert.equal(typeof character.id, 'string', 'character id should be a string.');
+      assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');
+      assert.equal(character.type, CONSTANTS.CHAR_TYPE.ENEMY, 'character type should that of an enemy');
+      assert.deepEqual(character.position, {x:0, y:0, z:0}, 'position should be at origin');
+      assert.deepEqual(character.rotation, {x:0, y:0, z:0}, 'rotation should be at origin');
+      assert.equal(character.fwdSpeed, 0, 'fwdSpeed should be 0');
+      assert.equal(character.rotYSpeed, 0, 'rotYSpeed should be 0');
+      assert.equal(character.sideSpeed, 0, 'sideSpeed should be 0');
+      assert.equal(character.totalHealth, 100, 'Total health should be 100');
+      assert.equal(character.currentHealth, params.currentHealth, 'Current health should be 100');
+    });
+  });
+
+  describe('when created with irrelevant parameters',function(){
+    let params = {neverGonnaGetUsed: "fake", anotherUnusedIndex: "not there"}
+    let character = new Character(params)
+    it('Should return without those attributes', function() {
+      assert.equal(typeof character.id, 'string', 'character id should be a string.');
+      assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');
+      assert.equal(character.type, CONSTANTS.CHAR_TYPE.ENEMY, 'character type should that of an enemy');
+      assert.deepEqual(character.position, {x:0, y:0, z:0}, 'position should be at origin');
+      assert.deepEqual(character.rotation, {x:0, y:0, z:0}, 'rotation should be at origin');
+      assert.equal(character.fwdSpeed, 0, 'fwdSpeed should be 0');
+      assert.equal(character.rotYSpeed, 0, 'rotYSpeed should be 0');
+      assert.equal(character.sideSpeed, 0, 'sideSpeed should be 0');
+      assert.equal(character.totalHealth, 100, 'Total health should be 100');
+      assert.equal(character.currentHealth, 100, 'Current health should be 100');
+      assert.notExists(character.neverGonnaGetUsed, "variable neverGonnaGetUsed should not exist")
+      assert.notExists(character.anotherUnusedIndex, "variable neverGonnaGetUsed should not exist")
+
+    });
+  });
+
+  describe('when created with mix of relevant and irrelevant parameters',function(){
+    let params = {id: "fancyId", totalHealth: 987, neverGonnaGetUsed: "fake", anotherUnusedIndex: "not there"}
+    let character = new Character(params)
+    it('Should return accordingly', function() {
+      assert.equal(character.id, params.id, 'Id should be the same as passed in parameters');
+      assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');
+      assert.equal(character.type, CONSTANTS.CHAR_TYPE.ENEMY, 'character type should that of an enemy');
+      assert.deepEqual(character.position, {x:0, y:0, z:0}, 'position should be at origin');
+      assert.deepEqual(character.rotation, {x:0, y:0, z:0}, 'rotation should be at origin');
+      assert.equal(character.fwdSpeed, 0, 'fwdSpeed should be 0');
+      assert.equal(character.rotYSpeed, 0, 'rotYSpeed should be 0');
+      assert.equal(character.sideSpeed, 0, 'sideSpeed should be 0');
+      assert.equal(character.totalHealth, params.totalHealth, 'Total health should be same as parameters');
+      assert.equal(character.currentHealth, 100, 'Current health should be 100');
+      assert.notExists(character.neverGonnaGetUsed, "variable neverGonnaGetUsed should not exist")
+      assert.notExists(character.anotherUnusedIndex, "variable neverGonnaGetUsed should not exist")
+    });
+  });
+
+  describe('when created with inline parameters',function(){
+    let character = new Character({id: "fancyId", totalHealth: 987, neverGonnaGetUsed: "fake", anotherUnusedIndex: "not there"})
+    it('Should return with attributes from parameters', function() {
+      assert.equal(character.id, "fancyId", 'Id should be the same as passed in parameters');
+      assert.notEqual(character.id, new Character().id, 'Id should be different from another new character instance.');
+      assert.equal(character.totalHealth, 987, 'Total health should be same as parameters');
+    });
+  });
+
+  describe('dealing damage',function(){
+    let character = new Character({curentHealth: 100})
+    it('Should be able to take damage', function() {
+      character.takeDamage(32)
+      assert.equal(character.currentHealth, 68, 'resulting health should be 68');
+    });
+  });
   // describe('getter functions',function(){
   //   let character = new character(fullParams);
   //   it('Should return correct attributes from parameters', function() {
