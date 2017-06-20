@@ -70,10 +70,10 @@ window.onload = function() {
 
   function createSkybox() {
     // Create skybox
-    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000.0}, scene);
+    var skybox = BABYLON.MeshBuilder.CreateBox("skyBox", {size:1000}, scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
-    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("CNTower/", scene);
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/desert/", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -84,7 +84,7 @@ window.onload = function() {
     // Create ground
     var extraGround = BABYLON.Mesh.CreateGround("extraGround", 1000, 1000, 1, scene, false);
     var extraGroundMaterial = new BABYLON.StandardMaterial("extraGround", scene);
-    extraGroundMaterial.diffuseTexture = new BABYLON.Texture("ground.jpg", scene);
+    extraGroundMaterial.diffuseTexture = new BABYLON.Texture("assets/texture/ground.jpg", scene);
     extraGroundMaterial.diffuseTexture.uScale = 60;
     extraGroundMaterial.diffuseTexture.vScale = 60;
     extraGround.position.y = -2.5;
@@ -304,6 +304,8 @@ window.onload = function() {
       msg.player.position = playerStatus.position;
       msg.player.rotation = playerStatus.rotation;
       msg.player.id = playerStatus.id;
+      msg.player.fwdSpeed = player.fwdSpeed;
+      msg.player.sideSpeed = player.sideSpeed;
 
       // Send the msg object as a JSON-formatted string.
       socket.send(JSON.stringify(msg));
@@ -315,7 +317,7 @@ window.onload = function() {
       if (character.id !== playerStatus.id) {
         var char = scene.getMeshByName(character.id);
           if (char) {
-            console.log(character, char);
+            // console.log(character, char);
             char.rotation.y += character.rotYSpeed * scene.getAnimationRatio();
             char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             char.position.z += character.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
