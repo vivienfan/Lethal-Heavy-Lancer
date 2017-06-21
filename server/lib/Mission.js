@@ -112,7 +112,6 @@ class Mission {
     let result = {
       'id': this.id,
       'type': this.type,
-      'map': this.map.messageFormat(),
       'characters': this.characters.map(character => {
         return character.messageFormat();
       })

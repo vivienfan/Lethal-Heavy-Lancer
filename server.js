@@ -69,7 +69,8 @@ wss.on('connection', (ws) => {
   ws.send(JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.PLAYER_INFO,
     'data': player.messageFormat(),
-    'mission': mission.messageFormat()
+    'mission': mission.messageFormat(),
+    'map': mission.map.messageFormat()
   }))
 
   // console.log("player char:", playerCharacter.messageFormat())
