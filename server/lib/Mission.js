@@ -5,6 +5,7 @@
 
 const uuidV4    = require('uuid/v4');
 const Character = require('./Character');
+const GameMap = require('./GameMap');
 const CONSTANTS = require("../../public/scripts/lib/constants");
 
 class Mission {
@@ -12,6 +13,7 @@ class Mission {
     props = props || {}
     this.id = props.id || uuidV4();
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
+    this.map = new GameMap()
     this.characters = []
     this.enemies = []
     this.allies = []
@@ -110,6 +112,7 @@ class Mission {
     let result = {
       'id': this.id,
       'type': this.type,
+      'map': this.map.messageFormat(),
       'characters': this.characters.map(character => {
         return character.messageFormat();
       })
