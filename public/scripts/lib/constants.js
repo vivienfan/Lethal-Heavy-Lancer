@@ -27,6 +27,11 @@ var CONSTANTS = {
 // Player attributes
   PLAYER: {
     INITIAL_HEALTH: 100
+  },
+
+  MAP: {
+    DEFAULT_SIZE: 32,
+    ELEMENT_SIZE: 2
   }
 }
 
