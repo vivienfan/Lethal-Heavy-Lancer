@@ -16,8 +16,8 @@ class Character {
     this.position = { x: 0, y: 0, z: 0 };
     this.rotation = { x: 0, y: 0, z: 0 };
     this.fwdSpeed = 0;
-    this.fwdSpeedMax = 0.5;
-    this.rotYSpeedMax = 0.02;
+    this.fwdSpeedMax = 0.34;
+    this.rotYSpeedMax = 0.04;
     this.rotYSpeed = 0;
     this.sideSpeed = 0;
     this.totalHealth = 100;
@@ -63,7 +63,7 @@ class Character {
     if ( diffAngle < 0.16 && diffAngle <= Math.PI || diffAngle > ( 2 * Math.PI - 0.16) && diffAngle > Math.PI) {
       let distSqr = diffPositionX * diffPositionX + diffPositionZ * diffPositionZ
       let rangeSqr = this.range * this.range * .8
-      this.fwdSpeed = Math.max(0, Math.min(this.fwdSpeedMax, ( distSqr - rangeSqr ) / 4 * this.fwdSpeedMax))
+      this.fwdSpeed = Math.max(0, Math.min(this.fwdSpeedMax, ( distSqr - rangeSqr ) / 24 * this.fwdSpeedMax))
     }
   }
 

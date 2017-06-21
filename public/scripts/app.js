@@ -321,9 +321,9 @@ window.onload = function() {
           if (char) {
             char.rotation.y += character.rotYSpeed * scene.getAnimationRatio();
             char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.z += character.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.x += character.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.z += character.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.z += character.fwdSpeed * Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.x += character.sideSpeed * -Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.z += character.sideSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
           }
         }
     });
@@ -336,8 +336,8 @@ window.onload = function() {
       prevTime = nowTime
 
       updatePlayerOrientation();
-      updateCharacterOriendtation();
       sendPlayerState();
+      updateCharacterOriendtation();
     }
   }
 
