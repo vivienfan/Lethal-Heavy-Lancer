@@ -31,6 +31,26 @@ window.onload = function() {
   var HEALTH_COLOR_LOW = "#f27011";
   var HEALTH_COLOR_VERY_LOW = "#f63a0f";
 
+  window.addEventListener("resize", function() {
+    engine.resize();
+  })
+
+  canvas.addEventListener("click", function() {
+    canvas.requestPointerLock()
+  })
+
+  canvas.addEventListener("mousemove", function(event) {
+    inputManager.process("mousemove", event)
+  })
+
+  window.addEventListener("keyup", function(event) {
+    inputManager.process("keyup", event)
+  })
+
+  window.addEventListener("keydown", function(event) {
+    inputManager.process("keydown", event)
+  });
+
   socket.onopen = function (event) {
     console.log('connected to server');
   }
@@ -60,13 +80,23 @@ window.onload = function() {
     }
   });
 
-  function removeCharacter(character) {
-    scene.getMeshByName(character.id).dispose();
-  }
-
   function initWorld(player, mission) {
     playerStatus = new Player(player, mission);
     createScene(mission.characters);
+  }
+
+  function createScene(characters) {
+    scene = new BABYLON.Scene(engine);
+    engine.enableOfflineSupport = false;
+
+    createSkybox();
+    createSun();
+    createGround();
+    createCharacters(characters);
+    createAvatar();
+
+    scene.enablePhysics(gravityVector, physicsPlugin);
+    return scene;
   }
 
   function createSkybox() {
@@ -92,6 +122,13 @@ window.onload = function() {
     skybox.infiniteDistance = true;
   }
 
+  function createSun() {
+    var sun = new BABYLON.HemisphericLight("Hemi0", new BABYLON.Vector3(0, 1, 0), scene);
+    sun.diffuse = new BABYLON.Color3(1, 1, 1);
+    sun.specular = new BABYLON.Color3(1, 1, 1);
+    sun.groundColor = new BABYLON.Color3(0, 0, 0);
+  }
+
   function createGround() {
     extraGround = BABYLON.Mesh.CreateGround("extraGround", 1500, 1500, 1, scene, false);
     extraGround.position.y = -3;
@@ -108,24 +145,19 @@ window.onload = function() {
     extraGround.material = mirrorMaterial;
   }
 
-  function createPlayers(players) {
-    BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
-      playerMesh = newMeshes[0];
-      playerMesh.position.y = -100;
-      players.forEach(function(player, index) {
-        if (scene.getMeshByName(player.id)){
-          var newPlayer = playerMesh.createInstance(player.id);
-          newPlayer.id = player.id;
-          newPlayer.name = player.name;
-          newPlayer.position.x = player.position.x + index * 5 + 2;
-          newPlayer.position.y = player.position.y;
-          newPlayer.position.z = player.position.z;
-          newPlayer.rotation = player.rotation;
-          newPlayer.isPickable = false;
-          extraGround.material.reflectionTexture.renderList.push(newPlayer);
-        }
-      });
+  function createCharacters(characters) {
+    var playerArr = [];
+    var npcArr = [];
+    characters.forEach(function (character) {
+      if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
+        npcArr.push(character);
+      } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER
+              && character.id !== playerStatus.id) {
+        playerArr.push(character);
+      }
     });
+    createNPCs(npcArr);
+    createPlayers(playerArr);
   }
 
   function createNPCs(npcs) {
@@ -147,35 +179,24 @@ window.onload = function() {
     });
   }
 
-  function createCharacters(characters) {
-    var playerArr = [];
-    var npcArr = [];
-    characters.forEach(function (character) {
-      if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
-        npcArr.push(character);
-      } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER
-              && character.id !== playerStatus.id) {
-        playerArr.push(character);
-      }
+  function createPlayers(players) {
+    BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+      playerMesh = newMeshes[0];
+      playerMesh.position.y = -100;
+      players.forEach(function(player, index) {
+        if (scene.getMeshByName(player.id)){
+          var newPlayer = playerMesh.createInstance(player.id);
+          newPlayer.id = player.id;
+          newPlayer.name = player.name;
+          newPlayer.position.x = player.position.x + index * 5 + 2;
+          newPlayer.position.y = player.position.y;
+          newPlayer.position.z = player.position.z;
+          newPlayer.rotation = player.rotation;
+          newPlayer.isPickable = false;
+          extraGround.material.reflectionTexture.renderList.push(newPlayer);
+        }
+      });
     });
-    createNPCs(npcArr);
-    createPlayers(playerArr);
-  }
-
-  function initFocus() {
-    avatar.position.x = playerStatus.position.x;
-    avatar.position.y = playerStatus.position.y;
-    avatar.position.z = playerStatus.position.z;
-    avatar.rotation.x = playerStatus.rotation.x;
-    avatar.rotation.y = playerStatus.rotation.y;
-    avatar.rotation.z = playerStatus.rotation.z;
-
-    cameraTarget.position.x = playerStatus.position.x;
-    cameraTarget.position.y = playerStatus.position.y + CAM_OFFSET;
-    cameraTarget.position.z = playerStatus.position.z;
-    cameraTarget.rotation.x = playerStatus.rotation.x;
-    cameraTarget.rotation.y = playerStatus.rotation.y;
-    cameraTarget.rotation.z = playerStatus.rotation.z;
   }
 
   function createAvatar() {
@@ -199,47 +220,20 @@ window.onload = function() {
     });
   }
 
-  function castRay(){
-    var length = 100;
-    var origin = cameraTarget.position;
-    var direction = new BABYLON.Vector3(
-      -Math.sin(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
-      Math.sin(camera.beta - BETA_OFFSET),
-      Math.cos(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
+  function initFocus() {
+    avatar.position.x = playerStatus.position.x;
+    avatar.position.y = playerStatus.position.y;
+    avatar.position.z = playerStatus.position.z;
+    avatar.rotation.x = playerStatus.rotation.x;
+    avatar.rotation.y = playerStatus.rotation.y;
+    avatar.rotation.z = playerStatus.rotation.z;
 
-    var ray = new BABYLON.Ray(origin, direction, length);
-    var hit = scene.pickWithRay(ray);
-
-    var msg = {
-      type: CONSTANTS.MESSAGE_TYPE.FIRE,
-      target: {}
-    }
-    if (hit.pickedMesh){
-      console.log(hit.pickedMesh);
-      msg.target.id = hit.pickedMesh.id;
-    }
-    socket.send(JSON.stringify(msg));
-  }
-
-  function createSun() {
-    var sun = new BABYLON.HemisphericLight("Hemi0", new BABYLON.Vector3(0, 1, 0), scene);
-    sun.diffuse = new BABYLON.Color3(1, 1, 1);
-    sun.specular = new BABYLON.Color3(1, 1, 1);
-    sun.groundColor = new BABYLON.Color3(0, 0, 0);
-  }
-
-  function createScene(characters) {
-    scene = new BABYLON.Scene(engine);
-    engine.enableOfflineSupport = false;
-
-    createSkybox();
-    createSun();
-    createGround();
-    createCharacters(characters);
-    createAvatar();
-
-    scene.enablePhysics(gravityVector, physicsPlugin);
-    return scene;
+    cameraTarget.position.x = playerStatus.position.x;
+    cameraTarget.position.y = playerStatus.position.y + CAM_OFFSET;
+    cameraTarget.position.z = playerStatus.position.z;
+    cameraTarget.rotation.x = playerStatus.rotation.x;
+    cameraTarget.rotation.y = playerStatus.rotation.y;
+    cameraTarget.rotation.z = playerStatus.rotation.z;
   }
 
   function updateCharacters(characters) {
@@ -287,32 +281,49 @@ window.onload = function() {
     });
   }
 
+  function removeCharacter(character) {
+    scene.getMeshByName(character.id).dispose();
+  }
+
+
+  function updateScene() {
+    if (scene && scene.getAnimationRatio()) {
+      var nowTime = Date.now()
+      var dt = nowTime - prevTime
+      prevTime = nowTime
+
+      updatePlayerOrientation();
+      sendPlayerState();
+      updateCharacterOriendtation();
+    }
+  }
+
   function updatePlayerOrientation() {
-      playerStatus.rotation.y += player.rotationY;
-      player.rotationY = 0;
-      playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio();
-      playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
-      avatar.rotation.y = playerStatus.rotation.y;
-      cameraTarget.rotation.y = playerStatus.rotation.y;
-      camera.alpha = - (playerStatus.rotation.y + ALPHA_OFFSET);
+    playerStatus.rotation.y += player.rotationY;
+    player.rotationY = 0;
+    playerStatus.rotation.y += player.rotYSpeed * scene.getAnimationRatio();
+    playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
+    avatar.rotation.y = playerStatus.rotation.y;
+    cameraTarget.rotation.y = playerStatus.rotation.y;
+    camera.alpha = - (playerStatus.rotation.y + ALPHA_OFFSET);
 
-      // // rotation on x-axis
-      camera.beta -= player.rotationX;
-      player.rotationX = 0;
-      camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
+    // // rotation on x-axis
+    camera.beta -= player.rotationX;
+    player.rotationX = 0;
+    camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
 
-      // move forward/backward
-      playerStatus.position.x -= player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-      playerStatus.position.z -= player.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+    // move forward/backward
+    playerStatus.position.x -= player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+    playerStatus.position.z -= player.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
-      // move left/right
-      playerStatus.position.x -= player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-      playerStatus.position.z -= player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+    // move left/right
+    playerStatus.position.x -= player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+    playerStatus.position.z -= player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
-      avatar.position.x = playerStatus.position.x;
-      avatar.position.z = playerStatus.position.z;
-      cameraTarget.position.x = playerStatus.position.x;
-      cameraTarget.position.z = playerStatus.position.z;
+    avatar.position.x = playerStatus.position.x;
+    avatar.position.z = playerStatus.position.z;
+    cameraTarget.position.x = playerStatus.position.x;
+    cameraTarget.position.z = playerStatus.position.z;
   }
 
   function sendPlayerState() {
@@ -347,37 +358,28 @@ window.onload = function() {
     });
   }
 
-  function updateScene() {
-    if (scene && scene.getAnimationRatio()) {
-      var nowTime = Date.now()
-      var dt = nowTime - prevTime
-      prevTime = nowTime
 
-      updatePlayerOrientation();
-      sendPlayerState();
-      updateCharacterOriendtation();
+  function castRay(){
+    var length = 100;
+    var origin = cameraTarget.position;
+    var direction = new BABYLON.Vector3(
+      -Math.sin(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
+      Math.sin(camera.beta - BETA_OFFSET),
+      Math.cos(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
+
+    var ray = new BABYLON.Ray(origin, direction, length);
+    var hit = scene.pickWithRay(ray);
+
+    var msg = {
+      type: CONSTANTS.MESSAGE_TYPE.FIRE,
+      target: {}
     }
+    if (hit.pickedMesh){
+      console.log(hit.pickedMesh);
+      msg.target.id = hit.pickedMesh.id;
+    }
+    socket.send(JSON.stringify(msg));
   }
-
-  window.addEventListener("resize", function() {
-    engine.resize();
-  })
-
-  canvas.addEventListener("click", function() {
-    canvas.requestPointerLock()
-  })
-
-  canvas.addEventListener("mousemove", function(event) {
-    inputManager.process("mousemove", event)
-  })
-
-  window.addEventListener("keyup", function(event) {
-    inputManager.process("keyup", event)
-  })
-
-  window.addEventListener("keydown", function(event) {
-    inputManager.process("keydown", event)
-  });
 
   function InputManager() {
     this.isPressed = {}
