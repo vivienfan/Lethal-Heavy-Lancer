@@ -301,13 +301,13 @@ window.onload = function() {
     if( playerStatus && socket.readyState === socket.OPEN ) {
       var msg = {
         type: CONSTANTS.MESSAGE_TYPE.UPDATE,
-        player: player
+        player: Object.assign({},player)
       };
       msg.player.position = playerStatus.position;
       msg.player.rotation = playerStatus.rotation;
       msg.player.id = playerStatus.id;
-      msg.player.fwdSpeed = player.fwdSpeed
-      msg.player.sideSpeed = player.sideSpeed
+      msg.player.fwdSpeed = -player.fwdSpeed
+      msg.player.sideSpeed = -player.sideSpeed
 
       // Send the msg object as a JSON-formatted string.
       socket.send(JSON.stringify(msg));
