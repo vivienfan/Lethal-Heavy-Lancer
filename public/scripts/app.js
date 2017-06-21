@@ -5,11 +5,16 @@ window.onload = function() {
 
   var canvas = document.getElementById("canvas");
   var engine = new BABYLON.Engine(canvas, true);
+  engine.displayLoadingUI();
+
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
   var scene, camera, playerMesh, npcMesh, extraGround, skybox;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
   var inputManager = new InputManager()
+
+  var healthBar = document.getElementById("health-bar");
+  var health = document.getElementById("health");
 
   var ANGLE = Math.PI/180;
   var UP_ANGLE_MAX = -Math.PI/3;
@@ -96,6 +101,8 @@ window.onload = function() {
     createAvatar();
 
     scene.enablePhysics(gravityVector, physicsPlugin);
+    health.classList.remove("hide");
+    engine.hideLoadingUI();
     return scene;
   }
 
@@ -123,7 +130,7 @@ window.onload = function() {
   }
 
   function createSun() {
-    var sun = new BABYLON.HemisphericLight("Hemi0", new BABYLON.Vector3(0, 1, 0), scene);
+    var sun = new BABYLON.HemisphericLight("Hemi0", new BABYLON.Vector3(20, 100, 20), scene);
     sun.diffuse = new BABYLON.Color3(1, 1, 1);
     sun.specular = new BABYLON.Color3(1, 1, 1);
     sun.groundColor = new BABYLON.Color3(0, 0, 0);
@@ -264,18 +271,17 @@ window.onload = function() {
         }
       } else {
         var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
-        var health = document.getElementById("health-bar");
-        health.style.width = healthPercent + "%";
+        healthBar.style.width = healthPercent + "%";
         if (healthPercent >= 80) {
-          health.style.backgroundColor = HEALTH_COLOR_FULL;
+          healthBar.style.backgroundColor = HEALTH_COLOR_FULL;
         } else if (healthPercent >= 60) {
-          health.style.backgroundColor = HEALTH_COLOR_HIGH;
+          healthBar.style.backgroundColor = HEALTH_COLOR_HIGH;
         } else if (healthPercent >= 40) {
-          health.style.backgroundColor = HEALTH_COLOR_HALF;
+          healthBar.style.backgroundColor = HEALTH_COLOR_HALF;
         } else if (healthPercent >= 20) {
-          health.style.backgroundColor = HEALTH_COLOR_LOW;
+          healthBar.style.backgroundColor = HEALTH_COLOR_LOW;
         } else {
-          health.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
+          healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
         }
       }
     });

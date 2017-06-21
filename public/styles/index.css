@@ -2,6 +2,10 @@
   position: absolute;
 }
 
+.hide {
+  display: none;
+}
+
 #health {
   margin: 5px;
   height: 10px;
