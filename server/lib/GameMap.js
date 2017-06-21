@@ -1,8 +1,9 @@
 'use strict';
 // GameMap.js
 
-const uuidV4 = require('uuid/v4');
-const CONSTANTS = require("../../public/scripts/lib/constants");
+const uuidV4      = require('uuid/v4');
+const CONSTANTS   = require('../../public/scripts/lib/constants');
+const PF  = require('pathfinding')
 
 class GameMap {
   constructor(props) {
@@ -13,8 +14,15 @@ class GameMap {
     this.startPos = [1,1]
     let x = props.x || CONSTANTS.MAP.DEFAULT_SIZE
     let z = props.z || CONSTANTS.MAP.DEFAULT_SIZE
+    this.pfGrid = new PF.Grid(x, z)
     let type = props.type || CONSTANTS.MISSION_TYPE.KILL
-    this.generateMap(x,z)
+    let seed = props.seed || this.id
+    this.generateMap(x, z, seed)
+    this.finder = new PF.AStarFinder({
+      // allowDiagonal: true
+      // diagonalMovement: PF.DiagonalMovement.IfAtMostOneObstacle
+      diagonalMovement: PF.DiagonalMovement.OnlyWhenNoObstacles
+    });
     // this.update(props);
   }
 
@@ -31,20 +39,50 @@ class GameMap {
     }
   }
 
-  generateMap(width,length) {
+  generateMap(width,length, seed) {
     for (var x = 0; x < width; x++) {
       this.grid[x] = []
       for (var z = 0; z < length; z++) {
         this.grid[x][z] = new MapElement()
-        if ( !this.isEdge(x,z, width, length) ) {
-          this.grid[x][z].open()
+        if ( this.isEdge(x,z, width, length) ) {
+          // this.grid[x][z].block()
+          this.block(x, z)
         }
       }
+    }
+    if ( seed === 'empty' ){
+
+    } else if ( seed === 'test' ) {
+      this.block(4,6)
     }
   }
 
   isEdge(x,z, width, length) {
     return ( x === 0 || z === 0 || x === width - 1 || z === length - 1)
+  }
+
+  block(x, z) {
+    // console.log(x, z, this.grid[x][z])
+    this.grid[x][z].block()
+    this.pfGrid.setWalkableAt(x, z, false)
+  }
+
+  open(x, z) {
+    this.grid[x][z].open()
+    this.pfGrid.setWalkableAt(x, z, true)
+  }
+
+  isObstacle(x, z) {
+    return this.grid[x][z].isObstacle
+  }
+
+  getPath(p0, p1) {
+    let path = this.finder.findPath(p0.x, p0.z, p1.x, p1.z, this.pfGrid.clone())
+      path = PF.Util.compressPath(path)
+    if (path.length > 0) {
+      path = PF.Util.smoothenPath(this.pfGrid, path)
+    }
+    return path;
   }
 
   update(props) {
@@ -61,7 +99,7 @@ class GameMap {
 class MapElement {
   constructor(props) {
     props = props || {}
-    this.isObstacle = props.isObstacle !== undefined ? props.isObstacle : true
+    this.isObstacle = props.isObstacle ? props.isObstacle : false
   }
 
   messageFormat() {

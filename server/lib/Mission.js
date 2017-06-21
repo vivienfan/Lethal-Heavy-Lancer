@@ -5,7 +5,7 @@
 
 const uuidV4    = require('uuid/v4');
 const Character = require('./Character');
-const GameMap = require('./GameMap');
+const GameMap   = require('./GameMap');
 const CONSTANTS = require("../../public/scripts/lib/constants");
 
 class Mission {
@@ -13,7 +13,7 @@ class Mission {
     props = props || {}
     this.id = props.id || uuidV4();
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
-    this.map = new GameMap()
+    this.map = new GameMap({seed: "empty"})
     this.characters = []
     this.enemies = []
     this.allies = []
@@ -77,6 +77,23 @@ class Mission {
       return element.id === message.player.id;
     });
     return result
+  }
+
+  findClosest(origin, targets) {
+
+  }
+
+  findClosestInRange(origin, range, targets) {
+    // targets.foreach
+  }
+
+  isWithinRange(origin, range, target) {
+    let diff = {
+      x: target.position.x - origin.position.x,
+      y: target.position.y - origin.position.y,
+      z: target.position.z - origin.position.z}
+    let distSqr = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z
+    return (distSqr <= (origin.range * origin.range));
   }
 
   fireOn(origin, target) {
