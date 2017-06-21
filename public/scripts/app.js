@@ -7,7 +7,7 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, camera, playerMesh, npcMesh;
+  var scene, camera, playerMesh, npcMesh, extraGround, skybox;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
   var inputManager = new InputManager()
 
@@ -71,7 +71,7 @@ window.onload = function() {
 
   function createSkybox() {
     // Create skybox
-    var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, scene);
+    skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, scene);
     skybox.isPickable = false;
 
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
@@ -93,14 +93,14 @@ window.onload = function() {
   }
 
   function createGround() {
-    var extraGround = BABYLON.Mesh.CreateGround("extraGround", 1500, 1500, 1, scene, false);
+    extraGround = BABYLON.Mesh.CreateGround("extraGround", 1500, 1500, 1, scene, false);
     extraGround.position.y = -3;
     extraGround.isPickable = false;
 
     var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
     mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
     mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -10.0);
-    mirrorMaterial.reflectionTexture.renderList = scene.meshes;
+    mirrorMaterial.reflectionTexture.renderList.push(skybox);
     mirrorMaterial.reflectionTexture.level = 0.6;
     // removing all light reflections
     mirrorMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
@@ -122,6 +122,7 @@ window.onload = function() {
           newPlayer.position.z = player.position.z;
           newPlayer.rotation = player.rotation;
           newPlayer.isPickable = false;
+          extraGround.material.reflectionTexture.renderList.push(newPlayer);
         }
       });
     });
@@ -140,6 +141,7 @@ window.onload = function() {
           newNPC.position.y = npc.position.y;
           newNPC.position.z = npc.position.z;
           newNPC.rotation = npc.rotation;
+          extraGround.material.reflectionTexture.renderList.push(newNPC);
         }
       });
     });
@@ -181,9 +183,11 @@ window.onload = function() {
       avatar = newMeshes[0];
       avatar.id = playerStatus.id;
       avatar.name = playerStatus.id;
-      avatar.skeleton = skeletons[0];
-      avatar.skeleton.createAnimationRange("walk", 0, 30);
+      // avatar.skeleton = skeletons[0];
+      // avatar.skeleton.createAnimationRange("walk", 0, 30);
       avatar.isPickable = false;
+
+      extraGround.material.reflectionTexture.renderList.push(avatar);
 
       cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
       cameraTarget.isPickable = false;
@@ -253,6 +257,7 @@ window.onload = function() {
             newNPC.name = character.id;
             newNPC.position = character.position;
             newNPC.rotation = character.rotation;
+            extraGround.material.reflectionTexture.renderList.push(newNPC);
           } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER && playerMesh) {
             var newPlayer = playerMesh.createInstance(character.id);
             newPlayer.id = character.id;
@@ -260,6 +265,7 @@ window.onload = function() {
             newPlayer.position = character.position;
             newPlayer.rotation = character.rotation;
             newPlayer.isPickable = false;
+            extraGround.material.reflectionTexture.renderList.push(newPlayer);
           }
         }
       } else {
