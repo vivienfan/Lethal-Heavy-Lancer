@@ -70,6 +70,8 @@ window.onload = function() {
   function createSkybox() {
     // Create skybox
     var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, scene);
+    skybox.isPickable = false;
+
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.disableLighting = true;
@@ -90,7 +92,10 @@ window.onload = function() {
 
   function createGround() {
     var extraGround = BABYLON.Mesh.CreateGround("extraGround", 1500, 1500, 1, scene, false);
-    var mirrorMaterial = new BABYLON.StandardMaterial("texture4", scene);
+    extraGround.position.y = -3;
+    extraGround.isPickable = false;
+
+    var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
     mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
     mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -10.0);
     mirrorMaterial.reflectionTexture.renderList = scene.meshes;
@@ -98,15 +103,12 @@ window.onload = function() {
     // removing all light reflections
     mirrorMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     mirrorMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-
     extraGround.material = mirrorMaterial;
-    extraGround.position.y = -3;
   }
 
   function createPlayers(players) {
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       playerMesh = newMeshes[0];
-      playerMesh.isPickable = false;
       playerMesh.position.y = -100;
       players.forEach(function(player, index) {
         if (scene.getMeshByName(player.id)){
@@ -117,6 +119,7 @@ window.onload = function() {
           newPlayer.position.y = player.position.y;
           newPlayer.position.z = player.position.z;
           newPlayer.rotation = player.rotation;
+          newPlayer.isPickable = false;
         }
       });
     });
@@ -206,6 +209,7 @@ window.onload = function() {
       target: {}
     }
     if (hit.pickedMesh){
+      console.log(hit.pickedMesh);
       msg.target.id = hit.pickedMesh.id;
     }
     socket.send(JSON.stringify(msg));
@@ -253,6 +257,7 @@ window.onload = function() {
             newPlayer.name = character.id;
             newPlayer.position = character.position;
             newPlayer.rotation = character.rotation;
+            newPlayer.isPickable = false;
           }
         }
       } else {
@@ -375,8 +380,8 @@ window.onload = function() {
     this.process = function(type, event) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" ) {
-        player.rotationY += event.movementX * ANGLE
-        player.rotationX += event.movementY * ANGLE
+        // player.rotationY += event.movementX * ANGLE
+        // player.rotationX += event.movementY * ANGLE
       } else {
         // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
         // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
