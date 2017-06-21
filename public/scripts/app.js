@@ -8,7 +8,7 @@ window.onload = function() {
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
   var scene, camera, playerMesh, npcMesh;
-  var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0, fire: false}
+  var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
   var inputManager = new InputManager()
 
   var ANGLE = Math.PI/180;
@@ -55,7 +55,7 @@ window.onload = function() {
   engine.runRenderLoop(function(){
     if (scene && scene.activeCamera) {
       updateScene();
-      checkForKills();
+      //checkForKills();
       scene.render();
     }
   });
@@ -281,12 +281,6 @@ window.onload = function() {
     });
   }
 
-  function checkForKills(){
-    if (player.fire) {
-      castRay();
-    }
-  }
-
   function updatePlayerOrientation() {
       playerStatus.rotation.y += player.rotationY;
       player.rotationY = 0;
@@ -473,10 +467,9 @@ window.onload = function() {
           case " ":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.fire = true;
+              castRay();
             } else if (type === "keyup") {
               this.isPressed[event.key] = false;
-              player.fire = false;
             }
             break;
           } // end of switch statement
