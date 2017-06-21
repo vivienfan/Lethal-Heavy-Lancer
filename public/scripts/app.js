@@ -100,7 +100,6 @@ window.onload = function() {
     createCharacters(characters);
     createAvatar();
 
-    scene.enablePhysics(gravityVector, physicsPlugin);
     health.classList.remove("hide");
     engine.hideLoadingUI();
     return scene;
@@ -211,19 +210,17 @@ window.onload = function() {
       avatar = newMeshes[0];
       avatar.id = playerStatus.id;
       avatar.name = playerStatus.id;
-      // avatar.skeleton = skeletons[0];
-      // avatar.skeleton.createAnimationRange("walk", 0, 30);
       avatar.isPickable = false;
-
       extraGround.material.reflectionTexture.renderList.push(avatar);
 
       cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
       cameraTarget.isPickable = false;
+      initFocus();
 
       camera = new BABYLON.ArcRotateCamera("arcCam", ALPHA_OFFSET, BETA_OFFSET, RADIUS, cameraTarget, scene);
+      camera.lowerBetaLimit = Math.PI / 3;
+      camera.upperBetaLimit = (5 * Math.PI) / 6;
       scene.activeCamera = camera;
-
-      initFocus();
     });
   }
 
