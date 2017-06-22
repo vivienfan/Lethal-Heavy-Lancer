@@ -21,9 +21,9 @@ window.onload = function() {
   // var DOWN_ANGLE_MAX = Math.PI/10;
   var CAM_OFFSET = 1.5;
   var ALPHA_OFFSET = -Math.PI/2;
-  var BETA_OFFSET = Math.PI/2 + 8 * ANGLE;
+  var BETA_OFFSET = Math.PI/2 ;//+ 8 * ANGLE;
   var RADIUS = 1.5;
-  var AIM_OFFSET = 10 * Math.PI/180;
+  var AIM_OFFSET = 0;//3 * Math.PI/180;
   var SPEED = 0.5;
   var alpha = 0;
   var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
@@ -100,21 +100,9 @@ window.onload = function() {
     createGround();
     createBuildings(map);
 
+    createNPCMesh();
     createPlayerMesh();
     createAvatar();
-
-    // var box0 = BABYLON.Mesh.CreateBox("box0", 1, scene);
-    // box0.position = new BABYLON.Vector3(10, 5, -10);
-
-    // var box1 = BABYLON.Mesh.CreateBox("box1", 3, scene);
-    // box1.position = new BABYLON.Vector3(-10, 5, -10);
-
-    // box0.checkCollisions = true;
-    // box1.checkCollisions = true;
-
-    // scene.registerBeforeRender(function() {
-    //   box0.moveWithCollisions(new BABYLON.Vector3(-0.1, 0, 0));
-    // });
 
     health.classList.remove("hide");
     engine.hideLoadingUI();
@@ -194,6 +182,17 @@ window.onload = function() {
     ground.material = mirrorMaterial;
   }
 
+  function createNPCMesh() {
+    var material_columns = new BABYLON.StandardMaterial('columnsmat', scene);
+    // material_columns.emissiveTexture = fireTexture;
+    // material_columns.opacityTexture = fireTexture;
+
+    npcMesh = BABYLON.Mesh.CreateSphere("npc-mesh", 16, 10, scene);
+    // var npcMesh = BABYLON.Mesh.CreateTorusKnot("npc-mesh", 3, 0.3, 128, 64, 2, 3, scene, false, BABYLON.Mesh.default);
+    npcMesh.material = material_columns;
+    npcMesh.setEnabled(false);
+  }
+
   function createPlayerMesh() {
     BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes) {
       playerMesh = newMeshes[0];
@@ -257,8 +256,8 @@ window.onload = function() {
           char_mesh.position = character.position;
           char_mesh.rotation = character.rotation;
         } else {
-          if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
-            // buildNewNPC(character);
+          if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
+            buildNewNPC(character);
           } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER && playerMesh) {
             buildNewPlayer(character);
           }
@@ -282,15 +281,9 @@ window.onload = function() {
   }
 
   function buildNewNPC(character) {
-    var material_columns = new BABYLON.StandardMaterial('columnsmat', scene);
-    material_columns.emissiveTexture = fireTexture;
-    material_columns.opacityTexture = fireTexture;
-
-    var newNPC = BABYLON.Mesh.CreateSphere(character.id, 16, 10, scene);
-    // var newNPC = BABYLON.Mesh.CreateTorusKnot("knot", 3, 0.3, 128, 64, 2, 3, scene, false, BABYLON.Mesh.DOUBLESIDE);
+    var newNPC = npcMesh.clone(character.id);
+    newNPC.position = character.position;
     newNPC.rotation = character.rotation;
-    newNPC.checkCollisions = true;
-    newNPC.material = material_columns;
     ground.material.reflectionTexture.renderList.push(newNPC);
     createParticle(character.id)
   }
@@ -419,7 +412,6 @@ window.onload = function() {
       -Math.sin(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)),
       Math.sin(avatar.rotation.x + AIM_OFFSET),
       -Math.cos(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)));
-
     createBeam(cameraTarget.position, direction);
 
     var ray = new BABYLON.Ray(origin, direction, length);
@@ -446,8 +438,8 @@ window.onload = function() {
     particalSystem.particleTexture = new BABYLON.FireProceduralTexture("fire", 256, scene);
     particalSystem.minSize = 0.3;
     particalSystem.maxSize = 0.3;
-    particalSystem.minLifeTime = 5;
-    particalSystem.maxLifeTime = 20;
+    particalSystem.minLifeTime = 0.2;
+    particalSystem.maxLifeTime = 0.5;
     particalSystem.minEmitPower = 50;
     particalSystem.maxEmitPower = 100;
 
