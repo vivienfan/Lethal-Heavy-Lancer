@@ -71,10 +71,13 @@ describe('Mission',function(){
       assert.equal(mission.findClosestInRange(mission.characters[0], 10, mission.enemies) , mission.characters[3], 'should be the third enemy');
       assert.isNotOk(mission.findClosestInRange(mission.characters[0], 4, mission.enemies), 'should not return anything');
       assert.equal(mission.findClosest(mission.characters[0], mission.enemies) , mission.characters[3], 'should be the third enemy');
-      // assert.notEqual(mission.id, new Mission().id, 'Id should be different from another new mission instance.');
-      // assert.equal(mission.type, fullParams.type, 'Current mission type should be the same as in parameters');
-      // assert.equal(mission.characters.length, fullParams.characters.length, 'Amount of characters should be the same as parameters');
-      // assert.deepEqual(mission.characters[1], new Character(fullParams.characters[1]), 'characters should be properly constructed');
+    });
+  });
+
+  describe('finding values',function(){
+    let mission = new Mission(fullParams);
+    it('Should return correct start position', function() {
+      assert.deepEqual(mission.getStartPosition(), { x: 1.5 * CONSTANTS.MAP.ELEMENT_SIZE, y: 0, z: 1.5 * CONSTANTS.MAP.ELEMENT_SIZE}, 'have proper start position');
     });
   });
 

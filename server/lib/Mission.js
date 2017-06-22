@@ -26,10 +26,15 @@ class Mission {
   }
 
   addCharacter(character) {
+    let playerStartPos = character.position || this.getStartPosition()
     if (!(character instanceof Character)) {
       character = new Character(character);
     }
+
     this.characters.push(character);
+    if ( character.type === CONSTANTS.CHAR_TYPE.PLAYER ) {
+      character.position = playerStartPos
+    }
     if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
       this.enemies.push(character)
     } else {
@@ -63,6 +68,10 @@ class Mission {
       }
     }
     return this
+  }
+
+  getStartPosition() {
+    return this.map.getStartPosition()
   }
 
   findCharacter(character) {

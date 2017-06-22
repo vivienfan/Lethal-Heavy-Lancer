@@ -76,6 +76,12 @@ class GameMap {
     return this.grid[x][z].isObstacle
   }
 
+  getStartPosition() {
+    let startX = (this.startPos[0] + 0.5) * this.elementSize
+    let startZ = (this.startPos[1] + 0.5) * this.elementSize
+    return {x: startX, y: 0, z: startZ}
+  }
+
   getPath(p0, p1) {
     let path = this.finder.findPath(p0.x, p0.z, p1.x, p1.z, this.pfGrid.clone())
       path = PF.Util.compressPath(path)

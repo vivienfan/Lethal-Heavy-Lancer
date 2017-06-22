@@ -24,7 +24,8 @@ class Player {
     } else {
       this.currentMission = new Mission(mission)
     }
-    return this.currentMission.addCharacter(new Character(this))
+
+    return this.currentMission.addCharacter(this)
   }
 
   messageFormat() {
