@@ -9,7 +9,7 @@ window.onload = function() {
 
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, camera, playerMesh, npcMesh, extraGround, skybox;
+  var scene, camera, playerMesh, npcMesh, extraGround, skybox, flame, fireTexture;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
   var inputManager = new InputManager()
 
@@ -29,6 +29,7 @@ window.onload = function() {
 
   var playerStatus = {};
   var characterStatus = [];
+  var emitters = {};
 
   var HEALTH_COLOR_FULL = "#86e01e";
   var HEALTH_COLOR_HIGH = "#f2d31b";
@@ -80,7 +81,6 @@ window.onload = function() {
   engine.runRenderLoop(function(){
     if (scene && scene.activeCamera) {
       updateScene();
-      //checkForKills();
       scene.render();
     }
   });
@@ -93,17 +93,26 @@ window.onload = function() {
   function createScene(characters) {
     scene = new BABYLON.Scene(engine);
     engine.enableOfflineSupport = false;
+    fireTexture = new BABYLON.FireProceduralTexture("fire", 256, scene);
+    flame = new BABYLON.Texture("Fire.png", scene);
 
     createSkybox();
     createSun();
     createGround();
-    createCharacters(characters);
+    createNPCMesh();
+    createPlayerMesh();
     createAvatar();
 
     health.classList.remove("hide");
     engine.hideLoadingUI();
+
     return scene;
   }
+
+
+  var alpha = 0;
+
+
 
   function createSkybox() {
     // Create skybox
@@ -113,11 +122,9 @@ window.onload = function() {
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.disableLighting = true;
-
     // texture
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/moon/", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-
     // removing all light reflections
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -151,57 +158,17 @@ window.onload = function() {
     extraGround.material = mirrorMaterial;
   }
 
-  function createCharacters(characters) {
-    var playerArr = [];
-    var npcArr = [];
-    characters.forEach(function (character) {
-      if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
-        npcArr.push(character);
-      } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER
-              && character.id !== playerStatus.id) {
-        playerArr.push(character);
-      }
-    });
-    createNPCs(npcArr);
-    createPlayers(playerArr);
-  }
-
-  function createNPCs(npcs) {
+  function createNPCMesh() {
     BABYLON.SceneLoader.ImportMesh("", "", "robot.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       npcMesh = newMeshes[0];
       npcMesh.position.y = -100;
-      npcs.forEach(function(npc, index) {
-        if (scene.getMeshByName(npc.id)){
-          console.log("other npc", npc);
-          newNPC.id = npc.id;
-          newNPC.name = npc.id;
-          newNPC.position.x = npc.position.x - index * 5 + 2;
-          newNPC.position.y = npc.position.y;
-          newNPC.position.z = npc.position.z;
-          newNPC.rotation = npc.rotation;
-          extraGround.material.reflectionTexture.renderList.push(newNPC);
-        }
-      });
     });
   }
 
-  function createPlayers(players) {
+  function createPlayerMesh() {
     BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
       playerMesh = newMeshes[0];
       playerMesh.position.y = -100;
-      players.forEach(function(player, index) {
-        if (scene.getMeshByName(player.id)){
-          var newPlayer = playerMesh.createInstance(player.id);
-          newPlayer.id = player.id;
-          newPlayer.name = player.name;
-          newPlayer.position.x = player.position.x + index * 5 + 2;
-          newPlayer.position.y = player.position.y;
-          newPlayer.position.z = player.position.z;
-          newPlayer.rotation = player.rotation;
-          newPlayer.isPickable = false;
-          extraGround.material.reflectionTexture.renderList.push(newPlayer);
-        }
-      });
     });
   }
 
@@ -214,6 +181,7 @@ window.onload = function() {
       extraGround.material.reflectionTexture.renderList.push(avatar);
 
       cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
+      cameraTarget.isVisible = false;
       cameraTarget.isPickable = false;
       initFocus();
 
@@ -250,23 +218,12 @@ window.onload = function() {
           scene.getMeshByName(character.id).rotation = character.rotation;
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
-            var newNPC = npcMesh.createInstance(character.id);
-            newNPC.id = character.id;
-            newNPC.name = character.id;
-            newNPC.position = character.position;
-            newNPC.rotation = character.rotation;
-            extraGround.material.reflectionTexture.renderList.push(newNPC);
+            buildNewNPC(character);
           } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER && playerMesh) {
-            var newPlayer = playerMesh.createInstance(character.id);
-            newPlayer.id = character.id;
-            newPlayer.name = character.id;
-            newPlayer.position = character.position;
-            newPlayer.rotation = character.rotation;
-            newPlayer.isPickable = false;
-            extraGround.material.reflectionTexture.renderList.push(newPlayer);
+            buildNewPlayer(character);
           }
         }
-      } else {
+      } else {  // update client info
         var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
         healthBar.style.width = healthPercent + "%";
         if (healthPercent >= 80) {
@@ -284,10 +241,61 @@ window.onload = function() {
     });
   }
 
+  function buildNewNPC(character) {
+    var material_columns = new BABYLON.StandardMaterial('columnsmat', scene);
+    material_columns.emissiveTexture = fireTexture;
+    material_columns.opacityTexture = fireTexture;
+
+    var newNPC = BABYLON.Mesh.CreateSphere(character.id, 16, 10, scene);
+
+    // var newNPC = BABYLON.Mesh.CreateTorusKnot("knot", 3, 0.3, 128, 64, 2, 3, scene, false, BABYLON.Mesh.DOUBLESIDE);
+    newNPC.material = material_columns;
+
+    // var newNPC = npcMesh.createInstance(character.id);
+    // newNPC.id = character.id;
+    // newNPC.name = character.id;
+    // newNPC.position = character.position;
+    newNPC.rotation = character.rotation;
+    extraGround.material.reflectionTexture.renderList.push(newNPC);
+    createParticle(character.id)
+  }
+
+  function createParticle(id) {
+    emitters[id] = BABYLON.Mesh.CreateBox("emitter0", 0.1, scene);
+    emitters[id].isVisible = false;
+    emitters[id].position.y = 10;
+
+    var particleSystem = new BABYLON.ParticleSystem("particles", 4000, scene);
+    particleSystem.particleTexture = flame;
+    particleSystem.minSize = 0.2;
+    particleSystem.maxSize = 0.5;
+    particleSystem.minEmitPower = 1.0;
+    particleSystem.maxEmitPower = 2.0;
+    particleSystem.minLifeTime = 0.5;
+    particleSystem.maxLifeTime = 1.0;
+    particleSystem.emitter = emitters[id];
+    particleSystem.emitRate = 500;
+    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    particleSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0);
+    particleSystem.maxEmitBox = new BABYLON.Vector3(0, 0, 0);
+    particleSystem.direction1 = new BABYLON.Vector3(0, 0, 0);
+    particleSystem.direction2 = new BABYLON.Vector3(0, 0, 0);
+    particleSystem.start();
+  }
+
+  function buildNewPlayer(character) {
+    var newPlayer = playerMesh.createInstance(character.id);
+    newPlayer.id = character.id;
+    newPlayer.name = character.id;
+    newPlayer.position = character.position;
+    newPlayer.rotation = character.rotation;
+    newPlayer.isPickable = false;
+    extraGround.material.reflectionTexture.renderList.push(newPlayer);
+  }
+
   function removeCharacter(character) {
     scene.getMeshByName(character.id).dispose();
   }
-
 
   function updateScene() {
     if (scene && scene.getAnimationRatio()) {
@@ -356,11 +364,17 @@ window.onload = function() {
             char.position.z -= character.fwdSpeed * Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             char.position.x -= character.sideSpeed * -Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             char.position.z -= character.sideSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            // there is a particle for this mesh -> npc, rotate the particle;
+            if (emitters[character.id]) {
+              emitters[character.id].position.x = 8 * Math.cos(alpha) + char.position.x;
+              emitters[character.id].position.y = 1.0;
+              emitters[character.id].position.z = 8 * Math.sin(alpha) + char.position.z;
+              alpha += 0.05 * scene.getAnimationRatio();
+            }
           }
         }
     });
   }
-
 
   function castRay(){
     var length = 100;
@@ -369,6 +383,8 @@ window.onload = function() {
       -Math.sin(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
       Math.sin(camera.beta - BETA_OFFSET),
       Math.cos(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
+
+    createBeam(cameraTarget.position, direction);
 
     var ray = new BABYLON.Ray(origin, direction, length);
     var hit = scene.pickWithRay(ray);
@@ -382,6 +398,42 @@ window.onload = function() {
       msg.target.id = hit.pickedMesh.id;
     }
     socket.send(JSON.stringify(msg));
+  }
+
+  function createBeam(position, direction) {
+    var hilt = BABYLON.Mesh.CreateCylinder("beam", 0.5, 0.5, 0.5, 12, scene);
+    hilt.position.y = position.y - 1;
+    hilt.position.x = position.x;
+    hilt.position.z = position.z;
+    hilt.visibility = false;
+
+    var particalSystem = new BABYLON.ParticleSystem("beam", 1000, scene);
+    particalSystem.particleTexture = new BABYLON.FireProceduralTexture("fire", 256, scene);
+    particalSystem.minSize = 0.3;
+    particalSystem.maxSize = 0.3;
+    particalSystem.minLifeTime = 5;
+    particalSystem.maxLifeTime = 20;
+    particalSystem.minEmitPower = 50;
+    particalSystem.maxEmitPower = 100;
+
+    particalSystem.minAngularSpeed = 0;
+
+    particalSystem.emitter = hilt;
+
+    particalSystem.emitRate = 500;
+    particalSystem.updateSpeed = 0.05;
+    particalSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+
+    particalSystem.direction1 = direction;
+    particalSystem.direction2 = direction;
+    particalSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0);
+    particalSystem.maxEmitBox = new BABYLON.Vector3(0, 0, 0);
+
+    particalSystem.start();
+
+    setTimeout(function() {
+      particalSystem.stop();
+    }, 200);
   }
 
   function InputManager() {
