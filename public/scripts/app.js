@@ -67,7 +67,6 @@ window.onload = function() {
         initWorld(data.data, data.mission, data.map.grid);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        console.log(Date.now());
         updateCharacters(data.mission.characters);
         break;
       case CONSTANTS.MESSAGE_TYPE.REMOVE:
@@ -92,7 +91,6 @@ window.onload = function() {
 
   function createScene(map) {
     scene = new BABYLON.Scene(engine);
-    scene.collisionsEnabled = true;
     // engine.enableOfflineSupport = false;
     fireTexture = new BABYLON.FireProceduralTexture("fire", 256, scene);
     flame = new BABYLON.Texture("Fire.png", scene);
@@ -100,10 +98,23 @@ window.onload = function() {
     createSkybox();
     createSun();
     createGround();
-    // createBuildings(map);
+    createBuildings(map);
 
     createPlayerMesh();
     createAvatar();
+
+    // var box0 = BABYLON.Mesh.CreateBox("box0", 1, scene);
+    // box0.position = new BABYLON.Vector3(10, 5, -10);
+
+    // var box1 = BABYLON.Mesh.CreateBox("box1", 3, scene);
+    // box1.position = new BABYLON.Vector3(-10, 5, -10);
+
+    // box0.checkCollisions = true;
+    // box1.checkCollisions = true;
+
+    // scene.registerBeforeRender(function() {
+    //   box0.moveWithCollisions(new BABYLON.Vector3(-0.1, 0, 0));
+    // });
 
     health.classList.remove("hide");
     engine.hideLoadingUI();
@@ -118,13 +129,15 @@ window.onload = function() {
           var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
           newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
-          newObstacle.scaling.y = Math.floor(Math.random() * 10) + 5;
-          newObstacle.position.y = -2;
-          var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
-          buildingMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/building00/", scene);
-          buildingMaterial.uScale = 0.01;
-          buildingMaterial.vScale = 0.01;
-          newObstacle.material = buildingMaterial;
+
+          newObstacle.scaling.y = (Math.floor(Math.random() * 100) + 50) / 10;
+          newObstacle.position.y = 30;
+          // var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
+          // buildingMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/building00/", scene);
+          // buildingMaterial.uScale = 0.01;
+          // buildingMaterial.vScale = 0.01;
+          // newObstacle.material = buildingMaterial;
+          newObstacle.checkCollisions = true;
           ground.material.reflectionTexture.renderList.push(newObstacle);
         }
       });
@@ -181,6 +194,7 @@ window.onload = function() {
       playerMesh = newMeshes[0];
       playerMesh.isPickable = false;
       playerMesh.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
+      playerMesh.checkCollisions = true;
       playerMesh.setEnabled(false);
     });
   }
@@ -191,6 +205,8 @@ window.onload = function() {
       avatar.id = playerStatus.id;
       avatar.name = playerStatus.id;
       avatar.isPickable = false;
+      avatar.checkCollisions = true;
+
       avatar.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
       ground.material.reflectionTexture.renderList.push(avatar);
 
@@ -264,6 +280,7 @@ window.onload = function() {
     var newNPC = BABYLON.Mesh.CreateSphere(character.id, 16, 10, scene);
     // var newNPC = BABYLON.Mesh.CreateTorusKnot("knot", 3, 0.3, 128, 64, 2, 3, scene, false, BABYLON.Mesh.DOUBLESIDE);
     newNPC.rotation = character.rotation;
+    newNPC.checkCollisions = true;
     newNPC.material = material_columns;
     ground.material.reflectionTexture.renderList.push(newNPC);
     createParticle(character.id)
