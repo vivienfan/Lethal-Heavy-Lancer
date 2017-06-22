@@ -13,7 +13,7 @@ class Mission {
     props = props || {}
     this.id = props.id || uuidV4();
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
-    this.map = new GameMap({seed: "empty"})
+    this.map = new GameMap({seed: "test"})
     this.characters = []
     this.enemies = []
     this.allies = []
@@ -26,10 +26,15 @@ class Mission {
   }
 
   addCharacter(character) {
+    let playerStartPos = character.position || this.getStartPosition()
     if (!(character instanceof Character)) {
       character = new Character(character);
     }
+
     this.characters.push(character);
+    if ( character.type === CONSTANTS.CHAR_TYPE.PLAYER ) {
+      character.position = playerStartPos
+    }
     if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
       this.enemies.push(character)
     } else {
@@ -65,6 +70,10 @@ class Mission {
     return this
   }
 
+  getStartPosition() {
+    return this.map.getStartPosition()
+  }
+
   findCharacter(character) {
     let result = this.characters.find(function(element) {
       return element.id === character.id;
@@ -74,30 +83,43 @@ class Mission {
 
   findCharacterIndex(character) {
     let result = this.characters.findIndex(function(element) {
-      return element.id === message.player.id;
+      return element.id === character.id;
     });
     return result
   }
 
   findClosest(origin, targets) {
-
+    return this.findClosestInRange(origin, null, targets)
   }
 
   findClosestInRange(origin, range, targets) {
-    // targets.foreach
+    let foundTarget = null;
+    let foundDistSqr;
+    targets.forEach(target => {
+      let distSqr = this.findDistSqr(origin, target)
+      if( !range || distSqr <= range * range )
+        if ( !foundTarget || distSqr < foundDistSqr ){
+          foundTarget = target
+          foundDistSqr = distSqr
+        }
+    })
+    return foundTarget
   }
 
   isWithinRange(origin, range, target) {
+    let distSqr = this.findDistSqr(origin, target)
+    return (distSqr <= (origin.range * origin.range));
+  }
+
+  findDistSqr(origin, target) {
     let diff = {
       x: target.position.x - origin.position.x,
       y: target.position.y - origin.position.y,
       z: target.position.z - origin.position.z}
-    let distSqr = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z
-    return (distSqr <= (origin.range * origin.range));
+    return diff.x * diff.x + diff.y * diff.y + diff.z * diff.z
   }
 
   fireOn(origin, target) {
-    console.log("fire on!")
     if ( origin.id ) {
       if ( !(origin instanceof Character) ) {
         origin = this.findCharacter(origin)
@@ -107,7 +129,6 @@ class Mission {
       target = this.findCharacter(target)
       if ( target && target.id ) {
         if ( target && this.canHit(origin, target) ) {
-          console.log("hit!")
           target.takeDamage(origin.damage);
         }
         return target.isDead()
@@ -116,12 +137,7 @@ class Mission {
   }
 
   canHit(origin, target) {
-    let diff = {
-      x: target.position.x - origin.position.x,
-      y: target.position.y - origin.position.y,
-      z: target.position.z - origin.position.z}
-    let distSqr = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z
-    return (distSqr <= (origin.range * origin.range));
+    return this.isWithinRange(origin, origin.range, target)
   }
 
   messageFormat(playerId) {
