@@ -21,13 +21,11 @@ window.onload = function() {
   // var DOWN_ANGLE_MAX = Math.PI/10;
   var CAM_OFFSET = 1.5;
   var ALPHA_OFFSET = -Math.PI/2;
-  var BETA_OFFSET = Math.PI/2 + 9 * ANGLE;
+  var BETA_OFFSET = Math.PI/2 + 8 * ANGLE;
   var RADIUS = 1.5;
   var AIM_OFFSET = 10 * Math.PI/180;
   var SPEED = 0.5;
   var alpha = 0;
-
-  var prevTime = Date.now()
 
   var playerStatus = {};
   var characterStatus = [];
@@ -69,6 +67,7 @@ window.onload = function() {
         initWorld(data.data, data.mission, data.map.grid);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
+        console.log(Date.now());
         updateCharacters(data.mission.characters);
         break;
       case CONSTANTS.MESSAGE_TYPE.REMOVE:
@@ -306,10 +305,6 @@ window.onload = function() {
 
   function updateScene() {
     if (scene && scene.getAnimationRatio()) {
-      var nowTime = Date.now()
-      var dt = nowTime - prevTime
-      prevTime = nowTime
-
       updatePlayerOrientation();
       sendPlayerState();
       updateCharacterOriendtation();
@@ -368,10 +363,10 @@ window.onload = function() {
         var char = scene.getMeshByName(character.id);
           if (char) {
             char.rotation.y += character.rotYSpeed * scene.getAnimationRatio();
-            char.position.x -= character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.z -= character.fwdSpeed * Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.x -= character.sideSpeed * -Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.z -= character.sideSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.z += character.fwdSpeed * Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.x += character.sideSpeed * -Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+            char.position.z += character.sideSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             // there is a particle for this mesh -> npc, rotate the particle;
             if (emitters[character.id]) {
               emitters[character.id].position.x = 8 * Math.cos(alpha) + char.position.x;
