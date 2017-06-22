@@ -21,7 +21,7 @@ window.onload = function() {
   var CAM_OFFSET = 1.5;
   var ALPHA_OFFSET = -Math.PI/2;
   var BETA_OFFSET = Math.PI/2 + 9 * ANGLE;
-  var RADIUS = 1.4;
+  var RADIUS = 1.5;
   var SPEED = 0.5;
   var alpha = 0;
 
@@ -340,16 +340,17 @@ window.onload = function() {
 
     // // rotation on x-axis
     camera.beta -= player.rotationX;
+    avatar.rotation.x = camera.beta - BETA_OFFSET;
     player.rotationX = 0;
     camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
 
     // move forward/backward
-    playerStatus.position.x -= player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-    playerStatus.position.z -= player.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+    playerStatus.position.x += player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+    playerStatus.position.z += player.fwdSpeed * Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
     // move left/right
-    playerStatus.position.x -= player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
-    playerStatus.position.z -= player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+    playerStatus.position.x += player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
+    playerStatus.position.z += player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
     avatar.position.x = playerStatus.position.x;
     avatar.position.z = playerStatus.position.z;
