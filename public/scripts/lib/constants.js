@@ -30,10 +30,14 @@ var CONSTANTS = {
   },
 
   MAP: {
-    DEFAULT_SIZE: 32,
+    DEFAULT_SIZE: 64,
     ELEMENT_SIZE: 2,
+    MIN_ROOMS: 12,
+    MAX_ROOMS: 15,
+    MIN_ROOM_SIZE: 6,
+    MAX_ROOM_SIZE: 12,
     FAIL_CUTOFF: 100,
-    SAFE_DISTANCE: 7
+    SAFE_DISTANCE: 6
   }
 }
 

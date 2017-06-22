@@ -35,7 +35,7 @@ wss.broadcast = function broadcast(data, except) {
 };
 
 let mission = new Mission()
-mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY, x: 10, y: 10})
+mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
 
 let prevTime = Date.now()
 const timer = setInterval(function() {

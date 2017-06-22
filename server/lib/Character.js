@@ -23,6 +23,7 @@ class Character {
     this.totalHealth = 100;
     this.currentHealth = 100;
     this.target = null;
+    this.movePosition;
     this.update(props);
   }
 
@@ -47,9 +48,13 @@ class Character {
     this.target = target
   }
 
-  moveTo(target) {
-    let diffPositionX = this.position.x - this.target.position.x
-    let diffPositionZ = this.position.z - this.target.position.z
+  setMovePosition(target) {
+
+  }
+
+  moveTo(position) {
+    let diffPositionX = this.position.x - position.x
+    let diffPositionZ = this.position.z - position.z
     let goalAngle = Math.atan2(diffPositionX, diffPositionZ)
     let diffAngle = (goalAngle - this.rotation.y + 4 * Math.PI) % (2 * Math.PI)
     if ( diffAngle > 0.08 && diffAngle <= Math.PI ) {
@@ -83,16 +88,26 @@ class Character {
     }
   }
 
-  process(dt) {
+  process(dt, map) {
     if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
       // this.rotYSpeed = 0.02;
       // this.fwdSpeed = .5;
       this.fwdSpeed = 0
       if (this.target) {
-        this.moveTo(this.target)
+        let path = map.getGamePath(this.position, this.target.position)
+        if ( path && path.length > 2 ) {
+          this.movePosition = path[1]
+          // if(this.position.x)          console.log('npc position', this.position)
+        } else if ( path && path.length === 2) {
+          this.movePosition = Object.assign({}, this.target.position)
+        }
+        if( this.movePosition ){
+          console.log("moving to pos:", this.movePosition)
+          this.moveTo(this.movePosition)
+        }
       }
     } else {
-      // console.log(this.fwdSpeed, this.sideSpeed)
+
     }
     this.rotation.y += this.rotYSpeed * dt
     this.rotation.y %= Math.PI * 2
@@ -110,37 +125,7 @@ class Character {
         if(index === "position") {}
       }
     }
-    // this._id = props.id || this._id;
-    // this._type = props.type === undefined ? this._type : props.type
-    // if ( props.position ) {
-    //   this._position.x = props.position.x === undefined ? this._position.x : props.position.x
-    //   this._position.y = props.position.y === undefined ? this._position.y : props.position.y
-    //   this._position.z = props.position.z === undefined ? this._position.z : props.position.z
-    // }
-    // if ( props.rotation ) {
-    //   this._rotation.x = (props.rotation.x === undefined ? this._rotation.x : props.rotation.x)
-    //   this._rotation.y = (props.rotation.y === undefined ? this._rotation.y : props.rotation.y)
-    //   this._rotation.z = (props.rotation.z === undefined ? this._rotation.z : props.rotation.z)
-    // }
-    // this._fwdSpeed = props.fwdSpeed === undefined ? this._fwdSpeed : props.fwdSpeed
-    // this._rotYSpeed = props.rotYSpeed === undefined ? this._rotYSpeed : props.rotYSpeed
-    // this._sideSpeed = props.sideSpeed === undefined ? this._sideSpeed : props.sideSpeed
-    // this._totalHealth = props.totalHealth === undefined ? this._totalHealth : props.totalHealth
-    // this._currentHealth = props.currentHealth === undefined ? this._currentHealth : props.currentHealth
   }
-
-  // autoUpdate(obj, props) {
-  //   props = props || {}
-  //   for ( let index in props )  {
-  //     if ( obj["_"+index] !== undefined ) {
-  //       console.log(typeof props[index] === "object" ? Object.keys(props[index]) : "not object")
-  //       obj["_"+index] = props[index];
-  //     } else if ( obj[index] !== undefined ) {
-  //       obj[index] = props[index];
-  //     }
-  //   }
-  // }
-
 
 }
 
