@@ -9,7 +9,7 @@ window.onload = function() {
 
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, camera, playerMesh, npcMesh, extraGround, skybox, flame, fireTexture;
+  var scene, camera, playerMesh, npcMesh, ground, skybox, flame, fireTexture;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
   var inputManager = new InputManager()
 
@@ -93,7 +93,8 @@ window.onload = function() {
 
   function createScene(map) {
     scene = new BABYLON.Scene(engine);
-    engine.enableOfflineSupport = false;
+    scene.collisionsEnabled = true;
+    // engine.enableOfflineSupport = false;
     fireTexture = new BABYLON.FireProceduralTexture("fire", 256, scene);
     flame = new BABYLON.Texture("Fire.png", scene);
 
@@ -117,15 +118,17 @@ window.onload = function() {
     map.forEach(function(x, indexX) {
       x.forEach(function(z, indexZ) {
         if (z.isObstacle) {
-          var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 1, scene);
+          var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
           newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.scaling.y = Math.floor(Math.random() * 10) + 5;
           newObstacle.position.y = -2;
-          var buildingMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+          var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
           buildingMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/building00/", scene);
+          buildingMaterial.uScale = 0.01;
+          buildingMaterial.vScale = 0.01;
           newObstacle.material = buildingMaterial;
-          extraGround.material.reflectionTexture.renderList.push(newObstacle);
+          ground.material.reflectionTexture.renderList.push(newObstacle);
         }
       });
     });
@@ -160,9 +163,10 @@ window.onload = function() {
   }
 
   function createGround() {
-    extraGround = BABYLON.Mesh.CreateGround("extraGround", 1500, 1500, 1, scene, false);
-    extraGround.position.y = -3;
-    extraGround.isPickable = false;
+    ground = BABYLON.Mesh.CreateGround("ground", 1500, 1500, 1, scene, false);
+    ground.position.y = -3;
+    ground.isPickable = false;
+    ground.checkCollisions = true;
 
     var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
     mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
@@ -172,7 +176,7 @@ window.onload = function() {
     // removing all light reflections
     mirrorMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     mirrorMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    extraGround.material = mirrorMaterial;
+    ground.material = mirrorMaterial;
   }
 
   function createNPCMesh() {
@@ -195,7 +199,7 @@ window.onload = function() {
       avatar.id = playerStatus.id;
       avatar.name = playerStatus.id;
       avatar.isPickable = false;
-      extraGround.material.reflectionTexture.renderList.push(avatar);
+      ground.material.reflectionTexture.renderList.push(avatar);
 
       cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
       cameraTarget.isVisible = false;
@@ -273,7 +277,7 @@ window.onload = function() {
     // newNPC.name = character.id;
     // newNPC.position = character.position;
     newNPC.rotation = character.rotation;
-    extraGround.material.reflectionTexture.renderList.push(newNPC);
+    ground.material.reflectionTexture.renderList.push(newNPC);
     createParticle(character.id)
   }
 
@@ -307,7 +311,7 @@ window.onload = function() {
     newPlayer.position = character.position;
     newPlayer.rotation = character.rotation;
     newPlayer.isPickable = false;
-    extraGround.material.reflectionTexture.renderList.push(newPlayer);
+    ground.material.reflectionTexture.renderList.push(newPlayer);
   }
 
   function removeCharacter(character) {
