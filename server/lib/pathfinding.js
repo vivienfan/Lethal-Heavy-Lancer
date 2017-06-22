@@ -4,13 +4,13 @@
 const GameMap = require("./GameMap");
 const PF = require('pathfinding')
 
-let map = new GameMap('empty')
+let map = new GameMap({notseed: 'not-test'})
 
 function printMap(map) {
-  let line = BresenhamLine({x:1,z:3}, {x:12, z:30})
-  for (var i = 0; i < line.length; i++) {
-    map.block(line[i].x, line[i].z)
-  }
+  // let line = BresenhamLine({x:1,z:3}, {x:12, z:30})
+  // for (var i = 0; i < line.length; i++) {
+  //   map.block(line[i].x, line[i].z)
+  // }
   let drawMap = map.grid.map(x => {
     return x.map(y => {
       if ( y.isObstacle ) {
@@ -20,7 +20,7 @@ function printMap(map) {
       }
     })
   })
-  let path = map.getPath({x:2, z:12}, {x:20, z:20})
+  let path = map.getPath({x:1, z:1}, {x:17, z:18})
   console.log(path.length)
   for (var i = 0; i < path.length; i++) {
     drawMap[path[i][0]][path[i][1]] = '.'
