@@ -72,6 +72,24 @@ class GameMap {
     this.pfGrid.setWalkableAt(x, z, true)
   }
 
+  isRowEmpty(z) {
+    for (var x = 0; x < this.grid.length; x++) {
+      if (this.grid[x][z].isObstacle) return false;
+    }
+    return true
+  }
+
+  isColumnEmpty(x) {
+    for (var z = 0; z < this.grid[x].length; z++) {
+      if (this.grid[x][z].isObstacle) return false;
+    }
+    return true
+  }
+
+  trimGrid() {
+
+  }
+
   isObstacle(x, z) {
     return this.grid[x][z].isObstacle
   }
