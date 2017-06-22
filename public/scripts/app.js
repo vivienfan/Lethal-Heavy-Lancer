@@ -16,12 +16,14 @@ window.onload = function() {
   var health = document.getElementById("health");
 
   var ANGLE = Math.PI/180;
-  var UP_ANGLE_MAX = -Math.PI/3;
-  var DOWN_ANGLE_MAX = Math.PI/10;
+  // TO-DO:
+  // var UP_ANGLE_MAX = -Math.PI/3;
+  // var DOWN_ANGLE_MAX = Math.PI/10;
   var CAM_OFFSET = 1.5;
   var ALPHA_OFFSET = -Math.PI/2;
   var BETA_OFFSET = Math.PI/2 + 9 * ANGLE;
   var RADIUS = 1.5;
+  var AIM_OFFSET = 10 * Math.PI/180;
   var SPEED = 0.5;
   var alpha = 0;
 
@@ -400,10 +402,14 @@ window.onload = function() {
   function castRay(){
     var length = 100;
     var origin = cameraTarget.position;
+    // var direction = new BABYLON.Vector3(
+    //   -Math.sin(camera.alpha - ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
+    //   Math.sin(camera.beta - BETA_OFFSET),
+    //   Math.cos(camera.alpha - ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
     var direction = new BABYLON.Vector3(
-      -Math.sin(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)),
-      Math.sin(camera.beta - BETA_OFFSET),
-      Math.cos(camera.alpha + ALPHA_OFFSET) * Math.abs(Math.cos(camera.beta - BETA_OFFSET)));
+      -Math.sin(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)),
+      Math.sin(avatar.rotation.x + AIM_OFFSET),
+      -Math.cos(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)));
 
     createBeam(cameraTarget.position, direction);
 
