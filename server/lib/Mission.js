@@ -13,7 +13,7 @@ class Mission {
     props = props || {}
     this.id = props.id || uuidV4();
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
-    this.map = new GameMap({seed: "empty"})
+    this.map = new GameMap({seed: "test"})
     this.characters = []
     this.enemies = []
     this.allies = []
@@ -83,7 +83,7 @@ class Mission {
 
   findCharacterIndex(character) {
     let result = this.characters.findIndex(function(element) {
-      return element.id === message.player.id;
+      return element.id === character.id;
     });
     return result
   }

@@ -18,15 +18,9 @@ describe('GameMap',function(){
       assert.equal(typeof map.id, 'string', 'Player id should be a string.');
       assert.notEqual(map.id, new GameMap().id, 'Id should be different from another new player instance.');
       assert.isTrue(map.grid[0][0].isObstacle, 'Corner should be an obstacle');
-      assert.isTrue(map.grid[gridSize -1][gridSize -1].isObstacle, 'Corner should be an obstacle');
-      assert.isTrue(map.grid[12][gridSize -1].isObstacle, 'Edge should be obstace');
-      assert.isTrue(map.grid[0][7].isObstacle, 'Edge should be obstace');
-      assert.isTrue(map.grid[gridSize -1][10].isObstacle, 'Edge should be obstace');
-      assert.isTrue(map.grid[2][0].isObstacle, 'Edge should be obstace');
-      assert.isFalse(map.grid[2][2].isObstacle, 'Inner spot should not be obstace');
+      assert.isFalse(map.grid[1][1].isObstacle, 'Inner spot should not be obstace');
     });
     // console.log(map.messageFormat())
-    console.log(map.messageFormat().grid[0][0],map.messageFormat().grid[1][1])
   });
 
   // describe('When created with full parameters',function(){
