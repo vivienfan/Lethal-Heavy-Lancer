@@ -1,6 +1,5 @@
 // app.js
 window.onload = function() {
-  console.log("attempting to connect WebSocket");
   var socket = new WebSocket("ws://localhost:8080");
 
   var canvas = document.getElementById("canvas");
@@ -19,10 +18,10 @@ window.onload = function() {
   var ANGLE = Math.PI/180;
   var UP_ANGLE_MAX = -Math.PI/3;
   var DOWN_ANGLE_MAX = Math.PI/10;
-  var CAM_OFFSET = 4.5;
-  var ALPHA_OFFSET = Math.PI/2;
-  var BETA_OFFSET = Math.PI/2;
-  var RADIUS = 3;
+  var CAM_OFFSET = 1.5;
+  var ALPHA_OFFSET = -Math.PI/2;
+  var BETA_OFFSET = Math.PI/2 + 9 * ANGLE;
+  var RADIUS = 1.4;
   var SPEED = 0.5;
   var alpha = 0;
 
@@ -59,7 +58,6 @@ window.onload = function() {
   });
 
   socket.onopen = function (event) {
-    console.log('connected to server');
   }
 
   socket.onmessage = (event) => {
@@ -101,7 +99,7 @@ window.onload = function() {
     createSkybox();
     createSun();
     createGround();
-    createBuildings(map);
+    // createBuildings(map);
 
     createNPCMesh();
     createPlayerMesh();
@@ -114,7 +112,6 @@ window.onload = function() {
   }
 
   function createBuildings(map) {
-    console.log(map);
     map.forEach(function(x, indexX) {
       x.forEach(function(z, indexZ) {
         if (z.isObstacle) {
@@ -187,22 +184,23 @@ window.onload = function() {
   }
 
   function createPlayerMesh() {
-    BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+    BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes) {
       playerMesh = newMeshes[0];
-      playerMesh.position.y = -100;
+      playerMesh.position.y = -1000;
     });
   }
 
   function createAvatar() {
-    BABYLON.SceneLoader.ImportMesh("", "", "walk.babylon", scene, function (newMeshes, particleSystems, skeletons) {
+    BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes,) {
       avatar = newMeshes[0];
       avatar.id = playerStatus.id;
       avatar.name = playerStatus.id;
       avatar.isPickable = false;
+      avatar.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
       ground.material.reflectionTexture.renderList.push(avatar);
 
       cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
-      cameraTarget.isVisible = false;
+      // cameraTarget.isVisible = false;
       cameraTarget.isPickable = false;
       initFocus();
 
@@ -310,6 +308,7 @@ window.onload = function() {
     newPlayer.name = character.id;
     newPlayer.position = character.position;
     newPlayer.rotation = character.rotation;
+    newPlayer.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
     newPlayer.isPickable = false;
     ground.material.reflectionTexture.renderList.push(newPlayer);
   }
@@ -415,7 +414,6 @@ window.onload = function() {
       target: {}
     }
     if (hit.pickedMesh){
-      console.log(hit.pickedMesh);
       msg.target.id = hit.pickedMesh.id;
     }
     socket.send(JSON.stringify(msg));
@@ -533,7 +531,6 @@ window.onload = function() {
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
               player.rotXSpeed = -(ANGLE)
-              // console.log("Set rotspeed")
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotXSpeed = 0
