@@ -30,8 +30,8 @@ var CONSTANTS = {
   },
 
   MAP: {
-    DEFAULT_SIZE: 32,
-    ELEMENT_SIZE: 2,
+    DEFAULT_SIZE: 100,
+    ELEMENT_SIZE: 10,
     FAIL_CUTOFF: 100,
     SAFE_DISTANCE: 7
   }

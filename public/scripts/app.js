@@ -26,6 +26,7 @@ window.onload = function() {
   var AIM_OFFSET = 10 * Math.PI/180;
   var SPEED = 0.5;
   var alpha = 0;
+  var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
 
   var playerStatus = {};
   var characterStatus = [];
@@ -79,7 +80,6 @@ window.onload = function() {
 
   engine.runRenderLoop(function(){
     if (scene && scene.activeCamera) {
-      updateScene();
       scene.render();
     }
   });
@@ -119,19 +119,24 @@ window.onload = function() {
     health.classList.remove("hide");
     engine.hideLoadingUI();
 
+    scene.registerBeforeRender(function() {
+      updateScene();
+    })
+
     return scene;
   }
 
   function createBuildings(map) {
+    console.log(map);
     map.forEach(function(x, indexX) {
       x.forEach(function(z, indexZ) {
         if (z.isObstacle) {
+          console.log("create building:", indexX, indexZ);
           var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
           newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
 
           newObstacle.scaling.y = (Math.floor(Math.random() * 100) + 50) / 10;
-          newObstacle.position.y = 30;
           // var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
           // buildingMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/building00/", scene);
           // buildingMaterial.uScale = 0.01;
@@ -194,7 +199,6 @@ window.onload = function() {
       playerMesh = newMeshes[0];
       playerMesh.isPickable = false;
       playerMesh.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
-      playerMesh.checkCollisions = true;
       playerMesh.setEnabled(false);
     });
   }
@@ -205,6 +209,9 @@ window.onload = function() {
       avatar.id = playerStatus.id;
       avatar.name = playerStatus.id;
       avatar.isPickable = false;
+
+      // collision
+      avatar.ellipsoid = SPACESHIP_ELLIPSOID;
       avatar.checkCollisions = true;
 
       avatar.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
@@ -213,6 +220,8 @@ window.onload = function() {
       cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
       // cameraTarget.isVisible = false;
       cameraTarget.isPickable = false;
+      cameraTarget.ellipsoid = SPACESHIP_ELLIPSOID;
+      cameraTarget.checkCollisions = true;
       initFocus();
 
       camera = new BABYLON.ArcRotateCamera("arcCam", ALPHA_OFFSET, BETA_OFFSET, RADIUS, cameraTarget, scene);
@@ -249,7 +258,7 @@ window.onload = function() {
           char_mesh.rotation = character.rotation;
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
-            buildNewNPC(character);
+            // buildNewNPC(character);
           } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER && playerMesh) {
             buildNewPlayer(character);
           }
@@ -351,10 +360,17 @@ window.onload = function() {
     playerStatus.position.x += player.sideSpeed * -Math.cos(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
     playerStatus.position.z += player.sideSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
 
-    avatar.position.x = playerStatus.position.x;
-    avatar.position.z = playerStatus.position.z;
-    cameraTarget.position.x = playerStatus.position.x;
-    cameraTarget.position.z = playerStatus.position.z;
+    // collision handling
+    var direction = new BABYLON.Vector3(
+      playerStatus.position.x - avatar.position.x, 0,
+      playerStatus.position.z - avatar.position.z);
+    avatar.moveWithCollisions(direction);
+
+    // collision engine auto-adjust position when collision happens
+    avatar.position.y = 0;
+    cameraTarget.position.x = avatar.position.x;
+    cameraTarget.position.y = avatar.position.y + CAM_OFFSET;
+    cameraTarget.position.z = avatar.position.z;
   }
 
   function sendPlayerState() {
