@@ -13,7 +13,7 @@ class Mission {
     props = props || {}
     this.id = props.id || uuidV4();
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
-    this.map = new GameMap({seed: "test"})
+    this.map = new GameMap()
     this.characters = []
     this.enemies = []
     this.allies = []
@@ -31,15 +31,16 @@ class Mission {
       character = new Character(character);
     }
 
-    this.characters.push(character);
     if ( character.type === CONSTANTS.CHAR_TYPE.PLAYER ) {
       character.position = playerStartPos
     }
     if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
       this.enemies.push(character)
+      character.position = this.map.generateEnemyPosition()
     } else {
       this.allies.push(character)
     }
+    this.characters.push(character);
     return this
   }
 
@@ -50,7 +51,7 @@ class Mission {
     if (index > -1) {
       this.characters.splice(index, 1)
 
-      if ( character.type = CONSTANTS.CHAR_TYPE.ENEMY ) {
+      if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
         index = this.enemies.findIndex(function(element) {
           return element.id === character.id;
         });
@@ -156,7 +157,7 @@ class Mission {
   update(dt) {
     this.characters.forEach((character, i) => {
       if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-        character.process(dt)
+        character.process(dt, this.map)
       }
     })
   }

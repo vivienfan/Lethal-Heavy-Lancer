@@ -15,6 +15,7 @@ class GameMap {
     this.elementSize = CONSTANTS.MAP.ELEMENT_SIZE
     this.startPos = [1,1]
     this.mapSize = props.mapSize || CONSTANTS.MAP.DEFAULT_SIZE
+    this.maxX = this.maxZ = this.mapSize
     this.pfGrid = new PF.Grid(this.mapSize, this.mapSize)
     let type = props.type || CONSTANTS.MISSION_TYPE.KILL
     this.seed = props.seed || this.id
@@ -62,7 +63,6 @@ class GameMap {
   }
 
   block(x, z) {
-    // console.log(x, z, this.grid[x][z])
     this.grid[x][z].block()
     this.pfGrid.setWalkableAt(x, z, false)
   }
@@ -98,6 +98,11 @@ class GameMap {
     return this.grid[x][z].isBlank
   }
 
+  isValid(x,z) {
+    let valid = x >= 0 && x < this.maxX && z >= 0 && z < this.maxZ
+    return valid && !this.isBlank(x,z) && !this.isObstacle(x,z)
+  }
+
   getStartPosition() {
     let startX = (this.startPos[0] + 0.5) * this.elementSize
     let startZ = (this.startPos[1] + 0.5) * this.elementSize
@@ -105,16 +110,57 @@ class GameMap {
   }
 
   generateEnemyPosition() {
-
+    let x = 0
+    let z = 0
+    let valid
+    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
+    // console.log('gen enemy pos')
+    do {
+      cutoff--;
+      if ( cutoff <= 0 ) {
+        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+        safeDist /= 2
+      }
+      x = this.GetRandom(1, this.mapSize - 2)
+      z = this.GetRandom(1, this.mapSize - 2)
+      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 1
+    } while (!valid)
+    // return {x: (x + 0.5) * this.elementSize, z: (z + 0.5) * this.elementSize}
+    return this.convertToGameCoords({x: x, z: z})
   }
 
   getPath(p0, p1) {
-    let path = this.finder.findPath(p0.x, p0.z, p1.x, p1.z, this.pfGrid.clone())
-      path = PF.Util.compressPath(path)
-    if (path.length > 0) {
-      path = PF.Util.smoothenPath(this.pfGrid, path)
+    let path
+    if ( this.isValid(p0.x, p0.z) && this.isValid(p1.x, p1.z) ) {
+      path = this.finder.findPath(p0.x, p0.z, p1.x, p1.z, this.pfGrid.clone())
+        path = PF.Util.compressPath(path)
+      if (path.length > 0) {
+        path = PF.Util.smoothenPath(this.pfGrid, path)
+      }
     }
     return path;
+  }
+
+  getGamePath(p0,p1) {
+    console.log('p0', p0, 'convertToMapCoords', this.convertToMapCoords(p0))
+    let path = this.getPath(this.convertToMapCoords(p0),this.convertToMapCoords(p1))
+    if ( path ) {
+      path = path.map(point => {
+        return this.convertToGameCoords({x: point[0], z: point[1]})
+      })
+    }
+    console.log('convertedPath', path)
+    return path
+  }
+
+  convertToGameCoords(position) {
+    console.log('pos', position)
+    return {x: (position.x + 0.5) * CONSTANTS.MAP.ELEMENT_SIZE, y: 0, z: (position.z + 0.5) * CONSTANTS.MAP.ELEMENT_SIZE}
+  }
+
+  convertToMapCoords(position) {
+    return {x: Math.floor(position.x / CONSTANTS.MAP.ELEMENT_SIZE), z: Math.floor(position.z / CONSTANTS.MAP.ELEMENT_SIZE)}
   }
 
   update(props) {
@@ -127,16 +173,15 @@ class GameMap {
     }
   }
 
-  generateRooms() {
+  generateRooms() { // adapted from https://jsfiddle.net/bigbadwaffle/YeazH/
     // genroomstart
       let room_count = this.GetRandom(10, 12);
-      let minSize = 5;
-      let maxSize = 10;
+      let minSize = CONSTANTS.MAP.MIN_ROOM_SIZE;
+      let maxSize = CONSTANTS.MAP.MAX_ROOM_SIZE;
       let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
 
       for (let i = 0; i < room_count && cutoff > 0; i++) {
           let room = {};
-          // console.log('creating room, map size', this.mapSize)
 
           room.x = this.GetRandom(1, this.mapSize - maxSize - 1);
           room.y = this.GetRandom(1, this.mapSize - maxSize - 1);
@@ -144,7 +189,6 @@ class GameMap {
           room.h = this.GetRandom(minSize, maxSize);
 
           if (this.DoesCollide(room)) {
-            // console.log('collides', this.rooms.length)
               i--;
               cutoff--;
               continue;
@@ -153,7 +197,6 @@ class GameMap {
           room.h--;
 
           this.rooms.push(room);
-          // console.log('added a room')
       }
       room_count = this.rooms.length
       this.SquashRooms();
@@ -232,7 +275,7 @@ class GameMap {
       return closest;
   }
   SquashRooms() {
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 15; i++) {
           for (let j = 0; j < this.rooms.length; j++) {
               let room = this.rooms[j];
               while (true) {
