@@ -11,7 +11,9 @@ class Character {
     this.id = uuidV4();
     this.type = CONSTANTS.CHAR_TYPE.ENEMY
     this.firing = false;
-    this.range = 10;
+    this.range = 3;
+    this.moveRange = 3
+    this.attackRange = 10
     this.damage = 50;
     this.position = { x: 0, y: 0, z: 0 };
     this.rotation = { x: 0, y: 0, z: 0 };
@@ -97,24 +99,26 @@ class Character {
         let path = map.getGamePath(this.position, this.target.position)
         if ( path && path.length > 2 ) {
           this.movePosition = path[1]
+          this.range = this.moveRange
           // if(this.position.x)          console.log('npc position', this.position)
         } else if ( path && path.length === 2) {
           this.movePosition = Object.assign({}, this.target.position)
+          this.range = this.attackRange
         }
         if( this.movePosition ){
-          console.log("moving to pos:", this.movePosition)
+          console.log("moving to pos:", this.movePosition, 'currPos', this.position)
           this.moveTo(this.movePosition)
         }
       }
+      this.rotation.y += this.rotYSpeed * dt
+      this.rotation.y %= Math.PI * 2
+      this.position.x += this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+      this.position.z += this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
+      this.position.x += this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
+      this.position.z += this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
     } else {
 
     }
-    this.rotation.y += this.rotYSpeed * dt
-    this.rotation.y %= Math.PI * 2
-    this.position.x += this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-    this.position.z += this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
-    this.position.x += this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
-    this.position.z += this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
   }
 
   update(props) {
