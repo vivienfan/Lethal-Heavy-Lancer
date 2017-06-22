@@ -24,6 +24,7 @@ window.onload = function() {
   var BETA_OFFSET = Math.PI/2;
   var RADIUS = 3;
   var SPEED = 0.5;
+  var alpha = 0;
 
   var prevTime = Date.now()
 
@@ -65,7 +66,7 @@ window.onload = function() {
     var data = JSON.parse(event.data);
     switch(data.type) {
       case CONSTANTS.MESSAGE_TYPE.PLAYER_INFO:
-        initWorld(data.data, data.mission);
+        initWorld(data.data, data.mission, data.map.grid);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
         updateCharacters(data.mission.characters);
@@ -85,12 +86,12 @@ window.onload = function() {
     }
   });
 
-  function initWorld(player, mission) {
+  function initWorld(player, mission, map) {
     playerStatus = new Player(player, mission);
-    createScene(mission.characters);
+    createScene(map);
   }
 
-  function createScene(characters) {
+  function createScene(map) {
     scene = new BABYLON.Scene(engine);
     engine.enableOfflineSupport = false;
     fireTexture = new BABYLON.FireProceduralTexture("fire", 256, scene);
@@ -99,6 +100,8 @@ window.onload = function() {
     createSkybox();
     createSun();
     createGround();
+    createBuildings(map);
+
     createNPCMesh();
     createPlayerMesh();
     createAvatar();
@@ -109,10 +112,24 @@ window.onload = function() {
     return scene;
   }
 
-
-  var alpha = 0;
-
-
+  function createBuildings(map) {
+    console.log(map);
+    map.forEach(function(x, indexX) {
+      x.forEach(function(z, indexZ) {
+        if (z.isObstacle) {
+          var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 1, scene);
+          newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
+          newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
+          newObstacle.scaling.y = Math.floor(Math.random() * 10) + 5;
+          newObstacle.position.y = -2;
+          var buildingMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+          buildingMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/building00/", scene);
+          newObstacle.material = buildingMaterial;
+          extraGround.material.reflectionTexture.renderList.push(newObstacle);
+        }
+      });
+    });
+  }
 
   function createSkybox() {
     // Create skybox
