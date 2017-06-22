@@ -87,7 +87,7 @@ class GameMap {
   }
 
   trimGrid() {
-
+    // TODO
   }
 
   isObstacle(x, z) {
@@ -115,7 +115,6 @@ class GameMap {
     let valid
     let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
-    // console.log('gen enemy pos')
     do {
       cutoff--;
       if ( cutoff <= 0 ) {
@@ -137,30 +136,29 @@ class GameMap {
         path = PF.Util.compressPath(path)
       if (path.length > 0) {
         path = PF.Util.smoothenPath(this.pfGrid, path)
+        // path = PF.Util.expandPath(path);
       }
     }
     return path;
   }
 
   getGamePath(p0,p1) {
-    console.log('p0', p0, 'convertToMapCoords', this.convertToMapCoords(p0))
     let path = this.getPath(this.convertToMapCoords(p0),this.convertToMapCoords(p1))
     if ( path ) {
       path = path.map(point => {
         return this.convertToGameCoords({x: point[0], z: point[1]})
       })
     }
-    console.log('convertedPath', path)
     return path
   }
 
   convertToGameCoords(position) {
-    console.log('pos', position)
-    return {x: (position.x + 0.5) * CONSTANTS.MAP.ELEMENT_SIZE, y: 0, z: (position.z + 0.5) * CONSTANTS.MAP.ELEMENT_SIZE}
+
+    return {x: (position.x - 0.5) * CONSTANTS.MAP.ELEMENT_SIZE, y: 0, z: (position.z - 0.5) * CONSTANTS.MAP.ELEMENT_SIZE}
   }
 
   convertToMapCoords(position) {
-    return {x: Math.floor(position.x / CONSTANTS.MAP.ELEMENT_SIZE), z: Math.floor(position.z / CONSTANTS.MAP.ELEMENT_SIZE)}
+    return {x: Math.ceil(position.x / CONSTANTS.MAP.ELEMENT_SIZE) , z: Math.ceil(position.z / CONSTANTS.MAP.ELEMENT_SIZE)}
   }
 
   update(props) {
