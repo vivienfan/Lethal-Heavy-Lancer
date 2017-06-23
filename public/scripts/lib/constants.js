@@ -24,16 +24,25 @@ var CONSTANTS = {
     STEAL: 1
   },
 
-// Player attributes
-  PLAYER: {
-    INITIAL_HEALTH: 100
+  MISSION: {
+    MAX_PLAYERS: 4
   },
 
+// Player attributes
+  PLAYER: {
+    INITIAL_HEALTH: 200
+  },
+
+// Map attributes
   MAP: {
-    DEFAULT_SIZE: 100,
-    ELEMENT_SIZE: 10,
+    DEFAULT_SIZE: 64,
+    ELEMENT_SIZE: 20,
+    MIN_ROOMS: 12,
+    MAX_ROOMS: 15,
+    MIN_ROOM_SIZE: 4,
+    MAX_ROOM_SIZE: 12,
     FAIL_CUTOFF: 100,
-    SAFE_DISTANCE: 7
+    SAFE_DISTANCE: 6
   }
 }
 

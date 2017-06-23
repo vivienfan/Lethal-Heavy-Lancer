@@ -13,7 +13,8 @@ const Mission       = require('./server/lib/Mission.js');
 const Player        = require('./server/lib/Player');
 const Character     = require('./server/lib/Character');
 require('dotenv').config()
-const DT            = process.env.DT || 33;
+const DT            = process.env.DT || 50;
+const missions      = []
 
 
 
@@ -35,7 +36,7 @@ wss.broadcast = function broadcast(data, except) {
 };
 
 let mission = new Mission()
-mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY, x: 10, y: 10})
+mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
 
 let prevTime = Date.now()
 const timer = setInterval(function() {
@@ -61,9 +62,15 @@ wss.on('connection', (ws) => {
   const playerCharacter = new Character(player)
   // console.log(player.)
 
-
-  player.joinMission(mission)
-  mission.characters[0].setTarget(mission.characters[1])
+  let existingMission = findOpenMission()
+  if (existingMission) {
+    player.joinMission(existingMission)
+  } else {
+    existingMission =
+    player.joinMission(mission)
+  }
+  // player.joinMission(mission)
+  // mission.characters[0].setTarget(mission.characters[1])
 
   // send player their player data after connection
   ws.send(JSON.stringify({
@@ -118,3 +125,11 @@ wss.on('connection', (ws) => {
     wss.broadcast(message);
   });
 });
+
+function findOpenMission() {
+  for (var i = 0; i < missions.length; i++) {
+    if (missions[i].numPlayers < CONSTANTS.MISSION.MAX_PLAYERS) {
+      return missions[i]
+    }
+  }
+}

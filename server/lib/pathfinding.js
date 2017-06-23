@@ -2,7 +2,8 @@
 // pathfinding.js
 
 const GameMap = require("./GameMap");
-const PF = require('pathfinding')
+// const PF = require('pathfinding')
+const CONSTANTS   = require('../../public/scripts/lib/constants');
 
 let map = new GameMap({notseed: 'not-test'})
 
@@ -20,7 +21,11 @@ function printMap(map) {
       }
     })
   })
-  let path = map.getPath({x:1, z:1}, {x:17, z:18})
+  // let path = map.getPath({x:1, z:1}, {x:17, z:18})
+  let dest = map.generateEnemyPosition()
+  // dest.x = Math.floor(dest.x / CONSTANTS.MAP.ELEMENT_SIZE)
+  // dest.z = Math.floor(dest.z / CONSTANTS.MAP.ELEMENT_SIZE)
+  let path = map.getPath({x:1, z:1}, map.convertToMapCoords(dest) )
   console.log(path.length)
   for (var i = 0; i < path.length; i++) {
     drawMap[path[i][0]][path[i][1]] = '.'
@@ -32,6 +37,7 @@ function printMap(map) {
     }
     console.log(output)
   }
+  map.generateEnemyPosition()
 }
 
 

@@ -13,10 +13,11 @@ class Mission {
     props = props || {}
     this.id = props.id || uuidV4();
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
-    this.map = new GameMap({seed: "test"})
+    this.map = new GameMap()
     this.characters = []
     this.enemies = []
     this.allies = []
+    this.players = []
     if ( Array.isArray(props.characters) ) {
       props.characters.forEach(character => {
         this.addCharacter(character)
@@ -31,15 +32,17 @@ class Mission {
       character = new Character(character);
     }
 
-    this.characters.push(character);
     if ( character.type === CONSTANTS.CHAR_TYPE.PLAYER ) {
       character.position = playerStartPos
+      this.players.push(character)
     }
     if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
       this.enemies.push(character)
+      character.position = this.map.generateEnemyPosition()
     } else {
       this.allies.push(character)
     }
+    this.characters.push(character);
     return this
   }
 
@@ -50,7 +53,7 @@ class Mission {
     if (index > -1) {
       this.characters.splice(index, 1)
 
-      if ( character.type = CONSTANTS.CHAR_TYPE.ENEMY ) {
+      if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
         index = this.enemies.findIndex(function(element) {
           return element.id === character.id;
         });
@@ -128,6 +131,7 @@ class Mission {
 
       target = this.findCharacter(target)
       if ( target && target.id ) {
+        console.log('fired on target')
         if ( target && this.canHit(origin, target) ) {
           target.takeDamage(origin.damage);
         }
@@ -138,6 +142,10 @@ class Mission {
 
   canHit(origin, target) {
     return this.isWithinRange(origin, origin.range, target)
+  }
+
+  get numPlayers() {
+    return this.players.length
   }
 
   messageFormat(playerId) {
@@ -155,8 +163,12 @@ class Mission {
 
   update(dt) {
     this.characters.forEach((character, i) => {
-      if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-        character.process(dt)
+      if (character.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
+        let closest = this.findClosest(character, this.allies)
+        if (closest) character.target = closest
+        // console.log(closest )
+        // mission.characters[0].setTarget(mission.characters[1])
+        character.process(dt, this.map)
       }
     })
   }
