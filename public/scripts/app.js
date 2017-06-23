@@ -103,8 +103,10 @@ window.onload = function() {
     createPlayerMesh();
     createAvatar();
 
-    health.classList.remove("hide");
-    engine.hideLoadingUI();
+    scene.executeWhenReady(function() {
+      health.classList.remove("hide");
+      engine.hideLoadingUI();
+    });
 
     scene.registerBeforeRender(function() {
       updateScene();
@@ -170,7 +172,7 @@ window.onload = function() {
       materials.push(newMaterial);
     }
 
-    var buildingMesh = BABYLON.Mesh.CreateBox("buildingMesh", CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
+    var buildingMesh = BABYLON.Mesh.CreateBox("buildingMesh", CONSTANTS.MAP.ELEMENT_SIZE - 4, scene);
     buildingMesh.checkCollisions = true;
     buildingMesh.setEnabled(false);
 
@@ -238,9 +240,6 @@ window.onload = function() {
       initFocus();
 
       camera = new BABYLON.ArcRotateCamera("arcCam", ALPHA_OFFSET, BETA_OFFSET, RADIUS, cameraTarget, scene);
-      // camera.lowerBetaLimit = DOWN_ANGLE_MAX;
-      // camera.upperBetaLimit = UP_ANGLE_MAX;
-
       scene.activeCamera = camera;
     });
   }
@@ -271,7 +270,7 @@ window.onload = function() {
           char_mesh.position = character.position;
           char_mesh.rotation = character.rotation;
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
-            char_mesh.rotation.y -= Math.PI / 2;
+            char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
           }
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
@@ -301,7 +300,6 @@ window.onload = function() {
   function buildNewNPC(character) {
     var newNPC = npcMesh.clone(character.id);
     newNPC.position = character.position;
-    newNPC.position.y = 10;
     newNPC.rotation = character.rotation;
     ground.material.reflectionTexture.renderList.push(newNPC);
     createParticles(character.id)
@@ -364,11 +362,6 @@ window.onload = function() {
     camera.alpha = - (playerStatus.rotation.y + ALPHA_OFFSET);
 
     // // rotation on x-axis
-    // camera.beta -= player.rotationX;
-    // avatar.rotation.x = camera.beta - BETA_OFFSET;
-    // cameraTarget.rotation.x = avatar.rotation.x + CAMERA_TARGET_OFFSET;
-    // player.rotationX = 0;
-    // camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
     var tmp_angle = camera.beta - player.rotationX;
     tmp_angle = camera.beta - player.rotXSpeed * scene.getAnimationRatio();
     player.rotationX = 0;
