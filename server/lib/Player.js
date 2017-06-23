@@ -15,7 +15,7 @@ class Player {
     this.type = CONSTANTS.CHAR_TYPE.PLAYER
     this.currentMission = props.currentMission || null;
     this.totalHealth = props.totalHealth || CONSTANTS.PLAYER.INITIAL_HEALTH;
-    this.currentHealth = props.currentHealth || 200;
+    this.currentHealth = props.currentHealth || CONSTANTS.PLAYER.INITIAL_HEALTH;
     this.rotation = {x: 0, y: Math.PI * 5/4, z: 0}
   }
 

@@ -15,6 +15,8 @@ class Character {
     this.moveRange = 3
     this.attackRange = 10
     this.damage = 50;
+    this.attackSpeed = 0.75 * 1000
+    this.lastAttack = 0
     this.position = { x: 0, y: 0, z: 0 };
     this.rotation = { x: 0, y: 0, z: 0 };
     this.fwdSpeed = 0;
@@ -74,6 +76,33 @@ class Character {
     }
   }
 
+  isWithinRange(range, target) {
+    let distSqr = this.findDistSqr(target)
+    return (distSqr <= (this.range * this.range));
+  }
+
+  findDistSqr(target) {
+    let diff = {
+      x: target.position.x - this.position.x,
+      y: target.position.y - this.position.y,
+      z: target.position.z - this.position.z}
+    return diff.x * diff.x + diff.y * diff.y + diff.z * diff.z
+  }
+
+  fireOn(target) {
+    this.startFiring()
+    if ( target && target.id ) {
+      if ( this.canHit(target) ) {
+        target.takeDamage(this.damage);
+      }
+      return target.isDead()
+    }
+  }
+
+  canHit(target) {
+    return this.isWithinRange(this.attackRange, target)
+  }
+
   messageFormat() {
     return {
       'id': this.id,
@@ -106,8 +135,13 @@ class Character {
           this.range = this.attackRange
         }
         if( this.movePosition ){
-          console.log("moving to pos:", this.movePosition, 'currPos', this.position)
+          // console.log("moving to pos:", this.movePosition, 'currPos', this.position)
           this.moveTo(this.movePosition)
+        }
+        let timeSinceAttack = Date.now() - this.lastAttack
+        if ( this.target instanceof Character && this.canHit(this.target) && timeSinceAttack > this.attackSpeed) {
+          this.lastAttack = Date.now()
+          this.fireOn(this.target)
         }
       }
       this.rotation.y += this.rotYSpeed * dt
