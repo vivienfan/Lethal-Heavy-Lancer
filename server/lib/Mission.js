@@ -38,7 +38,7 @@ class Mission {
     }
     if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
       this.enemies.push(character)
-      character.position = this.map.generateEnemyPosition()
+      character.update({ position: this.map.generateEnemyPosition() })
     } else {
       this.allies.push(character)
     }
