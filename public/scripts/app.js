@@ -174,6 +174,7 @@ window.onload = function() {
 
     var buildingMesh = BABYLON.Mesh.CreateBox("buildingMesh", CONSTANTS.MAP.ELEMENT_SIZE - 4, scene);
     buildingMesh.checkCollisions = true;
+    buildingMesh.isPickable = false;
     buildingMesh.setEnabled(false);
 
     map.forEach(function(x, indexX) {
@@ -271,6 +272,7 @@ window.onload = function() {
           char_mesh.rotation = character.rotation;
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
             char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
+            checkNPCHealth(character);
           }
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
@@ -281,20 +283,27 @@ window.onload = function() {
         }
       } else {  // update client info
         var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
-        healthBar.style.width = healthPercent + "%";
-        if (healthPercent >= 80) {
-          healthBar.style.backgroundColor = HEALTH_COLOR_FULL;
-        } else if (healthPercent >= 60) {
-          healthBar.style.backgroundColor = HEALTH_COLOR_HIGH;
-        } else if (healthPercent >= 40) {
-          healthBar.style.backgroundColor = HEALTH_COLOR_HALF;
-        } else if (healthPercent >= 20) {
-          healthBar.style.backgroundColor = HEALTH_COLOR_LOW;
+        if (healthPercent === 0) {
+          displayGameOver();
         } else {
-          healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
+        healthBar.style.width = healthPercent + "%";
+          if (healthPercent >= 80) {
+            healthBar.style.backgroundColor = HEALTH_COLOR_FULL;
+          } else if (healthPercent >= 60) {
+            healthBar.style.backgroundColor = HEALTH_COLOR_HIGH;
+          } else if (healthPercent >= 40) {
+            healthBar.style.backgroundColor = HEALTH_COLOR_HALF;
+          } else if (healthPercent >= 20) {
+            healthBar.style.backgroundColor = HEALTH_COLOR_LOW;
+          } else {
+            healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
+          }
         }
       }
     });
+  }
+
+  function checkNPCHealth(npc) {
   }
 
   function buildNewNPC(character) {
@@ -338,6 +347,10 @@ window.onload = function() {
     newPlayer.position = character.position;
     newPlayer.rotation = character.rotation;
     ground.material.reflectionTexture.renderList.push(newPlayer);
+  }
+
+  function displayGameOver() {
+
   }
 
   function removeCharacter(character) {
