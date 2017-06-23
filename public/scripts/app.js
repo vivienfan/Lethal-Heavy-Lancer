@@ -176,7 +176,7 @@ window.onload = function() {
     mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -10.0);
     mirrorMaterial.reflectionTexture.renderList.push(skybox);
     mirrorMaterial.reflectionTexture.level = 0.6;
-    // mirrorMaterial.bumpTexture = new BABYLON.Texture("assets/texture/normalMap.jpg", scene);
+    mirrorMaterial.bumpTexture = new BABYLON.Texture("assets/texture/normalMap.jpg", scene);
     // removing all light reflections
     mirrorMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     mirrorMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -186,10 +186,9 @@ window.onload = function() {
   function createNPCMesh() {
     var npcMaterial = new BABYLON.StandardMaterial('columnsmat', scene);
     npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/npc.jpg", scene);
-    npcMaterial.bumpTexture = new BABYLON.Texture("assets/texture/npc_normal_map.jpg", scene);
-    npcMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    npcMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    npcMaterial.alpha = 0.9;
+    npcMaterial.bumpTexture = new BABYLON.Texture("assets/texture/npc_normal.png", scene);
+    npcMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+    npcMaterial.specularColor = new BABYLON.Color3(1, 0, 0);
 
     npcMesh = BABYLON.Mesh.CreateSphere("npc-mesh", 16, 10, scene);
     npcMesh.material = npcMaterial;
