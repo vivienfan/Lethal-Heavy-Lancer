@@ -159,25 +159,34 @@ window.onload = function() {
   }
 
   function createBuildings(map) {
+    var materials = [];
+    for( var i = 0; i < TOTAL_BUILDINGS; i++) {
+      var newMaterial = new BABYLON.StandardMaterial("buildingMaterial" + i, scene);
+      newMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + i + ".jpg", scene);
+      newMaterial.bumpTexture = new BABYLON.Texture("assets/texture/buildings/normal_" + i + ".png", scene);
+      newMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+      newMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+      newMaterial.backFaceCulling = false;
+      materials.push(newMaterial);
+    }
+
+    var buildingMesh = BABYLON.Mesh.CreateBox("buildingMesh", CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
+    buildingMesh.checkCollisions = true;
+    buildingMesh.setEnabled(false);
+
     map.forEach(function(x, indexX) {
       x.forEach(function(z, indexZ) {
         if (z.isObstacle) {
-          var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
+          var newObstacle = buildingMesh.clone(indexX + "-" + indexZ);
           newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
 
-          var randomNum = (Math.floor(Math.random() * 500) + 300) / 100;
-          newObstacle.scaling.y = randomNum;
-          var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
-          var j = Math.floor(Math.random() * TOTAL_BUILDINGS);
-          buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + j + ".jpg", scene);
-          buildingMaterial.emissiveTexture.vScale = randomNum ;
-          buildingMaterial.bumpTexture = new BABYLON.Texture("assets/texture/buildings/normal_" + j + ".png", scene);
-          buildingMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-          buildingMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-          buildingMaterial.backFaceCulling = false;
+          var randomSize = (Math.floor(Math.random() * 500) + 300) / 100;
+          var randomIndex = Math.floor(Math.random() * TOTAL_BUILDINGS);
+          newObstacle.scaling.y = randomSize;
+          var buildingMaterial = materials[randomIndex].clone(indexX + "-" + indexZ);
+          buildingMaterial.emissiveTexture.vScale = randomSize ;
           newObstacle.material = buildingMaterial;
-          newObstacle.checkCollisions = true;
           ground.material.reflectionTexture.renderList.push(newObstacle);
         }
       });
