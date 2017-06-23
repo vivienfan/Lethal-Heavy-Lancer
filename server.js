@@ -63,7 +63,7 @@ wss.on('connection', (ws) => {
 
 
   player.joinMission(mission)
-  mission.characters[0].setTarget(mission.characters[1])
+  // mission.characters[0].setTarget(mission.characters[1])
 
   // send player their player data after connection
   ws.send(JSON.stringify({
