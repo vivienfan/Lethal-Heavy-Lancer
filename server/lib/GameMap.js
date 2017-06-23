@@ -154,7 +154,7 @@ class GameMap {
 
   convertToGameCoords(position) {
 
-    return {x: (position.x - 0.5) * CONSTANTS.MAP.ELEMENT_SIZE, y: 0, z: (position.z - 0.5) * CONSTANTS.MAP.ELEMENT_SIZE}
+    return {x: (position.x - 0.5) * CONSTANTS.MAP.ELEMENT_SIZE, y: 5, z: (position.z - 0.5) * CONSTANTS.MAP.ELEMENT_SIZE}
   }
 
   convertToMapCoords(position) {

@@ -473,8 +473,8 @@ window.onload = function() {
     this.process = function(type, event) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" ) {
-        // player.rotationY += event.movementX * ANGLE
-        // player.rotationX += event.movementY * ANGLE
+        player.rotationY += event.movementX * ANGLE
+        player.rotationX += event.movementY * ANGLE
       } else {
         // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
         // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
