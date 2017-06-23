@@ -121,11 +121,11 @@ window.onload = function() {
           newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
 
-          var randomNum = (Math.floor(Math.random() * 100) + 50) / 10;
+          var randomNum = (Math.floor(Math.random() * 500) + 300) / 100;
           newObstacle.scaling.y = randomNum;
           var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
           var j = Math.floor(Math.random() * TOTAL_BUILDINGS);
-          buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + 0 + ".jpg", scene);
+          buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + 2 + ".jpg", scene);
           buildingMaterial.emissiveTexture.vScale = randomNum / 2;
           buildingMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
           buildingMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
