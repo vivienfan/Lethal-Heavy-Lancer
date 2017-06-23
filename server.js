@@ -66,8 +66,7 @@ wss.on('connection', (ws) => {
   if (existingMission) {
     player.joinMission(existingMission)
   } else {
-    existingMission =
-    player.joinMission(mission)
+    existingMission = player.joinMission(mission)
   }
   // player.joinMission(mission)
   // mission.characters[0].setTarget(mission.characters[1])

@@ -17,6 +17,7 @@ class Player {
     this.totalHealth = props.totalHealth || CONSTANTS.PLAYER.INITIAL_HEALTH;
     this.currentHealth = props.currentHealth || CONSTANTS.PLAYER.INITIAL_HEALTH;
     this.rotation = {x: 0, y: Math.PI * 5/4, z: 0}
+    this.ws = props.ws || null
   }
 
   joinMission(mission) {
