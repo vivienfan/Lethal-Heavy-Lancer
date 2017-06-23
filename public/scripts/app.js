@@ -15,19 +15,20 @@ window.onload = function() {
   var healthBar = document.getElementById("health-bar");
   var health = document.getElementById("health");
 
-  var ANGLE = Math.PI/180;
+  var ANGLE = Math.PI / 180;
   // TO-DO:
   // var UP_ANGLE_MAX = -Math.PI/3;
   // var DOWN_ANGLE_MAX = Math.PI/10;
   var CAM_OFFSET = 1.5;
-  var ALPHA_OFFSET = -Math.PI/2;
-  var BETA_OFFSET = Math.PI/2 + 8 * ANGLE;
+  var ALPHA_OFFSET = -Math.PI / 2;
+  var BETA_OFFSET = Math.PI / 2 + 8 * ANGLE;
   var RADIUS = 1.5;
-  var AIM_OFFSET = 10 * Math.PI/180;
+  var AIM_OFFSET = 10 * Math.PI / 180;
   var SPEED = 0.5;
   var alpha = 0;
   var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
   var TOTAL_BUILDINGS = 25;
+  var CAMERA_TARGET_OFFSET = Math.PI / 2;
 
   var playerStatus = {};
   var characterStatus = [];
@@ -228,11 +229,13 @@ window.onload = function() {
       avatar.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
       ground.material.reflectionTexture.renderList.push(avatar);
 
-      cameraTarget = BABYLON.Mesh.CreateSphere("cameraTarget", 1, 0.1, scene);
-      // cameraTarget.isVisible = false;
+      cameraTarget = BABYLON.Mesh.CreateTorus("snipper-aim", 0.15, 0.01, 20, scene, false, BABYLON.Mesh.DEFAULTSIDE);
       cameraTarget.isPickable = false;
       cameraTarget.ellipsoid = SPACESHIP_ELLIPSOID;
       cameraTarget.checkCollisions = true;
+      var aim = BABYLON.Mesh.CreateSphere("aim-point", 1, 0.02, scene);
+      aim.isPickable = false;
+      aim.parent = cameraTarget;
       initFocus();
 
       camera = new BABYLON.ArcRotateCamera("arcCam", ALPHA_OFFSET, BETA_OFFSET, RADIUS, cameraTarget, scene);
@@ -253,7 +256,7 @@ window.onload = function() {
     cameraTarget.position.x = playerStatus.position.x;
     cameraTarget.position.y = playerStatus.position.y + CAM_OFFSET;
     cameraTarget.position.z = playerStatus.position.z;
-    cameraTarget.rotation.x = playerStatus.rotation.x;
+    cameraTarget.rotation.x = playerStatus.rotation.x + CAMERA_TARGET_OFFSET;
     cameraTarget.rotation.y = playerStatus.rotation.y;
     cameraTarget.rotation.z = playerStatus.rotation.z;
   }
@@ -355,6 +358,7 @@ window.onload = function() {
     // // rotation on x-axis
     camera.beta -= player.rotationX;
     avatar.rotation.x = camera.beta - BETA_OFFSET;
+    cameraTarget.rotation.x = avatar.rotation.x + CAMERA_TARGET_OFFSET;
     player.rotationX = 0;
     camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
 
@@ -435,14 +439,14 @@ window.onload = function() {
       target: {}
     }
     if (hit.pickedMesh){
-      console.log(hit.pickedMesh);
+      msg.target.id = hit.pickedMesh.id;
     }
     socket.send(JSON.stringify(msg));
   }
 
   function createBeam(position, direction) {
     var hilt = BABYLON.Mesh.CreateCylinder("beam", 0.5, 0.5, 0.5, 12, scene);
-    hilt.position.y = position.y - 2;
+    hilt.position.y = position.y - 1.5;
     hilt.position.x = position.x;
     hilt.position.z = position.z;
     hilt.visibility = false;
