@@ -273,6 +273,8 @@ window.onload = function() {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
             char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
             checkNPCHealth(character);
+          } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER){
+            displayPlayerFire(character);
           }
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
@@ -304,6 +306,10 @@ window.onload = function() {
   }
 
   function checkNPCHealth(npc) {
+  }
+
+  function displayPlayerFire(player) {
+    console.log(player);
   }
 
   function buildNewNPC(character) {
@@ -463,7 +469,7 @@ window.onload = function() {
       target: {}
     }
     if (hit.pickedMesh){
-      msg.target.id = hit.pickedMesh.id;
+      msg.target.id = hit.pickedMesh.name;
     }
     socket.send(JSON.stringify(msg));
   }
