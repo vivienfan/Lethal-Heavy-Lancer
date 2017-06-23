@@ -119,13 +119,57 @@ class Character {
     }
   }
 
-  process(dt, map) {
+  process(dt, mission) {
     if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
       // this.rotYSpeed = 0.02;
       // this.fwdSpeed = .5;
-      this.fwdSpeed = 0
-      if (this.target) {
-        let path = map.getGamePath(this.position, this.target.position)
+      this.processAI(mission)
+
+      this.rotation.y += this.rotYSpeed * dt
+      this.rotation.y %= Math.PI * 2
+      let newX = this.position.x + this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt +
+                 this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
+      let newZ = this.position.z + this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt +
+                 this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+
+      if (!mission.map.isGameObstacle(newX, this.position.z)) {
+        this.position.x = newX
+      }
+      if (!mission.map.isGameObstacle(this.position.x, newZ)) {
+        this.position.z = newZ
+      }
+
+      // this.position.x += this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+      // this.position.z += this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
+      // this.position.x += this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
+      // this.position.z += this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+
+    } else {
+
+    }
+  }
+
+  determineTarget(mission) {
+    let closest = mission.findClosest(this, mission.allies)
+    if (closest !== this.target || this.target && this.target.isDead()) {
+      let path
+      if (closest) path = mission.map.getGamePath(this.position, closest.position)
+      if (path && path.length <= 2) {
+        this.target = closest
+      } else if ( this.target && this.isWithinRange(this.range, this.target) ) {
+        this.target = {position: mission.map.generateEnemyPosition() }
+      }
+    }
+  }
+
+  processAI(mission) {
+    // let closest = mission.findClosest(this, mission.allies)
+    // if (closest) this.target = closest
+    // if (this.target instanceof Character && this.target.isDead()) this.target = {}
+    this.determineTarget(mission)
+    this.fwdSpeed = 0
+      if (this.target && this.target.position) {
+        let path = mission.map.getGamePath(this.position, this.target.position)
         if ( path && path.length > 2 ) {
           this.movePosition = path[1]
           this.range = this.moveRange
@@ -144,29 +188,6 @@ class Character {
           this.fireOn(this.target)
         }
       }
-      this.rotation.y += this.rotYSpeed * dt
-      this.rotation.y %= Math.PI * 2
-      let newX = this.position.x + this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt +
-                 this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
-      let newZ = this.position.z + this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt +
-                 this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-
-      if (!map.isGameObstacle(newX, this.position.z)) {
-        this.position.x = newX
-      }
-      if (!map.isGameObstacle(this.position.x, newZ)) {
-        this.position.z = newZ
-      }
-
-      // console.log("pos", this.position.x)
-      // this.position.x += this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-      // this.position.z += this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
-      // this.position.x += this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
-      // this.position.z += this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-
-    } else {
-
-    }
   }
 
   update(props) {
