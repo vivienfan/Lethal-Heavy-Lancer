@@ -27,6 +27,7 @@ window.onload = function() {
   var SPEED = 0.5;
   var alpha = 0;
   var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
+  var TOTAL_BUILDINGS = 25;
 
   var playerStatus = {};
   var characterStatus = [];
@@ -113,11 +114,9 @@ window.onload = function() {
   }
 
   function createBuildings(map) {
-    console.log(map);
     map.forEach(function(x, indexX) {
       x.forEach(function(z, indexZ) {
         if (z.isObstacle) {
-          console.log("create building:", indexX, indexZ);
           var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
           newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
@@ -125,7 +124,8 @@ window.onload = function() {
           var randomNum = (Math.floor(Math.random() * 100) + 50) / 10;
           newObstacle.scaling.y = randomNum;
           var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
-          buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/building1.jpg", scene);
+          var j = Math.floor(Math.random() * TOTAL_BUILDINGS);
+          buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + 0 + ".jpg", scene);
           buildingMaterial.emissiveTexture.vScale = randomNum / 2;
           buildingMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
           buildingMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -135,21 +135,6 @@ window.onload = function() {
         }
       });
     });
-    // for (var i = 0; i < 16; i++) {
-    //   var newObstacle = BABYLON.Mesh.CreateBox("Building" + i, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
-    //   newObstacle.position.x = i * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
-
-    //   var randomNum = (Math.floor(Math.random() * 100) + 50) / 10;
-    //   newObstacle.scaling.y = randomNum;
-    //   var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
-    //   buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/building" + i + ".jpg", scene);
-    //   buildingMaterial.emissiveTexture.vScale = randomNum / 2;
-    //   buildingMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    //   buildingMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    //   newObstacle.material = buildingMaterial;
-    //   newObstacle.checkCollisions = true;
-    //   ground.material.reflectionTexture.renderList.push(newObstacle);
-    // }
   }
 
   function createSkybox() {
@@ -161,7 +146,7 @@ window.onload = function() {
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.disableLighting = true;
     // texture
-    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/moon/", scene);
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/skybox/moon/", scene);
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     // removing all light reflections
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
@@ -191,6 +176,7 @@ window.onload = function() {
     mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -10.0);
     mirrorMaterial.reflectionTexture.renderList.push(skybox);
     mirrorMaterial.reflectionTexture.level = 0.6;
+    // mirrorMaterial.bumpTexture = new BABYLON.Texture("assets/texture/normalMap.jpg", scene);
     // removing all light reflections
     mirrorMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     mirrorMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -198,14 +184,14 @@ window.onload = function() {
   }
 
   function createNPCMesh() {
-    var material_columns = new BABYLON.StandardMaterial('columnsmat', scene);
-    material_columns.emissiveTexture = new BABYLON.Texture("assets/texture/1.jpg", scene);
-    material_columns.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    material_columns.specularColor = new BABYLON.Color3(0, 0, 0);
-    material_columns.alpha = 0.9;
+    var npcMaterial = new BABYLON.StandardMaterial('columnsmat', scene);
+    npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/npc.jpg", scene);
+    npcMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    npcMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    npcMaterial.alpha = 0.9;
 
     npcMesh = BABYLON.Mesh.CreateSphere("npc-mesh", 16, 10, scene);
-    npcMesh.material = material_columns;
+    npcMesh.material = npcMaterial;
     npcMesh.setEnabled(false);
   }
 
@@ -439,7 +425,7 @@ window.onload = function() {
       target: {}
     }
     if (hit.pickedMesh){
-      msg.target.id = hit.pickedMesh.id;
+      console.log(hit.pickedMesh);
     }
     socket.send(JSON.stringify(msg));
   }
@@ -456,7 +442,7 @@ window.onload = function() {
     particalSystem.minSize = 0.3;
     particalSystem.maxSize = 0.3;
     particalSystem.minLifeTime = 0.2;
-    particalSystem.maxLifeTime = 0.5;
+    particalSystem.maxLifeTime = 0.3;
     particalSystem.minEmitPower = 50;
     particalSystem.maxEmitPower = 100;
 
