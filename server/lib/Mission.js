@@ -180,11 +180,11 @@ class Mission {
   update(dt) {
     this.characters.forEach((character, i) => {
       if (character.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-        let closest = this.findClosest(character, this.allies)
-        if (closest) character.target = closest
+        // let closest = this.findClosest(character, this.allies)
+        // if (closest) character.target = closest
         // console.log(closest )
         // mission.characters[0].setTarget(mission.characters[1])
-        character.process(dt, this.map)
+        character.process(dt, this)
       }
     })
   }
