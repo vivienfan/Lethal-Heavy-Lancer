@@ -146,10 +146,24 @@ class Character {
       }
       this.rotation.y += this.rotYSpeed * dt
       this.rotation.y %= Math.PI * 2
-      this.position.x += this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-      this.position.z += this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
-      this.position.x += this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
-      this.position.z += this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+      let newX = this.position.x + this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt +
+                 this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
+      let newZ = this.position.z + this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt +
+                 this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+
+      if (!map.isGameObstacle(newX, this.position.z)) {
+        this.position.x = newX
+      }
+      if (!map.isGameObstacle(this.position.x, newZ)) {
+        this.position.z = newZ
+      }
+
+      // console.log("pos", this.position.x)
+      // this.position.x += this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+      // this.position.z += this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
+      // this.position.x += this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
+      // this.position.z += this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+
     } else {
 
     }

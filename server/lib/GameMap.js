@@ -94,6 +94,11 @@ class GameMap {
     return this.grid[x][z].isObstacle
   }
 
+  isGameObstacle(x, z) {
+    let gridPos = this.convertToMapCoords({x: x, z: z})
+    return this.isObstacle(gridPos.x, gridPos.z)
+  }
+
   isBlank(x, z) {
     return this.grid[x][z].isBlank
   }
@@ -153,7 +158,6 @@ class GameMap {
   }
 
   convertToGameCoords(position) {
-
     return {x: (position.x - 0.5) * CONSTANTS.MAP.ELEMENT_SIZE, y: 5, z: (position.z - 0.5) * CONSTANTS.MAP.ELEMENT_SIZE}
   }
 
