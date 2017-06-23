@@ -8,7 +8,7 @@ window.onload = function() {
 
   var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
   var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, camera, playerMesh, npcMesh, ground, skybox, flame, fireTexture;
+  var scene, camera, playerMesh, npcMesh, ground, skybox, flame;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
   var inputManager = new InputManager()
 
@@ -91,8 +91,6 @@ window.onload = function() {
 
   function createScene(map) {
     scene = new BABYLON.Scene(engine);
-    // engine.enableOfflineSupport = false;
-    fireTexture = new BABYLON.FireProceduralTexture("fire", 256, scene);
     flame = new BABYLON.Texture("Fire.png", scene);
 
     createSkybox();
@@ -124,17 +122,34 @@ window.onload = function() {
           newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
 
-          newObstacle.scaling.y = (Math.floor(Math.random() * 100) + 50) / 10;
-          // var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
-          // buildingMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/texture/building00/", scene);
-          // buildingMaterial.uScale = 0.01;
-          // buildingMaterial.vScale = 0.01;
-          // newObstacle.material = buildingMaterial;
+          var randomNum = (Math.floor(Math.random() * 100) + 50) / 10;
+          newObstacle.scaling.y = randomNum;
+          var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
+          buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/building1.jpg", scene);
+          buildingMaterial.emissiveTexture.vScale = randomNum / 2;
+          buildingMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+          buildingMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+          newObstacle.material = buildingMaterial;
           newObstacle.checkCollisions = true;
           ground.material.reflectionTexture.renderList.push(newObstacle);
         }
       });
     });
+    // for (var i = 0; i < 16; i++) {
+    //   var newObstacle = BABYLON.Mesh.CreateBox("Building" + i, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
+    //   newObstacle.position.x = i * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
+
+    //   var randomNum = (Math.floor(Math.random() * 100) + 50) / 10;
+    //   newObstacle.scaling.y = randomNum;
+    //   var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
+    //   buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/building" + i + ".jpg", scene);
+    //   buildingMaterial.emissiveTexture.vScale = randomNum / 2;
+    //   buildingMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    //   buildingMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    //   newObstacle.material = buildingMaterial;
+    //   newObstacle.checkCollisions = true;
+    //   ground.material.reflectionTexture.renderList.push(newObstacle);
+    // }
   }
 
   function createSkybox() {
@@ -184,11 +199,12 @@ window.onload = function() {
 
   function createNPCMesh() {
     var material_columns = new BABYLON.StandardMaterial('columnsmat', scene);
-    // material_columns.emissiveTexture = fireTexture;
-    // material_columns.opacityTexture = fireTexture;
+    material_columns.emissiveTexture = new BABYLON.Texture("assets/texture/1.jpg", scene);
+    material_columns.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    material_columns.specularColor = new BABYLON.Color3(0, 0, 0);
+    material_columns.alpha = 0.9;
 
     npcMesh = BABYLON.Mesh.CreateSphere("npc-mesh", 16, 10, scene);
-    // var npcMesh = BABYLON.Mesh.CreateTorusKnot("npc-mesh", 3, 0.3, 128, 64, 2, 3, scene, false, BABYLON.Mesh.default);
     npcMesh.material = material_columns;
     npcMesh.setEnabled(false);
   }
@@ -283,6 +299,7 @@ window.onload = function() {
   function buildNewNPC(character) {
     var newNPC = npcMesh.clone(character.id);
     newNPC.position = character.position;
+    newNPC.position.y = 10;
     newNPC.rotation = character.rotation;
     ground.material.reflectionTexture.renderList.push(newNPC);
     createParticle(character.id)
