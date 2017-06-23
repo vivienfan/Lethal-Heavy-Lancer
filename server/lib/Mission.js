@@ -7,6 +7,9 @@ const uuidV4    = require('uuid/v4');
 const Character = require('./Character');
 const GameMap   = require('./GameMap');
 const CONSTANTS = require("../../public/scripts/lib/constants");
+const WebSocket = require('ws');
+
+const DT        = process.env.DT || 50;
 
 class Mission {
   constructor(props) {
@@ -17,12 +20,17 @@ class Mission {
     this.characters = []
     this.enemies = []
     this.allies = []
+    this.playerChars = []
     this.players = []
+    this.wss = props.wss || null
     if ( Array.isArray(props.characters) ) {
       props.characters.forEach(character => {
         this.addCharacter(character)
       })
     }
+
+    this.prevTime = Date.now()
+    this.timer = this.missionTimer()
 
   }
 
@@ -34,7 +42,7 @@ class Mission {
 
     if ( character.type === CONSTANTS.CHAR_TYPE.PLAYER ) {
       character.position = playerStartPos
-      this.players.push(character)
+      this.playerChars.push(character)
     }
     if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
       this.enemies.push(character)
@@ -44,6 +52,14 @@ class Mission {
     }
     this.characters.push(character);
     return this
+  }
+
+  addPlayer(player) {
+    if (player && player.ws) {
+      this.ws = player.ws
+      this.players.push(player)
+
+    }
   }
 
   removeCharacter(character) {
@@ -171,6 +187,31 @@ class Mission {
         character.process(dt, this.map)
       }
     })
+  }
+
+  broadcast(data, except) {
+    this.players.forEach(function each(player) {
+      if (player.ws.readyState === WebSocket.OPEN && player.ws !== except) {
+        player.ws.send(data);
+      }
+    });
+  }
+
+  missionTimer() {
+    return setInterval(()=> {
+      let triggers = []
+      let currTime = Date.now()
+      let updateRatio = (currTime - this.prevTime) * 0.06 // following Babylon's definition of the animationRatio: dt * ( 60/1000 )
+      this.prevTime = currTime
+      // this.update(updateRatio)
+      let message = JSON.stringify({
+        'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
+        'mission': this.messageFormat(),
+        'triggers': triggers
+      })
+      // console.log("mission timer")
+      // wss.broadcast(message);
+    }, DT);
   }
 }
 
