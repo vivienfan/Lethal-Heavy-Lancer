@@ -149,11 +149,26 @@ class Character {
     }
   }
 
-  processAI(mission) {
+  determineTarget(mission) {
     let closest = mission.findClosest(this, mission.allies)
-    if (closest) this.target = closest
+    if (closest !== this.target || this.target && this.target.isDead()) {
+      let path
+      if (closest) path = mission.map.getGamePath(this.position, closest.position)
+      if (path && path.length <= 2) {
+        this.target = closest
+      } else if ( this.target && this.isWithinRange(this.range, this.target) ) {
+        this.target = {position: mission.map.generateEnemyPosition() }
+      }
+    }
+  }
+
+  processAI(mission) {
+    // let closest = mission.findClosest(this, mission.allies)
+    // if (closest) this.target = closest
+    // if (this.target instanceof Character && this.target.isDead()) this.target = {}
+    this.determineTarget(mission)
     this.fwdSpeed = 0
-      if (this.target) {
+      if (this.target && this.target.position) {
         let path = mission.map.getGamePath(this.position, this.target.position)
         if ( path && path.length > 2 ) {
           this.movePosition = path[1]

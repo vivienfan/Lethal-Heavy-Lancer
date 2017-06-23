@@ -29,17 +29,22 @@ class Mission {
       })
     }
 
+    for (var i = 0; i < 7; i++) {
+      this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
+    }
+
+
     this.prevTime = Date.now()
     this.timer = this.missionTimer()
 
   }
 
   addCharacter(character) {
-    let playerStartPos = character.position || this.getStartPosition()
     if (!(character instanceof Character)) {
       character = new Character(character);
     }
 
+    let playerStartPos = character.position || this.getStartPosition()
     if ( character.type === CONSTANTS.CHAR_TYPE.PLAYER ) {
       character.position = playerStartPos
       this.playerChars.push(character)
@@ -116,7 +121,7 @@ class Mission {
     let foundDistSqr;
     targets.forEach(target => {
       let distSqr = this.findDistSqr(origin, target)
-      if( !range || distSqr <= range * range )
+      if( !target.isDead() && (!range || distSqr <= range * range) )
         if ( !foundTarget || distSqr < foundDistSqr ){
           foundTarget = target
           foundDistSqr = distSqr
