@@ -113,30 +113,6 @@ window.onload = function() {
     return scene;
   }
 
-  function createBuildings(map) {
-    map.forEach(function(x, indexX) {
-      x.forEach(function(z, indexZ) {
-        if (z.isObstacle) {
-          var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
-          newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
-          newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
-
-          var randomNum = (Math.floor(Math.random() * 500) + 300) / 100;
-          newObstacle.scaling.y = randomNum;
-          var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
-          var j = Math.floor(Math.random() * TOTAL_BUILDINGS);
-          buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + j + ".jpg", scene);
-          buildingMaterial.emissiveTexture.vScale = randomNum ;
-          buildingMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-          buildingMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-          newObstacle.material = buildingMaterial;
-          newObstacle.checkCollisions = true;
-          ground.material.reflectionTexture.renderList.push(newObstacle);
-        }
-      });
-    });
-  }
-
   function createSkybox() {
     // Create skybox
     skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, scene);
@@ -176,11 +152,36 @@ window.onload = function() {
     mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -10.0);
     mirrorMaterial.reflectionTexture.renderList.push(skybox);
     mirrorMaterial.reflectionTexture.level = 0.6;
-    mirrorMaterial.bumpTexture = new BABYLON.Texture("assets/texture/normalMap.jpg", scene);
     // removing all light reflections
     mirrorMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     mirrorMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     ground.material = mirrorMaterial;
+  }
+
+  function createBuildings(map) {
+    map.forEach(function(x, indexX) {
+      x.forEach(function(z, indexZ) {
+        if (z.isObstacle) {
+          var newObstacle = BABYLON.Mesh.CreateBox("Building" + indexX + indexZ, CONSTANTS.MAP.ELEMENT_SIZE - 2, scene);
+          newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
+          newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
+
+          var randomNum = (Math.floor(Math.random() * 500) + 300) / 100;
+          newObstacle.scaling.y = randomNum;
+          var buildingMaterial = new BABYLON.StandardMaterial("BuildingMaterial", scene);
+          var j = Math.floor(Math.random() * TOTAL_BUILDINGS);
+          buildingMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + j + ".jpg", scene);
+          buildingMaterial.emissiveTexture.vScale = randomNum ;
+          buildingMaterial.bumpTexture = new BABYLON.Texture("assets/texture/buildings/normal_" + j + ".png", scene);
+          buildingMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+          buildingMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+          buildingMaterial.backFaceCulling = false;
+          newObstacle.material = buildingMaterial;
+          newObstacle.checkCollisions = true;
+          ground.material.reflectionTexture.renderList.push(newObstacle);
+        }
+      });
+    });
   }
 
   function createNPCMesh() {
