@@ -22,8 +22,9 @@ window.onload = function() {
   var ALPHA_OFFSET = -Math.PI / 2;
   var BETA_OFFSET = Math.PI / 2 + 8 * ANGLE;
   var RADIUS = 1.5;
-  var AIM_OFFSET = 10 * Math.PI / 180;
-  var SPEED = 0.5;
+
+  var AIM_OFFSET = 10 * Math.PI/180;
+  var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
   var alpha = 0;
   var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
   var TOTAL_BUILDINGS = 25;
@@ -515,9 +516,9 @@ window.onload = function() {
 
     this.process = function(type, event) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
-      if ( type === "mousemove" ) {
-        // player.rotationY += event.movementX * ANGLE
-        // player.rotationX += event.movementY * ANGLE
+      if ( type === "mousemove" && !!document.pointerLockElement) {
+        player.rotationY += event.movementX * ANGLE
+        player.rotationX += event.movementY * ANGLE
       } else {
         // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
         // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
