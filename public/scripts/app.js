@@ -16,9 +16,8 @@ window.onload = function() {
   var health = document.getElementById("health");
 
   var ANGLE = Math.PI / 180;
-  // TO-DO:
-  // var UP_ANGLE_MAX = -Math.PI/3;
-  // var DOWN_ANGLE_MAX = Math.PI/10;
+  var UP_ANGLE_MAX = 135 * ANGLE;
+  var DOWN_ANGLE_MAX = 80 * ANGLE;
   var CAM_OFFSET = 1.5;
   var ALPHA_OFFSET = -Math.PI / 2;
   var BETA_OFFSET = Math.PI / 2 + 8 * ANGLE;
@@ -239,8 +238,9 @@ window.onload = function() {
       initFocus();
 
       camera = new BABYLON.ArcRotateCamera("arcCam", ALPHA_OFFSET, BETA_OFFSET, RADIUS, cameraTarget, scene);
-      camera.lowerBetaLimit = Math.PI / 3;
-      camera.upperBetaLimit = (5 * Math.PI) / 6;
+      // camera.lowerBetaLimit = DOWN_ANGLE_MAX;
+      // camera.upperBetaLimit = UP_ANGLE_MAX;
+
       scene.activeCamera = camera;
     });
   }
@@ -364,11 +364,17 @@ window.onload = function() {
     camera.alpha = - (playerStatus.rotation.y + ALPHA_OFFSET);
 
     // // rotation on x-axis
-    camera.beta -= player.rotationX;
+    // camera.beta -= player.rotationX;
+    // avatar.rotation.x = camera.beta - BETA_OFFSET;
+    // cameraTarget.rotation.x = avatar.rotation.x + CAMERA_TARGET_OFFSET;
+    // player.rotationX = 0;
+    // camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
+    var tmp_angle = camera.beta - player.rotationX;
+    tmp_angle = camera.beta - player.rotXSpeed * scene.getAnimationRatio();
+    player.rotationX = 0;
+    camera.beta = Math.min(Math.max(tmp_angle, DOWN_ANGLE_MAX), UP_ANGLE_MAX);
     avatar.rotation.x = camera.beta - BETA_OFFSET;
     cameraTarget.rotation.x = avatar.rotation.x + CAMERA_TARGET_OFFSET;
-    player.rotationX = 0;
-    camera.beta -= player.rotXSpeed * scene.getAnimationRatio();
 
     // move forward/backward
     playerStatus.position.x += player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();
