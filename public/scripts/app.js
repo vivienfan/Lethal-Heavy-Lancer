@@ -446,24 +446,23 @@ window.onload = function() {
 
   function createBeam(position, direction) {
     var hilt = BABYLON.Mesh.CreateCylinder("beam", 0.5, 0.5, 0.5, 12, scene);
-    hilt.position.y = position.y - 1.5;
+    hilt.position.y = position.y - 2;
     hilt.position.x = position.x;
     hilt.position.z = position.z;
     hilt.visibility = false;
 
-    var particalSystem = new BABYLON.ParticleSystem("beam", 1000, scene);
-    particalSystem.particleTexture = new BABYLON.FireProceduralTexture("fire", 256, scene);
-    particalSystem.minSize = 0.3;
-    particalSystem.maxSize = 0.3;
+    var particalSystem = new BABYLON.ParticleSystem("beam", 4000, scene);
+    particalSystem.particleTexture = new BABYLON.Texture("Fire.png", scene);
+    particalSystem.minSize = 0.5;
+    particalSystem.maxSize = 0.5;
     particalSystem.minLifeTime = 0.2;
-    particalSystem.maxLifeTime = 0.5;
+    particalSystem.maxLifeTime = 0.6;
     particalSystem.minEmitPower = 50;
     particalSystem.maxEmitPower = 100;
 
     particalSystem.minAngularSpeed = 0;
 
     particalSystem.emitter = hilt;
-
     particalSystem.emitRate = 500;
     particalSystem.updateSpeed = 0.05;
     particalSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
