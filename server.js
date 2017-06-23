@@ -98,6 +98,7 @@ wss.on('connection', (ws) => {
         }
       } else if ( message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
         let targetDied = mission.fireOn(player, message.target)
+        console.log("received fire!", message.target)
         wss.broadcast(JSON.stringify(message), ws)
         if (targetDied) {
           mission.removeCharacter(message.target)

@@ -31,7 +31,8 @@ var CONSTANTS = {
 // Player attributes
   PLAYER: {
     INITIAL_HEALTH: 200,
-    MAX_SPEED: 0.5
+    MAX_SPEED: 0.5,
+    RANGE: 100
   },
 
 // NPC attributes

@@ -464,7 +464,7 @@ window.onload = function() {
       target: {}
     }
     if (hit.pickedMesh){
-      msg.target.id = hit.pickedMesh.id;
+      msg.target.id = hit.pickedMesh.name;
     }
     socket.send(JSON.stringify(msg));
   }
