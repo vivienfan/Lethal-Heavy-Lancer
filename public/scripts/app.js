@@ -6,8 +6,8 @@ window.onload = function() {
   var engine = new BABYLON.Engine(canvas, true);
   engine.displayLoadingUI();
 
-  var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
-  var physicsPlugin = new BABYLON.CannonJSPlugin();
+  // var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
+  // var physicsPlugin = new BABYLON.CannonJSPlugin();
   var scene, camera, playerMesh, npcMesh, ground, skybox, flame;
   var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
   var inputManager = new InputManager()
@@ -15,6 +15,8 @@ window.onload = function() {
   var healthBar = document.getElementById("health-bar");
   var health = document.getElementById("health");
   var bloodBlur = document.getElementById("blood-blur");
+
+  var GROUND_LEVEL = -3;
 
   var ANGLE = Math.PI / 180;
   var UP_ANGLE_MAX = 135 * ANGLE;
@@ -72,7 +74,7 @@ window.onload = function() {
         initWorld(data.data, data.mission, data.map.grid);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        updateCharacters(data.mission.characters);
+        // updateCharacters(data.mission.characters);
         break;
       case CONSTANTS.MESSAGE_TYPE.REMOVE:
         removeCharacter(data.character);
@@ -149,7 +151,7 @@ window.onload = function() {
 
   function createGround() {
     ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
-    ground.position.y = -3;
+    ground.position.y = GROUND_LEVEL;
     ground.isPickable = false;
     ground.checkCollisions = true;
 
@@ -171,8 +173,8 @@ window.onload = function() {
       var newMaterial = new BABYLON.StandardMaterial("buildingMaterial" + i, scene);
       newMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + i + ".jpg", scene);
       newMaterial.bumpTexture = new BABYLON.Texture("assets/texture/buildings/normal_" + i + ".png", scene);
-      newMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-      newMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+      newMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+      newMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
       newMaterial.backFaceCulling = false;
       materials.push(newMaterial);
     }
@@ -181,6 +183,17 @@ window.onload = function() {
     buildingMesh.checkCollisions = true;
     buildingMesh.isPickable = false;
     buildingMesh.setEnabled(false);
+
+    var buildingBase = BABYLON.Mesh.CreateBox("buildingBase", CONSTANTS.MAP.ELEMENT_SIZE, scene, false);
+    buildingBase.scaling.y = 0.2;
+    buildingBase.isPickable = false;
+    buildingBase.material = new BABYLON.StandardMaterial("baseMaterial", scene);
+    buildingBase.material.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/concrete.png", scene);
+    buildingBase.material.bumpTexture = new BABYLON.Texture("assets/texture/buildings/concrete_normal.png", scene);
+    buildingBase.material.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+    buildingBase.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+    buildingBase.material.backFaceCulling = false;
+    buildingBase.setEnabled(false);
 
     map.forEach(function(x, indexX) {
       x.forEach(function(z, indexZ) {
@@ -196,6 +209,12 @@ window.onload = function() {
           buildingMaterial.emissiveTexture.vScale = randomSize ;
           newObstacle.material = buildingMaterial;
           ground.material.reflectionTexture.renderList.push(newObstacle);
+
+          var newObstacleBase = buildingBase.clone(indexX + "-" + indexZ);
+          newObstacleBase.position.x = newObstacle.position.x;
+          newObstacleBase.position.y = 0;
+          newObstacleBase.position.z = newObstacle.position.z;
+          ground.material.reflectionTexture.renderList.push(newObstacleBase);
         }
       });
     });
