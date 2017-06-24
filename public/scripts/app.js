@@ -298,6 +298,7 @@ window.onload = function() {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
             char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
           } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER){
+            char_mesh.position.y = 0;
             displayPlayerFire(character);
           }
         } else {
