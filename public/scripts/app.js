@@ -34,6 +34,7 @@ window.onload = function() {
   var playerStatus = {};
   var characterStatus = [];
   var particleSystems = {};
+  var deadNPC = [];
 
   var HEALTH_COLOR_FULL = "#86e01e";
   var HEALTH_COLOR_HIGH = "#f2d31b";
@@ -202,7 +203,8 @@ window.onload = function() {
 
   function createNPCMesh() {
     var npcMaterial = new BABYLON.StandardMaterial('columnsmat', scene);
-    npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/npc.jpg", scene);
+    // npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/npc.jpg", scene);
+    npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/blue_red_flame.jpg", scene);
     npcMaterial.bumpTexture = new BABYLON.Texture("assets/texture/npc_normal.png", scene);
     npcMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
     npcMaterial.specularColor = new BABYLON.Color3(1, 0, 0);
@@ -371,7 +373,7 @@ window.onload = function() {
       } else {
         particleSystems[character.id][0].dispose();
         particleSystems[character.id][1].dispose();
-        scene.getMeshByName(character.id).dispose();
+        deadNPC.push({counter: 12, mesh: scene.getMeshByName(character.id), particleSystems: null}); // 12 frames
       }
     }
   }
@@ -385,6 +387,7 @@ window.onload = function() {
       updatePlayerOrientation();
       sendPlayerState();
       updateCharacterOriendtation();
+      deadNPCAnimation();
     }
   }
 
@@ -466,6 +469,22 @@ window.onload = function() {
             }
           }
         }
+    });
+  }
+
+  function deadNPCAnimation() {
+    deadNPC.forEach(function(npc, index) {
+      if(npc.counter === 0) {
+        npc.mesh.dispose();
+        deadNPC.splice(index, 1);
+      } else {
+        if (npc.counter > 2) {
+          npc.mesh.scaling.x /= 1.2;
+          npc.mesh.scaling.y /= 1.2;
+          npc.mesh.scaling.z /= 1.2;
+        }
+        npc.counter--;
+      }
     });
   }
 
