@@ -25,29 +25,31 @@ var CONSTANTS = {
   },
 
   MISSION: {
-    MAX_PLAYERS: 4
+    MAX_PLAYERS: 4,
+    NUM_ENEMIES: 12
   },
 
 // Player attributes
   PLAYER: {
     INITIAL_HEALTH: 200,
-    MAX_SPEED: 0.5,
+    MAX_SPEED: 0.9,
     RANGE: 100
   },
 
 // NPC attributes
   NPC: {
-    MAX_FWD_SPEED: 0.34
+    MAX_FWD_SPEED: 2.5,
+    DETECTION_RANGE: 8
   },
 
 // Map attributes
   MAP: {
-    DEFAULT_SIZE: 64,
+    DEFAULT_SIZE: 70,
     ELEMENT_SIZE: 25,
-    MIN_ROOMS: 12,
-    MAX_ROOMS: 15,
+    MIN_ROOMS: 14,
+    MAX_ROOMS: 18,
     MIN_ROOM_SIZE: 4,
-    MAX_ROOM_SIZE: 12,
+    MAX_ROOM_SIZE: 10,
     FAIL_CUTOFF: 100,
     SAFE_DISTANCE: 6
   }

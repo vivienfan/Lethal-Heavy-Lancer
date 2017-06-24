@@ -29,7 +29,7 @@ class Mission {
       })
     }
 
-    for (var i = 0; i < 7; i++) {
+    for (var i = 0; i < CONSTANTS.MISSION.NUM_ENEMIES; i++) {
       this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
     }
 
@@ -132,7 +132,6 @@ class Mission {
 
   isWithinRange(origin, range, target) {
     let distSqr = this.findDistSqr(origin, target)
-    if (origin.type = CONSTANTS.CHAR_TYPE.PLAYER) console.log("origin, range, target", range)
     return (distSqr <= (origin.range * origin.range));
   }
 
@@ -153,9 +152,7 @@ class Mission {
 
       target = this.findCharacter(target)
       if ( target && target.id ) {
-        console.log('fired on target')
         if ( this.canHit(origin, target) ) {
-          console.log("could hit!")
           target.takeDamage(origin.damage);
         }
         return target.isDead()
