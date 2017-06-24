@@ -74,7 +74,7 @@ window.onload = function() {
         initWorld(data.data, data.mission, data.map.grid);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        // updateCharacters(data.mission.characters);
+        updateCharacters(data.mission.characters);
         break;
       case CONSTANTS.MESSAGE_TYPE.REMOVE:
         removeCharacter(data.character);
