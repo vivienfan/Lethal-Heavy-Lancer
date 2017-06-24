@@ -150,7 +150,7 @@ class Character {
   }
 
   determineTarget(mission) {
-    let closest = mission.findClosestInRange(this, 6 * CONSTANTS.MAP.ELEMENT_SIZE, mission.allies)
+    let closest = mission.findClosestInRange(this, CONSTANTS.NPC.DETECTION_RANGE * CONSTANTS.MAP.ELEMENT_SIZE, mission.allies)
     let path
     if (closest && closest !== this.target) path = mission.map.getGamePath(this.position, closest.position)
     // if (closest !== this.target && path && path.length <= 2 || this.target instanceof Character && this.target.isDead() ) {

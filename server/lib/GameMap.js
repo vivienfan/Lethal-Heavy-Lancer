@@ -13,7 +13,7 @@ class GameMap {
     this.grid = []
     this.rooms = []
     this.elementSize = CONSTANTS.MAP.ELEMENT_SIZE
-    this.startPos = [2,2]
+    this.startPos = [1,1]
     this.mapSize = props.mapSize || CONSTANTS.MAP.DEFAULT_SIZE
     this.maxX = this.maxZ = this.mapSize
     this.pfGrid = new PF.Grid(this.mapSize, this.mapSize)
@@ -111,7 +111,7 @@ class GameMap {
   getStartPosition() {
     let startX = (this.startPos[0] + 0.5) * this.elementSize
     let startZ = (this.startPos[1] + 0.5) * this.elementSize
-    return {x: startX, y: 0, z: startZ}
+    return this.convertToGameCoords({x: this.startPos[0], y: 0, z: this.startPos[1]})
   }
 
   generateEnemyPosition() {
