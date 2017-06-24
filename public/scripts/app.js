@@ -14,6 +14,7 @@ window.onload = function() {
 
   var healthBar = document.getElementById("health-bar");
   var health = document.getElementById("health");
+  var bloodBlur = document.getElementById("blood-blur");
 
   var ANGLE = Math.PI / 180;
   var UP_ANGLE_MAX = 135 * ANGLE;
@@ -106,6 +107,7 @@ window.onload = function() {
 
     scene.executeWhenReady(function() {
       health.classList.remove("hide");
+      bloodBlur.classList.remove("hide");
       engine.hideLoadingUI();
     });
 
@@ -301,6 +303,9 @@ window.onload = function() {
           } else {
             healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
           }
+          if (healthPercent <= 50) {
+            bloodBlur.style.opacity = (1 - healthPercent / 100) / 2;
+          }
         }
       }
     });
@@ -310,7 +315,6 @@ window.onload = function() {
   }
 
   function displayPlayerFire(player) {
-    console.log(player);
   }
 
   function buildNewNPC(character) {
