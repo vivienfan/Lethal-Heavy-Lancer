@@ -18,6 +18,7 @@ class Player {
     this.totalHealth = props.totalHealth || CONSTANTS.PLAYER.INITIAL_HEALTH;
     this.currentHealth = props.currentHealth || CONSTANTS.PLAYER.INITIAL_HEALTH;
     this.rotation = {x: 0, y: Math.PI * 5/4, z: 0}
+    this.position = {x: 0, y:0, z:0}
     this.ws = props.ws || null
   }
 
@@ -27,7 +28,7 @@ class Player {
     } else {
       this.currentMission = new Mission(mission)
     }
-
+    this.position = this.currentMission.map.getStartPosition()
     return this.currentMission.addCharacter(this)
   }
 
