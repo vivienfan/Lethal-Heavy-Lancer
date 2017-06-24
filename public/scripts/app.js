@@ -144,8 +144,8 @@ window.onload = function() {
 
   function createSun() {
     var sun = new BABYLON.HemisphericLight("Hemi0", new BABYLON.Vector3(20, 100, 20), scene);
-    sun.diffuse = new BABYLON.Color3(1, 1, 1);
-    sun.specular = new BABYLON.Color3(1, 1, 1);
+    sun.diffuse = new BABYLON.Color3(0.5, 0.5, 0.5);
+    sun.specular = new BABYLON.Color3(0.5, 0.5, 0.5);
     sun.groundColor = new BABYLON.Color3(0, 0, 0);
   }
 
@@ -173,8 +173,8 @@ window.onload = function() {
       var newMaterial = new BABYLON.StandardMaterial("buildingMaterial" + i, scene);
       newMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + i + ".jpg", scene);
       newMaterial.bumpTexture = new BABYLON.Texture("assets/texture/buildings/normal_" + i + ".png", scene);
-      newMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-      newMaterial.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+      newMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+      newMaterial.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
       newMaterial.backFaceCulling = false;
       materials.push(newMaterial);
     }
@@ -190,8 +190,8 @@ window.onload = function() {
     buildingBase.material = new BABYLON.StandardMaterial("baseMaterial", scene);
     buildingBase.material.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/concrete.png", scene);
     buildingBase.material.bumpTexture = new BABYLON.Texture("assets/texture/buildings/concrete_normal.png", scene);
-    buildingBase.material.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-    buildingBase.material.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+    buildingBase.material.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+    buildingBase.material.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
     buildingBase.material.backFaceCulling = false;
     buildingBase.setEnabled(false);
 
