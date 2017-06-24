@@ -314,6 +314,13 @@ window.onload = function() {
   }
 
   function displayPlayerFire(player) {
+    if (player.fire) {
+      var direction = new BABYLON.Vector3(
+        -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)),
+        Math.sin(player.rotation.x),
+        -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)));
+      createBeam(player.position, direction, 0);
+    }
   }
 
   function buildNewNPC(character) {
@@ -495,7 +502,7 @@ window.onload = function() {
       -Math.sin(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)),
       Math.sin(avatar.rotation.x + AIM_OFFSET),
       -Math.cos(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)));
-    createBeam(cameraTarget.position, direction);
+    createBeam(cameraTarget.position, direction, -2);
 
     var ray = new BABYLON.Ray(origin, direction, length);
     var hit = scene.pickWithRay(ray);
@@ -510,9 +517,9 @@ window.onload = function() {
     socket.send(JSON.stringify(msg));
   }
 
-  function createBeam(position, direction) {
+  function createBeam(position, direction, offset) {
     var hilt = BABYLON.Mesh.CreateCylinder("beam", 0.5, 0.5, 0.5, 12, scene);
-    hilt.position.y = position.y - 2;
+    hilt.position.y = position.y + offset;
     hilt.position.x = position.x;
     hilt.position.z = position.z;
     hilt.visibility = false;
