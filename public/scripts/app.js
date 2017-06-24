@@ -33,7 +33,7 @@ window.onload = function() {
 
   var playerStatus = {};
   var characterStatus = [];
-  var emitters = {};
+  var particleSystems = {};
 
   var HEALTH_COLOR_FULL = "#86e01e";
   var HEALTH_COLOR_HIGH = "#f2d31b";
@@ -147,7 +147,7 @@ window.onload = function() {
   }
 
   function createGround() {
-    ground = BABYLON.Mesh.CreateGround("ground", 1500, 1500, 1, scene, false);
+    ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
     ground.position.y = -3;
     ground.isPickable = false;
     ground.checkCollisions = true;
@@ -161,6 +161,7 @@ window.onload = function() {
     mirrorMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     mirrorMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     ground.material = mirrorMaterial;
+    ground.infiniteDistance = true;
   }
 
   function createBuildings(map) {
@@ -322,31 +323,31 @@ window.onload = function() {
   }
 
   function createParticles(id) {
-    emitters[id] = [];
+    particleSystems[id] = [];
     createOneLayer("Fire.png", id, 0, 0.2, 0.3);
     createOneLayer("Fire.png", id, 1, 0.2, 0.4);
   }
 
   function createOneLayer(filePath, id, level, minSize, maxSize) {
-    emitters[id][level] = BABYLON.Mesh.CreateBox("emitter" + level, 0.1, scene);
-    emitters[id][level].isVisible = false;
+    var emitter = BABYLON.Mesh.CreateBox("emitter" + level, 0.1, scene);
+    emitter.isVisible = false;
 
-    var particleSystem = new BABYLON.ParticleSystem("particles", 1000, scene);
-    particleSystem.particleTexture = new BABYLON.Texture(filePath, scene);
-    particleSystem.minSize = minSize;
-    particleSystem.maxSize = maxSize;
-    particleSystem.minEmitPower = 1;
-    particleSystem.maxEmitPower = 2;
-    particleSystem.minLifeTime = 0.7;
-    particleSystem.maxLifeTime = 1;
-    particleSystem.emitter = emitters[id][level];
-    particleSystem.emitRate = 100;
-    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-    particleSystem.minEmitBox = new BABYLON.Vector3(0, 0, 0);
-    particleSystem.maxEmitBox = new BABYLON.Vector3(0, 0, 0);
-    particleSystem.direction1 = new BABYLON.Vector3(0, 0, 0);
-    particleSystem.direction2 = new BABYLON.Vector3(0, 0, 0);
-    particleSystem.start();
+    particleSystems[id][level] = new BABYLON.ParticleSystem("particles", 1000, scene);
+    particleSystems[id][level].particleTexture = new BABYLON.Texture(filePath, scene);
+    particleSystems[id][level].minSize = minSize;
+    particleSystems[id][level].maxSize = maxSize;
+    particleSystems[id][level].minEmitPower = 1;
+    particleSystems[id][level].maxEmitPower = 2;
+    particleSystems[id][level].minLifeTime = 0.7;
+    particleSystems[id][level].maxLifeTime = 1;
+    particleSystems[id][level].emitter = emitter;
+    particleSystems[id][level].emitRate = 100;
+    particleSystems[id][level].blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    particleSystems[id][level].minEmitBox = new BABYLON.Vector3(0, 0, 0);
+    particleSystems[id][level].maxEmitBox = new BABYLON.Vector3(0, 0, 0);
+    particleSystems[id][level].direction1 = new BABYLON.Vector3(0, 0, 0);
+    particleSystems[id][level].direction2 = new BABYLON.Vector3(0, 0, 0);
+    particleSystems[id][level].start();
   }
 
   function buildNewPlayer(character) {
@@ -358,7 +359,6 @@ window.onload = function() {
   }
 
   function removeCharacter(character) {
-    console.log("remove character");
     if (character.id === playerStatus.id) {
       displayGameOver();
       console.log("you died");
@@ -368,9 +368,10 @@ window.onload = function() {
         var player = scene.getMeshByName(character.id);
         player.position.y = -2;
         // add flame
-      } else if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
+      } else {
+        particleSystems[character.id][0].dispose();
+        particleSystems[character.id][1].dispose();
         scene.getMeshByName(character.id).dispose();
-
       }
     }
   }
@@ -453,14 +454,14 @@ window.onload = function() {
             char.position.x += character.sideSpeed * -Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             char.position.z += character.sideSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             // there is a particle for this mesh -> npc, rotate the particle;
-            if (emitters[character.id]) {
-              emitters[character.id][0].position.x = 3.5 * Math.cos(alpha) + char.position.x;
-              emitters[character.id][0].position.y = 0.5;
-              emitters[character.id][0].position.z = 3.5 * Math.sin(alpha) + char.position.z;
+            if (particleSystems[character.id]) {
+              particleSystems[character.id][0].emitter.position.x = 3.5 * Math.cos(alpha) + char.position.x;
+              particleSystems[character.id][0].emitter.position.y = 0.5;
+              particleSystems[character.id][0].emitter.position.z = 3.5 * Math.sin(alpha) + char.position.z;
 
-              emitters[character.id][1].position.x = -2 * Math.cos(alpha) + char.position.x;
-              emitters[character.id][1].position.y = 0.8;
-              emitters[character.id][1].position.z = -2 * Math.sin(alpha) + char.position.z;
+              particleSystems[character.id][1].emitter.position.x = -2 * Math.cos(alpha) + char.position.x;
+              particleSystems[character.id][1].emitter.position.y = 0.8;
+              particleSystems[character.id][1].emitter.position.z = -2 * Math.sin(alpha) + char.position.z;
               alpha += 0.05 * scene.getAnimationRatio();
             }
           }
