@@ -230,6 +230,7 @@ window.onload = function() {
 
     npcMesh = BABYLON.Mesh.CreateSphere("npc-mesh", 16, 8, scene);
     npcMesh.material = npcMaterial;
+    npcMesh.checkCollisions = true;
     npcMesh.setEnabled(false);
   }
 
@@ -239,6 +240,7 @@ window.onload = function() {
       playerMesh.isPickable = false;
       playerMesh.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
       playerMesh.setEnabled(false);
+      playerMesh.checkCollisions = true;
     });
   }
 
@@ -343,6 +345,7 @@ window.onload = function() {
     var newNPC = npcMesh.clone(character.id);
     newNPC.position = character.position;
     newNPC.rotation = character.rotation;
+    newNPC.checkCollisions = true;
     ground.material.reflectionTexture.renderList.push(newNPC);
     createParticles(character.id)
   }
@@ -379,8 +382,8 @@ window.onload = function() {
     var newPlayer = playerMesh.clone(character.id);
     newPlayer.position = character.position;
     newPlayer.rotation = character.rotation;
+    newPlayer.checkCollisions = true;
     ground.material.reflectionTexture.renderList.push(newPlayer);
-    console.log(ground.material.reflectionTexture.renderList);
   }
 
   function removeCharacter(character) {
@@ -450,6 +453,9 @@ window.onload = function() {
     cameraTarget.position.x = avatar.position.x;
     cameraTarget.position.y = avatar.position.y + CAM_OFFSET;
     cameraTarget.position.z = avatar.position.z;
+    playerStatus.position.x = avatar.position.x;
+    playerStatus.position.y = avatar.position.y;
+    playerStatus.position.z = avatar.position.z;
   }
 
   function sendPlayerState() {
@@ -459,8 +465,8 @@ window.onload = function() {
         player: Object.assign({},player)
       };
       msg.player.id = playerStatus.id;
-      msg.player.rotation = playerStatus.rotation;
-      msg.player.position = playerStatus.position;
+      msg.player.rotation = avatar.rotation;
+      msg.player.position = avatar.position;
       msg.player.fwdSpeed = player.fwdSpeed;
       msg.player.sideSpeed = player.sideSpeed;
 
