@@ -297,7 +297,6 @@ window.onload = function() {
           char_mesh.rotation = character.rotation;
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
             char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
-            checkNPCHealth(character);
           } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER){
             displayPlayerFire(character);
           }
@@ -322,14 +321,11 @@ window.onload = function() {
         } else {
           healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
         }
-        if (healthPercent <= 50) {
-          bloodBlur.style.opacity = (1 - healthPercent / 100) / 2;
+        if (healthPercent <= 75) {
+          bloodBlur.style.opacity = 1 - healthPercent / 100;
         }
       }
     });
-  }
-
-  function checkNPCHealth(npc) {
   }
 
   function displayPlayerFire(player) {
