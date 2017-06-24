@@ -21,10 +21,10 @@ window.onload = function() {
   var DOWN_ANGLE_MAX = 80 * ANGLE;
   var CAM_OFFSET = 1.5;
   var ALPHA_OFFSET = -Math.PI / 2;
-  var BETA_OFFSET = Math.PI / 2 + 8 * ANGLE;
+  var BETA_OFFSET = Math.PI / 2 + 5 * ANGLE;
   var RADIUS = 1.5;
 
-  var AIM_OFFSET = 10 * Math.PI/180;
+  var AIM_OFFSET = 7 * Math.PI/180;
   var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
   var alpha = 0;
   var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
@@ -156,7 +156,7 @@ window.onload = function() {
     mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
     mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -10.0);
     mirrorMaterial.reflectionTexture.renderList.push(skybox);
-    mirrorMaterial.reflectionTexture.level = 0.6;
+    mirrorMaterial.reflectionTexture.level = 0.5;
     // removing all light reflections
     mirrorMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     mirrorMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -226,13 +226,13 @@ window.onload = function() {
       avatar.id = playerStatus.id;
       avatar.name = playerStatus.id;
       avatar.isPickable = false;
+      avatar.backFaceCulling = false;
 
       // collision
       avatar.ellipsoid = SPACESHIP_ELLIPSOID;
       avatar.checkCollisions = true;
 
       avatar.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
-      ground.material.reflectionTexture.renderList.push(avatar);
 
       cameraTarget = BABYLON.Mesh.CreateTorus("snipper-aim", 0.15, 0.01, 20, scene, false, BABYLON.Mesh.DEFAULTSIDE);
       cameraTarget.isPickable = false;
@@ -288,24 +288,20 @@ window.onload = function() {
         }
       } else {  // update client info
         var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
-        if (healthPercent === 0) {
-          displayGameOver();
-        } else {
         healthBar.style.width = healthPercent + "%";
-          if (healthPercent >= 80) {
-            healthBar.style.backgroundColor = HEALTH_COLOR_FULL;
-          } else if (healthPercent >= 60) {
-            healthBar.style.backgroundColor = HEALTH_COLOR_HIGH;
-          } else if (healthPercent >= 40) {
-            healthBar.style.backgroundColor = HEALTH_COLOR_HALF;
-          } else if (healthPercent >= 20) {
-            healthBar.style.backgroundColor = HEALTH_COLOR_LOW;
-          } else {
-            healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
-          }
-          if (healthPercent <= 50) {
-            bloodBlur.style.opacity = (1 - healthPercent / 100) / 2;
-          }
+        if (healthPercent >= 80) {
+          healthBar.style.backgroundColor = HEALTH_COLOR_FULL;
+        } else if (healthPercent >= 60) {
+          healthBar.style.backgroundColor = HEALTH_COLOR_HIGH;
+        } else if (healthPercent >= 40) {
+          healthBar.style.backgroundColor = HEALTH_COLOR_HALF;
+        } else if (healthPercent >= 20) {
+          healthBar.style.backgroundColor = HEALTH_COLOR_LOW;
+        } else {
+          healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
+        }
+        if (healthPercent <= 50) {
+          bloodBlur.style.opacity = (1 - healthPercent / 100) / 2;
         }
       }
     });
@@ -358,14 +354,29 @@ window.onload = function() {
     newPlayer.position = character.position;
     newPlayer.rotation = character.rotation;
     ground.material.reflectionTexture.renderList.push(newPlayer);
+    console.log(ground.material.reflectionTexture.renderList);
+  }
+
+  function removeCharacter(character) {
+    console.log("remove character");
+    if (character.id === playerStatus.id) {
+      displayGameOver();
+      console.log("you died");
+    } else {
+      if (character.type === CONSTANTS.CHAR_TYPE.PLAYER) {
+        console.log("player died");
+        var player = scene.getMeshByName(character.id);
+        player.position.y = -2;
+        // add flame
+      } else if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
+        scene.getMeshByName(character.id).dispose();
+
+      }
+    }
   }
 
   function displayGameOver() {
 
-  }
-
-  function removeCharacter(character) {
-    scene.getMeshByName(character.id).dispose();
   }
 
   function updateScene() {
@@ -534,7 +545,7 @@ window.onload = function() {
               this.isPressed[event.key] = true
               player.fwdSpeed = SPEED
             } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
+              this.isPressed[event.key] = false;
               player.fwdSpeed = 0
             }
             break;
