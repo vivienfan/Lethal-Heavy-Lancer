@@ -161,7 +161,7 @@ window.onload = function() {
   }
 
   function createGround() {
-    ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
+    ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 0.1, scene, false);
     ground.position.y = GROUND_LEVEL;
     ground.isPickable = false;
     ground.checkCollisions = true;
@@ -345,10 +345,10 @@ window.onload = function() {
     console.log("player fires:", player);
     var player = scene.getMeshByName(id);
     var direction = new BABYLON.Vector3(
-      -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)),
+      -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x + 45 * MATH.PI/180)),
       Math.sin(player.rotation.x),
-      -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)));
-    createBeam(player.position, direction, 0);
+      -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x + 45 * MATH.PI/180)));
+    createBeam(player.position, direction, -0.5);
   }
 
   function buildNewNPC(character) {
@@ -404,20 +404,44 @@ window.onload = function() {
         console.log("player died");
         var player = scene.getMeshByName(character.id);
         player.position.y = -2;
-        // add flame
+
+        var emitter = BABYLON.Mesh.CreateBox("emitter", 0.1, scene);
+        emitter.position.x = player.position.x;
+        emitter.position.y = 0;
+        emitter.position.z = player.position.z;
+        emitter.isVisible = false;
+
+        var flame_ps = new BABYLON.ParticleSystem("particles", 2000, scene);
+        flame_ps.particleTexture = new BABYLON.Texture("assets/texture/red_blue_flame.jpg", scene);
+        flame_ps.minSize = 1;
+        flame_ps.maxSize = 2;
+        flame_ps.minLifeTime = 0.3;
+        flame_ps.maxLifeTime = 1.5;
+        flame_ps.minEmitPower = 1;
+        flame_ps.maxEmitPower = 3;
+        flame_ps.minAngularSpeed = 0;
+        flame_ps.maxAngularSpeed = Math.PI;
+        flame_ps.emitter = emitter;
+        flame_ps.emitRate = 800;
+        flame_ps.updateSpeed = 0.05;
+        flame_ps.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+        flame_ps.direction1 = new BABYLON.Vector3(-7, 8, 3);
+        flame_ps.direction2 = new BABYLON.Vector3(7, 8, -3);
+        flame_ps.minEmitBox = new BABYLON.Vector3(-3, 0, -3);
+        flame_ps.maxEmitBox = new BABYLON.Vector3(3, 0, 3);
+        // flame_ps.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+        // flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+        // flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+        flame_ps.start();
       } else {
-        console.log(character);
-        if (particleSystems[character.id]) {
-          particleSystems[character.id][0].dispose();
-          particleSystems[character.id][1].dispose();
-        }
+        particleSystems[character.id][0].dispose();
+        particleSystems[character.id][1].dispose();
         deadNPC.push({counter: 12, mesh: scene.getMeshByName(character.id), particleSystems: null}); // 12 frames
       }
     }
   }
 
   function displayGameLose() {
-    console.log("you died");
     ALIVE = false;
     healthBar.style.width = "0%";
     bloodBlur.style.opacity = 1;
@@ -430,7 +454,9 @@ window.onload = function() {
 
   function updateScene() {
     if (scene && scene.getAnimationRatio()) {
-      updatePlayerOrientation();
+      if (ALIVE) {
+        updatePlayerOrientation();
+      }
       sendPlayerState();
       updateCharacterOriendtation();
       deadNPCAnimation();
