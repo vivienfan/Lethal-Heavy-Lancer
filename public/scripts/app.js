@@ -32,7 +32,7 @@ window.onload = function() {
   var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
   var alpha = 0;
   var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
-  var TOTAL_BUILDINGS = 24;
+  var TOTAL_BUILDINGS = 23;
   var CAMERA_TARGET_OFFSET = Math.PI / 2;
 
   var playerStatus = {};
@@ -78,16 +78,16 @@ window.onload = function() {
         initWorld(data.data, data.mission, data.map.grid);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        // updateCharacters(data.mission.characters);
+        updateCharacters(data.mission.characters);
         break;
       case CONSTANTS.MESSAGE_TYPE.FIRE:
-        // displayPlayerFire(data.data.id);
+        displayPlayerFire(data.data.id);
         break;
       case CONSTANTS.MESSAGE_TYPE.REMOVE:
-        // removeCharacter(data.character);
+        removeCharacter(data.character);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_END:
-        // displayGameWin();
+        displayGameWin();
         break;
       default:
         break;
@@ -107,11 +107,11 @@ window.onload = function() {
     createSkybox();
     createSun();
     createGround();
-    // createBuildings(map);
-    viewAllBuildingTextures(TOTAL_BUILDINGS, scene, WORLD_OFFSET);
+    createBuildings(map);
+    // viewAllBuildingTextures(TOTAL_BUILDINGS, scene, WORLD_OFFSET);
 
-    // createNPCMesh();
-    // createPlayerMesh();
+    createNPCMesh();
+    createPlayerMesh();
     createAvatar();
 
     scene.executeWhenReady(function() {
@@ -169,7 +169,7 @@ window.onload = function() {
 
     var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
     mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
-    mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -1, 0, -10);
+    mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -1, 0, -5.5);
     mirrorMaterial.reflectionTexture.renderList.push(skybox);
     mirrorMaterial.reflectionTexture.level = 0.5;
     // removing all light reflections
@@ -184,7 +184,7 @@ window.onload = function() {
     for( var i = 0; i < TOTAL_BUILDINGS; i++) {
       var newMaterial = new BABYLON.StandardMaterial("buildingMaterial" + i, scene);
       newMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + i + ".jpg", scene);
-      newMaterial.bumpTexture = new BABYLON.Texture("assets/texture/buildings/normal_" + i + ".png", scene);
+      // newMaterial.bumpTexture = new BABYLON.Texture("assets/texture/buildings/normal_" + i + ".png", scene);
       newMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
       newMaterial.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
       newMaterial.backFaceCulling = false;
