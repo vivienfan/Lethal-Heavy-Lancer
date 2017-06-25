@@ -32,7 +32,7 @@ window.onload = function() {
   var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
   var alpha = 0;
   var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
-  var TOTAL_BUILDINGS = 25;
+  var TOTAL_BUILDINGS = 24;
   var CAMERA_TARGET_OFFSET = Math.PI / 2;
 
   var playerStatus = {};
@@ -78,16 +78,16 @@ window.onload = function() {
         initWorld(data.data, data.mission, data.map.grid);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        updateCharacters(data.mission.characters);
+        // updateCharacters(data.mission.characters);
         break;
       case CONSTANTS.MESSAGE_TYPE.FIRE:
-        displayPlayerFire(data.data.id);
+        // displayPlayerFire(data.data.id);
         break;
       case CONSTANTS.MESSAGE_TYPE.REMOVE:
-        removeCharacter(data.character);
+        // removeCharacter(data.character);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_END:
-        displayGameWin();
+        // displayGameWin();
         break;
       default:
         break;
@@ -107,10 +107,11 @@ window.onload = function() {
     createSkybox();
     createSun();
     createGround();
-    createBuildings(map);
+    // createBuildings(map);
+    viewAllBuildingTextures(TOTAL_BUILDINGS, scene, WORLD_OFFSET);
 
-    createNPCMesh();
-    createPlayerMesh();
+    // createNPCMesh();
+    // createPlayerMesh();
     createAvatar();
 
     scene.executeWhenReady(function() {
