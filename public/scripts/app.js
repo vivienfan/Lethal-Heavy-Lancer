@@ -17,7 +17,7 @@ window.onload = function() {
   var bloodBlur = document.getElementById("blood-blur");
   var gameOver = document.getElementById("game-over");
 
-  var GROUND_LEVEL = -3;
+  var GROUND_LEVEL = -2.2;
 
   var ANGLE = Math.PI / 180;
   var UP_ANGLE_MAX = 135 * ANGLE;
@@ -146,7 +146,6 @@ window.onload = function() {
     // removing all light reflections
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-
     skybox.material = skyboxMaterial;
 
     // skybox follow camera position
@@ -161,14 +160,14 @@ window.onload = function() {
   }
 
   function createGround() {
-    ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 0.1, scene, false);
+    ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
     ground.position.y = GROUND_LEVEL;
     ground.isPickable = false;
     ground.checkCollisions = true;
 
     var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
     mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
-    mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -10.0);
+    mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -7);
     mirrorMaterial.reflectionTexture.renderList.push(skybox);
     mirrorMaterial.reflectionTexture.level = 0.5;
     // removing all light reflections
@@ -196,7 +195,7 @@ window.onload = function() {
     buildingMesh.setEnabled(false);
 
     var buildingBase = BABYLON.Mesh.CreateBox("buildingBase", CONSTANTS.MAP.ELEMENT_SIZE, scene, false);
-    buildingBase.scaling.y = 0.2;
+    buildingBase.scaling.y = 0.1;
     buildingBase.isPickable = false;
     buildingBase.material = new BABYLON.StandardMaterial("baseMaterial", scene);
     buildingBase.material.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/concrete.png", scene);
