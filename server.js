@@ -86,14 +86,14 @@ wss.on('connection', (ws) => {
   ws.on('message', function incoming(message) {
     message = JSON.parse(message)
 
-    if ( mission ) {
+    if ( player.currentMission ) {
       if ( message.type === CONSTANTS.MESSAGE_TYPE.UPDATE ) {
-        let player = mission.characters.find(function(element) {
-          return element.id === playerCharacter.id;
+        let playerChar = player.currentMission.characters.find(function(element) {
+          return element.id === player.id;
         });
 
-        if (player) {
-          player.update(message.player);
+        if (playerChar) {
+          playerChar.update(message.player);
         }
       } else if ( message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
         player.currentMission.broadcast(JSON.stringify({
