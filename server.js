@@ -36,36 +36,37 @@ wss.broadcast = function broadcast(data, except) {
 };
 
 let mission = new Mission()
-mission.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
+missions.push(mission)
 
 let prevTime = Date.now()
-const timer = setInterval(function() {
-  let triggers = []
-  let currTime = Date.now()
-  let updateRatio = (currTime - prevTime) * 0.06 // following Babylon's definition of the animationRatio: dt * ( 60/1000 )
-  prevTime = currTime
-  mission.update(updateRatio)
-  let message = JSON.stringify({
-    'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
-    'mission': mission.messageFormat(),
-    'triggers': triggers
-  })
-  // console.log(mission._characters)
-  wss.broadcast(message);
-}, DT);
+// const timer = setInterval(function() {
+//   let triggers = []
+//   let currTime = Date.now()
+//   let updateRatio = (currTime - prevTime) * 0.06 // following Babylon's definition of the animationRatio: dt * ( 60/1000 )
+//   prevTime = currTime
+//   mission.update(updateRatio)
+//   let message = JSON.stringify({
+//     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
+//     'mission': mission.messageFormat(),
+//     'triggers': triggers
+//   })
+//   // console.log(mission._characters)
+//   wss.broadcast(message);
+// }, DT);
 
 wss.on('connection', (ws) => {
   console.log('Client connected')
-  let count = 0
-  const player = new Player()
+  const player = new Player({ws: ws})
   console.log(player)
   const playerCharacter = new Character(player)
   // console.log(player.)
 
   let existingMission = findOpenMission()
   if (existingMission) {
-    player.joinMission(existingMission)
+    // player.joinMission(existingMission)
+    existingMission.addPlayer(player)
   } else {
+    existingMission
     existingMission = player.joinMission(mission)
   }
   // player.joinMission(mission)
@@ -88,27 +89,30 @@ wss.on('connection', (ws) => {
     if ( mission ) {
       if ( message.type === CONSTANTS.MESSAGE_TYPE.UPDATE ) {
         let player = mission.characters.find(function(element) {
-          // console.log("elem, char - ids",element.id, playerCharacter.id)
           return element.id === playerCharacter.id;
         });
 
-        // console.log("player, char", player, playerCharacter)
         if (player) {
           player.update(message.player);
         }
       } else if ( message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
-        let targetDied = mission.fireOn(player, message.target)
-        console.log("received fire!", message)
-        wss.broadcast(JSON.stringify(message), ws)
+        player.currentMission.broadcast(JSON.stringify({
+          'type': CONSTANTS.MESSAGE_TYPE.FIRE,
+          'data': player.messageFormat(),
+        }), ws)
+        player.currentMission.fireOn(player, message.target)
+        // let targetDied = player.currentMission.fireOn(player, message.target)
 
-        if (targetDied) {
-          mission.removeCharacter(message.target)
-          let deathMessage = JSON.stringify({
-            'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
-            'character': message.target
-          })
-          wss.broadcast(deathMessage);
-        }
+        // if (targetDied) {
+        //   mission.removeCharacter(message.target)
+        //   let deathMessage = JSON.stringify({
+        //     'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
+        //     'character': message.target
+        //   })
+        //   player.currentMission.broadcast(deathMessage);
+        // }
+      } else if (message.type === CONSTANTS.MESSAGE_TYPE.PLAYER_READY) {
+        player.currentMission.playerReady(player)
       }
     }
 
@@ -117,7 +121,7 @@ wss.on('connection', (ws) => {
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => {
     console.log('Client disconnected')
-    mission.removeCharacter(player)
+    player.currentMission.removeCharacter(player)
     let message = JSON.stringify({
       'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
       'character': player.messageFormat()
@@ -133,4 +137,7 @@ function findOpenMission() {
       return missions[i]
     }
   }
+  let newMission = new Mission()
+  missions.push(newMission)
+  return newMission
 }
