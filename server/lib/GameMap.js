@@ -13,7 +13,7 @@ class GameMap {
     this.grid = []
     this.rooms = []
     this.elementSize = CONSTANTS.MAP.ELEMENT_SIZE
-    this.startPos = [1,1]
+    this.startPos = [2,2]
     this.mapSize = props.mapSize || CONSTANTS.MAP.DEFAULT_SIZE
     this.maxX = this.maxZ = this.mapSize
     this.pfGrid = new PF.Grid(this.mapSize, this.mapSize)

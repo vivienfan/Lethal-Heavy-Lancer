@@ -62,9 +62,10 @@ class Mission {
     if (player && player.ws) {
       this.players.push(player)
       player.setMission(this)
+      player.position = this.map.getStartPosition()
       this.addCharacter(player)
 
-      // TODO: Remove below line, and  instead tie in to socket message from client done loading.
+      // TODO: Remove below line, and instead tie in to socket message from client done loading.
       this.playerReady(player)
     }
   }
@@ -101,7 +102,7 @@ class Mission {
       }
       let deathMessage = JSON.stringify({
         'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
-        'character': character
+        'character': {id: character.id}
       })
       this.broadcast(deathMessage);
     }
