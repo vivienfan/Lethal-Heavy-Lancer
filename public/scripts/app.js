@@ -163,7 +163,6 @@ window.onload = function() {
     ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
     ground.position.y = GROUND_LEVEL;
     ground.isPickable = false;
-    ground.checkCollisions = true;
 
     var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
     mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
@@ -283,6 +282,7 @@ window.onload = function() {
   }
 
   function initFocus() {
+    playerStatus.position.y = 0;
     avatar.position.x = playerStatus.position.x;
     avatar.position.y = playerStatus.position.y;
     avatar.position.z = playerStatus.position.z;
@@ -426,9 +426,9 @@ window.onload = function() {
         flame_ps.direction2 = new BABYLON.Vector3(7, 8, -3);
         flame_ps.minEmitBox = new BABYLON.Vector3(-3, 0, -3);
         flame_ps.maxEmitBox = new BABYLON.Vector3(3, 0, 3);
-        // flame_ps.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
-        // flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
-        // flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+        flame_ps.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+        flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+        flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
         flame_ps.start();
       } else {
         particleSystems[character.id][0].dispose();
@@ -492,7 +492,7 @@ window.onload = function() {
     avatar.moveWithCollisions(direction);
 
     // collision engine auto-adjust position when collision happens
-    avatar.position.y = 0;
+    // avatar.position.y = 0;
     cameraTarget.position.x = avatar.position.x;
     cameraTarget.position.y = avatar.position.y + CAM_OFFSET;
     cameraTarget.position.z = avatar.position.z;
