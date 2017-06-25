@@ -47,8 +47,7 @@ class Mission {
     if ( character.type === CONSTANTS.CHAR_TYPE.PLAYER ) {
       character.position = playerStartPos
       this.playerChars.push(character)
-    }
-    if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
+    } else if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
       this.enemies.push(character)
       character.update({ position: this.map.generateEnemyPosition() })
     } else {
@@ -66,7 +65,7 @@ class Mission {
       this.addCharacter(player)
 
       // TODO: Remove below line, and instead tie in to socket message from client done loading.
-      this.playerReady(player)
+      // this.playerReady(player)
     }
   }
 
@@ -105,6 +104,12 @@ class Mission {
         'character': {id: character.id}
       })
       this.broadcast(deathMessage);
+      if (this.enemies.length <= 0){
+        let winMessage = JSON.stringify({
+          'type': CONSTANTS.MESSAGE_TYPE.GAME_END
+        })
+        this.broadcast(winMessage)
+      }
     }
     return this
   }

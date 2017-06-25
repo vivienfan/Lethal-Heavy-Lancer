@@ -17,7 +17,8 @@ var CONSTANTS = {
     FIRE: 3,
     REMOVE: 4,
     GAME_END: 5,  // when all npc die in a game instance
-    GAME_START: 6 // start a game -> need this when u create loop of games
+    GAME_START: 6, // start a game -> need this when u create loop of games
+    PLAYER_READY: 7
   },
 
 // Types of missions

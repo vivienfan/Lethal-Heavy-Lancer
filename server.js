@@ -111,6 +111,8 @@ wss.on('connection', (ws) => {
         //   })
         //   player.currentMission.broadcast(deathMessage);
         // }
+      } else if (message.type === CONSTANTS.MESSAGE_TYPE.PLAYER_READY) {
+        player.currentMission.playerReady(player)
       }
     }
 
