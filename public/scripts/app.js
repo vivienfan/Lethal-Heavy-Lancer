@@ -18,6 +18,7 @@ window.onload = function() {
   var gameOver = document.getElementById("game-over");
 
   var GROUND_LEVEL = -2.2;
+  var WORLD_OFFSET = -5;
 
   var ANGLE = Math.PI / 180;
   var UP_ANGLE_MAX = 135 * ANGLE;
@@ -136,6 +137,7 @@ window.onload = function() {
     // Create skybox
     skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, scene);
     skybox.isPickable = false;
+    skybox.position.y = WORLD_OFFSET;
 
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     skyboxMaterial.backFaceCulling = false;
@@ -161,12 +163,12 @@ window.onload = function() {
 
   function createGround() {
     ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
-    ground.position.y = GROUND_LEVEL;
+    ground.position.y = GROUND_LEVEL + WORLD_OFFSET;
     ground.isPickable = false;
 
     var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
     mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
-    mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -7, 0, -7);
+    mirrorMaterial.reflectionTexture.mirrorPlane = new BABYLON.Plane(0, -1, 0, -10);
     mirrorMaterial.reflectionTexture.renderList.push(skybox);
     mirrorMaterial.reflectionTexture.level = 0.5;
     // removing all light reflections
@@ -210,6 +212,7 @@ window.onload = function() {
           var newObstacle = buildingMesh.clone(indexX + "-" + indexZ);
           newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
           newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
+          newObstacle.position.y = WORLD_OFFSET;
 
           var randomSize = (Math.floor(Math.random() * 500) + 300) / 100;
           var randomIndex = Math.floor(Math.random() * TOTAL_BUILDINGS);
@@ -221,7 +224,7 @@ window.onload = function() {
 
           var newObstacleBase = buildingBase.clone(indexX + "-" + indexZ);
           newObstacleBase.position.x = newObstacle.position.x;
-          newObstacleBase.position.y = 0;
+          newObstacleBase.position.y = WORLD_OFFSET;
           newObstacleBase.position.z = newObstacle.position.z;
           ground.material.reflectionTexture.renderList.push(newObstacleBase);
         }
@@ -392,6 +395,8 @@ window.onload = function() {
     newPlayer.rotation = character.rotation;
     newPlayer.checkCollisions = true;
     ground.material.reflectionTexture.renderList.push(newPlayer);
+    console.log(ground.material.reflectionTexture.renderList);
+    console.log(newPlayer);
   }
 
   function removeCharacter(character) {
@@ -400,11 +405,11 @@ window.onload = function() {
     } else {
       if (character.type === CONSTANTS.CHAR_TYPE.PLAYER) {
         var player = scene.getMeshByName(character.id);
-        player.position.y = -2;
+        player.position.y = WORLD_OFFSET;
 
         var emitter = BABYLON.Mesh.CreateBox("emitter", 0.1, scene);
         emitter.position.x = player.position.x;
-        emitter.position.y = 0;
+        emitter.position.y = WORLD_OFFSET;
         emitter.position.z = player.position.z;
         emitter.isVisible = false;
 
@@ -424,8 +429,8 @@ window.onload = function() {
         flame_ps.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
         flame_ps.direction1 = new BABYLON.Vector3(-7, 8, 3);
         flame_ps.direction2 = new BABYLON.Vector3(7, 8, -3);
-        flame_ps.minEmitBox = new BABYLON.Vector3(-3, 0, -3);
-        flame_ps.maxEmitBox = new BABYLON.Vector3(3, 0, 3);
+        flame_ps.minEmitBox = new BABYLON.Vector3(-5, 0, -5);
+        flame_ps.maxEmitBox = new BABYLON.Vector3(5, 0, 5);
         flame_ps.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
         flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
         flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
