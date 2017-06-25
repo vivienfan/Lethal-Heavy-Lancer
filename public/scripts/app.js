@@ -15,6 +15,7 @@ window.onload = function() {
   var healthBar = document.getElementById("health-bar");
   var health = document.getElementById("health");
   var bloodBlur = document.getElementById("blood-blur");
+  var gameOver = document.getElementById("game-over");
 
   var GROUND_LEVEL = -3;
 
@@ -43,6 +44,8 @@ window.onload = function() {
   var HEALTH_COLOR_HALF = "#f2b01e";
   var HEALTH_COLOR_LOW = "#f27011";
   var HEALTH_COLOR_VERY_LOW = "#f63a0f";
+
+  var ALIVE = true;
 
   window.addEventListener("resize", function() {
     engine.resize();
@@ -415,6 +418,10 @@ window.onload = function() {
 
   function displayGameLose() {
     console.log("you died");
+    ALIVE = false;
+    healthBar.style.width = "0%";
+    bloodBlur.style.opacity = 1;
+    gameOver.classList.remove("hide");
   }
 
   function displayGameWin() {
@@ -592,101 +599,107 @@ window.onload = function() {
     this.lastY = 0
 
     this.process = function(type, event) {
-      // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
-      if ( type === "mousemove" && !!document.pointerLockElement) {
-        player.rotationY += event.movementX * ANGLE
-        player.rotationX += event.movementY * ANGLE
-      } else {
-        // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
-        // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
-        // and input frequency
-        switch ( event.key ) {
-          case "w":
-          case "W":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.fwdSpeed = SPEED
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false;
-              player.fwdSpeed = 0
-            }
-            break;
-          case "s":
-          case "S":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.fwdSpeed = -(SPEED)
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.fwdSpeed = 0
-            }
-            break;
-          case "a":
-          case "A":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.sideSpeed = SPEED
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.sideSpeed = 0
-            }
-            break;
-          case "d":
-          case "D":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.sideSpeed = -SPEED
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.sideSpeed = 0
-            }
-            break;
-          case "ArrowRight":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.rotYSpeed = ANGLE
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.rotYSpeed = 0
-            }
-            break;
-          case "ArrowLeft":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.rotYSpeed = -(ANGLE)
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.rotYSpeed = 0
-            }
-            break;
-          case "ArrowUp":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.rotXSpeed = -(ANGLE)
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.rotXSpeed = 0
-            }
-            break;
-          case "ArrowDown":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              player.rotXSpeed = ANGLE
-            } else if ( type === "keyup" ){
-              this.isPressed[event.key] = false
-              player.rotXSpeed = 0
-            }
-            break;
-          case " ":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
-              this.isPressed[event.key] = true
-              castRay();
-            } else if (type === "keyup") {
-              this.isPressed[event.key] = false;
-            }
-            break;
+      if (ALIVE) {
+        // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
+        if ( type === "mousemove" && !!document.pointerLockElement) {
+          player.rotationY += event.movementX * ANGLE
+          player.rotationX += event.movementY * ANGLE
+        } else {
+          // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
+          // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
+          // and input frequency
+          switch ( event.key ) {
+            case "w":
+            case "W":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                player.fwdSpeed = SPEED
+              } else if ( type === "keyup" ){
+                this.isPressed[event.key] = false;
+                player.fwdSpeed = 0
+              }
+              break;
+            case "s":
+            case "S":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                player.fwdSpeed = -(SPEED)
+              } else if ( type === "keyup" ){
+                this.isPressed[event.key] = false
+                player.fwdSpeed = 0
+              }
+              break;
+            case "a":
+            case "A":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                player.sideSpeed = SPEED
+              } else if ( type === "keyup" ){
+                this.isPressed[event.key] = false
+                player.sideSpeed = 0
+              }
+              break;
+            case "d":
+            case "D":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                player.sideSpeed = -SPEED
+              } else if ( type === "keyup" ){
+                this.isPressed[event.key] = false
+                player.sideSpeed = 0
+              }
+              break;
+            case "ArrowRight":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                player.rotYSpeed = ANGLE
+              } else if ( type === "keyup" ){
+                this.isPressed[event.key] = false
+                player.rotYSpeed = 0
+              }
+              break;
+            case "ArrowLeft":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                player.rotYSpeed = -(ANGLE)
+              } else if ( type === "keyup" ){
+                this.isPressed[event.key] = false
+                player.rotYSpeed = 0
+              }
+              break;
+            case "ArrowUp":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                player.rotXSpeed = -(ANGLE)
+              } else if ( type === "keyup" ){
+                this.isPressed[event.key] = false
+                player.rotXSpeed = 0
+              }
+              break;
+            case "ArrowDown":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                player.rotXSpeed = ANGLE
+              } else if ( type === "keyup" ){
+                this.isPressed[event.key] = false
+                player.rotXSpeed = 0
+              }
+              break;
+            case " ":
+              if ( type === "keydown" && !this.isPressed[event.key] ) {
+                this.isPressed[event.key] = true
+                castRay();
+              } else if (type === "keyup") {
+                this.isPressed[event.key] = false;
+              }
+              break;
           } // end of switch statement
+        } // end of key input
+      } else {
+        if (event.key === "r" || event.key === "R") {
+          // restart the game? redirect to lobby?
         }
-      } // end of process method
+      }
+    } // end of process method
   } // end of InputManager class
 }

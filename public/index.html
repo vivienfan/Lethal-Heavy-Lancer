@@ -9,27 +9,20 @@
     <script type="text/javascript" src="scripts/cannon.js"></script>
     <script type="text/javascript" src="scripts/babylon.fireProceduralTexture.js"></script>
     <!-- <script type="text/javascript" src="scripts/babylon.gui.js"></script> -->
-    <style>
-    html, body, div, #canvas {
-      width: 100%;
-      height: 100%;
-      padding: 0;
-      margin: 0;
-      overflow: hidden;
-    }
-    </style>
-  </head>
-  <body>
-    <div id="health" class="overlay hide">
-      <div id="health-bar"></div>
-    </div>
-    <img id="blood-blur" class="overlay hide" src="assets/bloodblur.png">
-    <canvas id="canvas"></canvas>
-
     <script type="text/javascript" src="scripts/lib/constants.js"></script>
     <script type="text/javascript" src="scripts/lib/player.js"></script>
     <script type="text/javascript" src="scripts/lib/character.js"></script>
     <script type="text/javascript" src="scripts/lib/InputManager.js"></script>
     <script type="text/javascript" src="scripts/app.js"></script>
+  </head>
+
+  <body>
+    <div id="health" class="overlay hide">
+      <div id="health-bar"></div>
+    </div>
+    <img id="blood-blur" class="overlay hide" src="assets/bloodblur.png">
+    <img id="game-over" class="overlay hide" src="assets/game_over.png">
+    <canvas id="canvas"></canvas>
   </body>
+
 </html>
