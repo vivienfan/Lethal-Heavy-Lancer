@@ -94,7 +94,7 @@ window.onload = function() {
   }
 
   function initWorld(player, mission, map) {
-    console.log(player, mission);
+    console.log("init world: ", player, mission);
     playerStatus = new Player(player, mission);
     createScene(map);
   }
@@ -342,12 +342,11 @@ window.onload = function() {
   }
 
   function displayPlayerFire(id) {
-    console.log("player fires:", player);
     var player = scene.getMeshByName(id);
     var direction = new BABYLON.Vector3(
-      -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x + 45 * MATH.PI/180)),
+      -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)),
       Math.sin(player.rotation.x),
-      -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x + 45 * MATH.PI/180)));
+      -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)));
     createBeam(player.position, direction, -0.5);
   }
 
@@ -401,7 +400,6 @@ window.onload = function() {
       displayGameLose();
     } else {
       if (character.type === CONSTANTS.CHAR_TYPE.PLAYER) {
-        console.log("player died");
         var player = scene.getMeshByName(character.id);
         player.position.y = -2;
 
