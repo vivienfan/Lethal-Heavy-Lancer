@@ -79,16 +79,13 @@ window.onload = function() {
       case CONSTANTS.MESSAGE_TYPE.REMOVE:
         removeCharacter(data.character);
         break;
+      case CONSTANTS.MESSAGE_TYPE.GAME_END:
+        displayGameWin();
+        break;
       default:
         break;
     }
   }
-
-  engine.runRenderLoop(function(){
-    if (scene && scene.activeCamera) {
-      scene.render();
-    }
-  });
 
   function initWorld(player, mission, map) {
     playerStatus = new Player(player, mission);
@@ -111,7 +108,13 @@ window.onload = function() {
     scene.executeWhenReady(function() {
       health.classList.remove("hide");
       bloodBlur.classList.remove("hide");
+
       engine.hideLoadingUI();
+      engine.runRenderLoop(function(){
+        if (scene && scene.activeCamera) {
+          scene.render();
+        }
+      });
     });
 
     scene.registerBeforeRender(function() {
@@ -388,8 +391,7 @@ window.onload = function() {
 
   function removeCharacter(character) {
     if (character.id === playerStatus.id) {
-      displayGameOver();
-      console.log("you died");
+      displayGameLose();
     } else {
       if (character.type === CONSTANTS.CHAR_TYPE.PLAYER) {
         console.log("player died");
@@ -404,7 +406,11 @@ window.onload = function() {
     }
   }
 
-  function displayGameOver() {
+  function displayGameLose() {
+    console.log("you died");
+  }
+
+  function displayGameWin() {
 
   }
 

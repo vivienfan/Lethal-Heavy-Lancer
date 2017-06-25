@@ -15,7 +15,7 @@ var CONSTANTS = {
     UPDATE: 1,
     PLAYER_INFO: 2,
     FIRE: 3,
-    REMOVE: 4,
+    REMOVE: 4,    // for both npc and player
     GAME_END: 5,  // when all npc die in a game instance
     GAME_START: 6 // start a game -> need this when u create loop of games
   },
