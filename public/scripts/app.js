@@ -391,7 +391,9 @@ window.onload = function() {
 
   function buildNewPlayer(character) {
     var newPlayer = playerMesh.clone(character.id);
-    newPlayer.position = character.position;
+    newPlayer.position.x = character.position.x;
+    newPlayer.position.y = 0;
+    newPlayer.position.z = character.position.z;
     newPlayer.rotation = character.rotation;
     newPlayer.checkCollisions = true;
     ground.material.reflectionTexture.renderList.push(newPlayer);
