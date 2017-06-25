@@ -101,9 +101,10 @@ class Mission {
       }
       let deathMessage = JSON.stringify({
         'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
-        'character': {id: character.id}
+        'character': character.messageFormat()
       })
       this.broadcast(deathMessage);
+      console.log('sent remove')
       if (this.enemies.length <= 0){
         let winMessage = JSON.stringify({
           'type': CONSTANTS.MESSAGE_TYPE.GAME_END
