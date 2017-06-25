@@ -32,6 +32,10 @@ class Player {
     return this.currentMission.addCharacter(this)
   }
 
+  setMission(mission) {
+    this.currentMission = mission
+  }
+
   messageFormat() {
     return {
       'id': this.id,

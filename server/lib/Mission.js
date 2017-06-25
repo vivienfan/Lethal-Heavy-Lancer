@@ -33,7 +33,6 @@ class Mission {
       this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
     }
 
-
     this.prevTime = Date.now()
     this.timer = this.missionTimer()
 
@@ -61,9 +60,19 @@ class Mission {
 
   addPlayer(player) {
     if (player && player.ws) {
-      this.ws = player.ws
       this.players.push(player)
+      player.setMission(this)
+      this.addCharacter(player)
 
+      // TODO: Remove below line, and  instead tie in to socket message from client done loading.
+      this.playerReady(player)
+    }
+  }
+
+  playerReady(player) {
+    let playerChar = this.findCharacter(player)
+    if (playerChar) {
+      this.allies.push(playerChar)
     }
   }
 
@@ -90,6 +99,11 @@ class Mission {
           this.allies.splice(index, 1)
         }
       }
+      let deathMessage = JSON.stringify({
+        'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
+        'character': character
+      })
+      this.broadcast(deathMessage);
     }
     return this
   }
@@ -148,14 +162,27 @@ class Mission {
       if ( !(origin instanceof Character) ) {
         origin = this.findCharacter(origin)
       }
-      origin.startFiring()
+      if (origin) {
+        origin.startFiring()
 
-      target = this.findCharacter(target)
-      if ( target && target.id ) {
-        if ( this.canHit(origin, target) ) {
-          target.takeDamage(origin.damage);
+        target = this.findCharacter(target)
+        if ( target && target.id ) {
+          if ( this.canHit(origin, target) ) {
+            target.takeDamage(origin.damage);
+          }
+          // return target.isDead()
+          // let targetDied = player.currentMission.fireOn(player, message.target)
+
+          // if (targetDied) {
+          if (target.isDead()) {
+            this.removeCharacter(target)
+            // let deathMessage = JSON.stringify({
+            //   'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
+            //   'character': target
+            // })
+            // this.broadcast(deathMessage);
+          }
         }
-        return target.isDead()
       }
     }
   }
@@ -207,14 +234,14 @@ class Mission {
       let currTime = Date.now()
       let updateRatio = (currTime - this.prevTime) * 0.06 // following Babylon's definition of the animationRatio: dt * ( 60/1000 )
       this.prevTime = currTime
-      // this.update(updateRatio)
+      this.update(updateRatio)
       let message = JSON.stringify({
         'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
         'mission': this.messageFormat(),
         'triggers': triggers
       })
       // console.log("mission timer")
-      // wss.broadcast(message);
+      this.broadcast(message);
     }, DT);
   }
 }

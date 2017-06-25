@@ -153,11 +153,7 @@ class Character {
     let closest = mission.findClosestInRange(this, CONSTANTS.NPC.DETECTION_RANGE * CONSTANTS.MAP.ELEMENT_SIZE, mission.allies)
     let path
     if (closest && closest !== this.target) path = mission.map.getGamePath(this.position, closest.position)
-    // if (closest !== this.target && path && path.length <= 2 || this.target instanceof Character && this.target.isDead() ) {
-    //   this.target = closest
-    // } else if ( this.target && this.isWithinRange(this.range, this.target) ) {
-    //   this.target = {position: mission.map.generateEnemyPosition() }
-    // }
+
     if ( path && path.length <= 2 ) {
       this.target = closest
     } else if ( !this.target || this.target instanceof Character && this.target.isDead() || this.isWithinRange(this.range, this.target) ) {
@@ -166,9 +162,6 @@ class Character {
   }
 
   processAI(mission) {
-    // let closest = mission.findClosest(this, mission.allies)
-    // if (closest) this.target = closest
-    // if (this.target instanceof Character && this.target.isDead()) this.target = {}
     this.determineTarget(mission)
     this.fwdSpeed = 0
       if (this.target && this.target.position) {
@@ -176,19 +169,17 @@ class Character {
         if ( path && path.length > 2 ) {
           this.movePosition = path[1]
           this.range = this.moveRange
-          // if(this.position.x)          console.log('npc position', this.position)
         } else if ( path && path.length === 2) {
           this.movePosition = Object.assign({}, this.target.position)
           this.range = this.attackRange
         }
         if( this.movePosition ){
-          // console.log("moving to pos:", this.movePosition, 'currPos', this.position)
           this.moveTo(this.movePosition)
         }
         let timeSinceAttack = Date.now() - this.lastAttack
         if ( this.target instanceof Character && this.canHit(this.target) && timeSinceAttack > this.attackSpeed) {
           this.lastAttack = Date.now()
-          this.fireOn(this.target)
+          mission.fireOn(this, this.target)
         }
       }
   }
