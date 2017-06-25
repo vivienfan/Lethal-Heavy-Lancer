@@ -1,6 +1,6 @@
 // app.js
 window.onload = function() {
-  var socket = new WebSocket("ws://localhost:8080");
+  var socket = new WebSocket(`ws://${window.location.hostname}:8080`);
 
   var canvas = document.getElementById("canvas");
   var engine = new BABYLON.Engine(canvas, true);
