@@ -57,7 +57,7 @@ let prevTime = Date.now()
 wss.on('connection', (ws) => {
   console.log('Client connected')
   const player = new Player({ws: ws})
-  console.log(player)
+  // console.log(player)
   const playerCharacter = new Character(player)
   // console.log(player.)
 
@@ -66,7 +66,6 @@ wss.on('connection', (ws) => {
     // player.joinMission(existingMission)
     existingMission.addPlayer(player)
   } else {
-    existingMission
     existingMission = player.joinMission(mission)
   }
   // player.joinMission(mission)
@@ -76,9 +75,10 @@ wss.on('connection', (ws) => {
   ws.send(JSON.stringify({
     'type': CONSTANTS.MESSAGE_TYPE.PLAYER_INFO,
     'data': player.messageFormat(),
-    'mission': mission.messageFormat(),
-    'map': mission.map.messageFormat()
+    'mission': player.currentMission.messageFormat(),
+    'map': player.currentMission.map.messageFormat()
   }))
+  console.log('sent player info')
 
   // console.log("player char:", playerCharacter.messageFormat())
   // console.log("mission: ", mission)
@@ -86,14 +86,14 @@ wss.on('connection', (ws) => {
   ws.on('message', function incoming(message) {
     message = JSON.parse(message)
 
-    if ( mission ) {
+    if ( player.currentMission ) {
       if ( message.type === CONSTANTS.MESSAGE_TYPE.UPDATE ) {
-        let player = mission.characters.find(function(element) {
-          return element.id === playerCharacter.id;
+        let playerChar = player.currentMission.characters.find(function(element) {
+          return element.id === player.id;
         });
 
-        if (player) {
-          player.update(message.player);
+        if (playerChar) {
+          playerChar.update(message.player);
         }
       } else if ( message.type === CONSTANTS.MESSAGE_TYPE.FIRE) {
         player.currentMission.broadcast(JSON.stringify({
@@ -122,12 +122,12 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     console.log('Client disconnected')
     player.currentMission.removeCharacter(player)
-    let message = JSON.stringify({
-      'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
-      'character': player.messageFormat()
-    })
+    // let message = JSON.stringify({
+    //   'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
+    //   'character': player.messageFormat()
+    // })
     // console.log(mission._characters)
-    wss.broadcast(message);
+    // wss.broadcast(message);
   });
 });
 
