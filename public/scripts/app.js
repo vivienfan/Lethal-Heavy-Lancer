@@ -76,6 +76,9 @@ window.onload = function() {
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
         updateCharacters(data.mission.characters);
         break;
+      case CONSTANTS.MESSAGE_TYPE.FIRE:
+        displayPlayerFire(data.data.id);
+        break;
       case CONSTANTS.MESSAGE_TYPE.REMOVE:
         removeCharacter(data.character);
         break;
@@ -88,6 +91,7 @@ window.onload = function() {
   }
 
   function initWorld(player, mission, map) {
+    console.log(player, mission);
     playerStatus = new Player(player, mission);
     createScene(map);
   }
@@ -108,6 +112,7 @@ window.onload = function() {
     scene.executeWhenReady(function() {
       health.classList.remove("hide");
       bloodBlur.classList.remove("hide");
+      socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
 
       engine.hideLoadingUI();
       engine.runRenderLoop(function(){
@@ -304,7 +309,6 @@ window.onload = function() {
             char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
           } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER){
             char_mesh.position.y = 0;
-            displayPlayerFire(character);
           }
         } else {
           if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && npcMesh) {
@@ -334,14 +338,14 @@ window.onload = function() {
     });
   }
 
-  function displayPlayerFire(player) {
-    if (player.fire) {
-      var direction = new BABYLON.Vector3(
-        -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)),
-        Math.sin(player.rotation.x),
-        -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)));
-      createBeam(player.position, direction, 0);
-    }
+  function displayPlayerFire(id) {
+    console.log("player fires:", player);
+    var player = scene.getMeshByName(id);
+    var direction = new BABYLON.Vector3(
+      -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)),
+      Math.sin(player.rotation.x),
+      -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)));
+    createBeam(player.position, direction, 0);
   }
 
   function buildNewNPC(character) {
@@ -399,8 +403,11 @@ window.onload = function() {
         player.position.y = -2;
         // add flame
       } else {
-        particleSystems[character.id][0].dispose();
-        particleSystems[character.id][1].dispose();
+        console.log(character);
+        if (particleSystems[character.id]) {
+          particleSystems[character.id][0].dispose();
+          particleSystems[character.id][1].dispose();
+        }
         deadNPC.push({counter: 12, mesh: scene.getMeshByName(character.id), particleSystems: null}); // 12 frames
       }
     }
