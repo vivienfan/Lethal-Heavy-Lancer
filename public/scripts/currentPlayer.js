@@ -38,7 +38,7 @@ function initFocus() {
   cameraTarget.position.x = playerStatus.position.x;
   cameraTarget.position.y = playerStatus.position.y + CONSTANTS.CAMERA.HEIGHT_OFFSET;
   cameraTarget.position.z = playerStatus.position.z;
-  cameraTarget.rotation.x = playerStatus.rotation.x + CAMERA_TARGET_OFFSET;
+  cameraTarget.rotation.x = playerStatus.rotation.x + CONSTANTS.CAMERA_TARGET_OFFSET;
   cameraTarget.rotation.y = playerStatus.rotation.y;
   cameraTarget.rotation.z = playerStatus.rotation.z;
 }
@@ -80,7 +80,7 @@ function updatePlayerOrientation() {
   player.rotationX = 0;
   camera.beta = Math.min(Math.max(tmp_angle, CONSTANTS.CAMERA.DOWN_ANGLE_MAX), CONSTANTS.CAMERA.UP_ANGLE_MAX);
   avatar.rotation.x = camera.beta - CONSTANTS.CAMERA.BETA_OFFSET;
-  cameraTarget.rotation.x = avatar.rotation.x + CAMERA_TARGET_OFFSET;
+  cameraTarget.rotation.x = avatar.rotation.x + CONSTANTS.CAMERA_TARGET_OFFSET;
 
   // move forward/backward
   playerStatus.position.x += player.fwdSpeed * Math.sin(playerStatus.rotation.y + Math.PI) * scene.getAnimationRatio();

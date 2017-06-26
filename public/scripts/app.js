@@ -13,15 +13,14 @@ var particleSystems = {};
 var deadNPC = [];
 
 var ALIVE = true;
+var SPACESHIP_ELLIPSOID;
 
 var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
 var npcSoundEffects = {};
 
 var alpha = 0;
 
-var SPACESHIP_ELLIPSOID;
-// var TOTAL_BUILDINGS = 23;
-var CAMERA_TARGET_OFFSET = Math.PI / 2;
+// var CAMERA_TARGET_OFFSET = Math.PI / 2;
 
 var HEALTH_COLOR_FULL = "#86e01e";
 var HEALTH_COLOR_HIGH = "#f2d31b";
