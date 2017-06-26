@@ -19,9 +19,8 @@ var npcSoundEffects = {};
 
 var alpha = 0;
 
-// var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
 var SPACESHIP_ELLIPSOID;
-var TOTAL_BUILDINGS = 23;
+// var TOTAL_BUILDINGS = 23;
 var CAMERA_TARGET_OFFSET = Math.PI / 2;
 
 var HEALTH_COLOR_FULL = "#86e01e";

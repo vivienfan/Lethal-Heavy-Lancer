@@ -106,7 +106,7 @@ function createGround() {
 
 function createBuildings(map) {
   var materials = [];
-  for( var i = 0; i < TOTAL_BUILDINGS; i++) {
+  for( var i = 0; i < CONSTANTS.TOTAL_BUILDINGS; i++) {
     var newMaterial = new BABYLON.StandardMaterial("buildingMaterial" + i, scene);
     newMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/buildings/" + i + ".jpg", scene);
     // newMaterial.bumpTexture = new BABYLON.Texture("assets/texture/buildings/normal_" + i + ".png", scene);
@@ -141,7 +141,8 @@ function createBuildings(map) {
         newObstacle.position.y = CONSTANTS.WORLD_OFFSET;
 
         var randomSize = (Math.floor(Math.random() * 500) + 300) / 100;
-        var randomIndex = Math.floor(Math.random() * TOTAL_BUILDINGS);
+        var randomIndex = Math.floor(Math.random() * CONSTANTS.TOTAL_BUILDINGS);
+
         newObstacle.scaling.y = randomSize;
         var buildingMaterial = materials[randomIndex].clone(indexX + "-" + indexZ);
         buildingMaterial.emissiveTexture.vScale = randomSize ;

@@ -73,11 +73,9 @@ var CONSTANTS = {
     RADIUS: 1.5
   },
 
-  AIM_OFFSET: 7 * Math.PI/180
+  AIM_OFFSET: 7 * Math.PI/180,
 
-  // SPACESHIP_ELLIPSOID:
-
-  // TOTAL_BUILDINGS:
+  TOTAL_BUILDINGS: 23
 
   // HEALTH_COLOR: {
   //   FULL:
