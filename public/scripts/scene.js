@@ -185,18 +185,18 @@ function updateCharacters(characters) {
       var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
       healthBar.style.width = healthPercent + "%";
       if (healthPercent >= 80) {
-        healthBar.style.backgroundColor = HEALTH_COLOR_FULL;
+        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.FULL;
       } else if (healthPercent >= 60) {
-        healthBar.style.backgroundColor = HEALTH_COLOR_HIGH;
+        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HIGH;
       } else if (healthPercent >= 40) {
         if (!alarmSound.isPlaying) {
           alarmSound.play();
         }
-        healthBar.style.backgroundColor = HEALTH_COLOR_HALF;
+        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HALF;
       } else if (healthPercent >= 20) {
-        healthBar.style.backgroundColor = HEALTH_COLOR_LOW;
+        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.LOW;
       } else {
-        healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
+        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.VERY_LOW;
       }
       if (healthPercent <= 75) {
         bloodBlur.style.opacity = (1 - healthPercent / 100) * 0.7;

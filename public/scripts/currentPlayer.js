@@ -132,5 +132,5 @@ function displayGameLose() {
 }
 
 function displayGameWin() {
-
+  console.log("you win page shall display there");
 }

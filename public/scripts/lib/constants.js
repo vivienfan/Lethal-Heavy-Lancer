@@ -77,16 +77,15 @@ var CONSTANTS = {
 
   TOTAL_BUILDINGS: 23,
 
-  CAMERA_TARGET_OFFSET: Math.PI / 2
+  CAMERA_TARGET_OFFSET: Math.PI / 2,
 
-  // HEALTH_COLOR: {
-  //   FULL:
-  //   HIGHT:
-  //   HALF:
-  //   LOW:
-  //   VERY_LOW:
-  // }
-
+  HEALTH_COLOR: {
+    FULL: "#86e01e",
+    HIGHT: "#f2d31b",
+    HALF: "#f2b01e",
+    LOW: "#f27011",
+    VERY_LOW: "#f63a0f"
+  }
 }
 
 if (typeof module !== "undefined" && module.exports) {

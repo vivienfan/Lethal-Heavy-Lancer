@@ -4,30 +4,21 @@ var socket;
 var canvas, healthBar, health, bloodBlur, gameOver;
 
 var engine, scene, camera, playerMesh, npcMesh, ground, skybox, flame;
-var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
 var inputManager = new InputManager();
 
-var playerStatus = {};
-var characterStatus = [];
-var particleSystems = {};
-var deadNPC = [];
+var npcSoundEffects = {};
+var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
 
 var ALIVE = true;
 var SPACESHIP_ELLIPSOID;
 
-var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
-var npcSoundEffects = {};
+var playerStatus = {};
+var characterStatus = [];
+var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
 
 var alpha = 0;
-
-// var CAMERA_TARGET_OFFSET = Math.PI / 2;
-
-var HEALTH_COLOR_FULL = "#86e01e";
-var HEALTH_COLOR_HIGH = "#f2d31b";
-var HEALTH_COLOR_HALF = "#f2b01e";
-var HEALTH_COLOR_LOW = "#f27011";
-var HEALTH_COLOR_VERY_LOW = "#f63a0f";
-
+var deadNPC = [];
+var particleSystems = {};
 
 window.onload = function() {
   socket = new WebSocket(`ws://${window.location.hostname}:8080`);
@@ -42,7 +33,6 @@ window.onload = function() {
   gameOver = document.getElementById("game-over");
 
   SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
-
 
   window.addEventListener("resize", function() {
     engine.resize();
