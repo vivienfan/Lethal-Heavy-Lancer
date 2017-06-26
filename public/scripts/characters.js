@@ -98,11 +98,11 @@ function displayPlayerFire(id) {
 
   function removePlayer(id) {
     var player = scene.getMeshByName(id);
-    player.position.y = WORLD_OFFSET;
+    player.position.y = CONSTANTS.WORLD_OFFSET;
 
     var emitter = BABYLON.Mesh.CreateBox("emitter", 0.1, scene);
     emitter.position.x = player.position.x;
-    emitter.position.y = WORLD_OFFSET;
+    emitter.position.y = CONSTANTS.WORLD_OFFSET;
     emitter.position.z = player.position.z;
     emitter.isVisible = false;
 

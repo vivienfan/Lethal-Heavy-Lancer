@@ -9,7 +9,7 @@ function createScene(map) {
   createSun();
   createGround();
   createBuildings(map);
-  // viewAllBuildingTextures(TOTAL_BUILDINGS, scene, WORLD_OFFSET);
+  // viewAllBuildingTextures(CONSTANTS.TOTAL_BUILDINGS, scene, CONSTANTS.WORLD_OFFSET);
 
   createNPCMesh();
   createPlayerMesh();
@@ -63,7 +63,7 @@ function createSkybox() {
   // Create skybox
   skybox = BABYLON.Mesh.CreateBox("skyBox", 1000, scene);
   skybox.isPickable = false;
-  skybox.position.y = WORLD_OFFSET;
+  skybox.position.y = CONSTANTS.WORLD_OFFSET;
 
   var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
   skyboxMaterial.backFaceCulling = false;
@@ -89,7 +89,7 @@ function createSun() {
 
 function createGround() {
   ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
-  ground.position.y = GROUND_LEVEL + WORLD_OFFSET;
+  ground.position.y = CONSTANTS.GROUND_LEVEL + CONSTANTS.WORLD_OFFSET;
   ground.isPickable = false;
 
   var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
@@ -138,7 +138,7 @@ function createBuildings(map) {
         var newObstacle = buildingMesh.clone(indexX + "-" + indexZ);
         newObstacle.position.x = indexX * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
         newObstacle.position.z = indexZ * CONSTANTS.MAP.ELEMENT_SIZE - CONSTANTS.MAP.ELEMENT_SIZE / 2;
-        newObstacle.position.y = WORLD_OFFSET;
+        newObstacle.position.y = CONSTANTS.WORLD_OFFSET;
 
         var randomSize = (Math.floor(Math.random() * 500) + 300) / 100;
         var randomIndex = Math.floor(Math.random() * TOTAL_BUILDINGS);
@@ -150,7 +150,7 @@ function createBuildings(map) {
 
         var newObstacleBase = buildingBase.clone(indexX + "-" + indexZ);
         newObstacleBase.position.x = newObstacle.position.x;
-        newObstacleBase.position.y = WORLD_OFFSET;
+        newObstacleBase.position.y = CONSTANTS.WORLD_OFFSET;
         newObstacleBase.position.z = newObstacle.position.z;
         ground.material.reflectionTexture.renderList.push(newObstacleBase);
       }

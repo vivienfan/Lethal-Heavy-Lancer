@@ -55,7 +55,12 @@ var CONSTANTS = {
     MAX_ROOM_SIZE: 10,
     FAIL_CUTOFF: 100,
     SAFE_DISTANCE: 6
-  }
+  },
+
+  // client side constants:
+  GROUND_LEVEL: -2.2,
+
+  WORLD_OFFSET: -5
 }
 
 if (typeof module !== "undefined" && module.exports) {

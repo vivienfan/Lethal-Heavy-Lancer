@@ -1,20 +1,28 @@
 // app.js
 var socket;
 
-var canvas;
-var engine;
+var canvas, healthBar, health, bloodBlur, gameOver;
 
-var scene, camera, playerMesh, npcMesh, ground, skybox, flame;
+var engine, scene, camera, playerMesh, npcMesh, ground, skybox, flame;
 var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
 var inputManager = new InputManager();
 
-var healthBar;
-var health;
-var bloodBlur;
-var gameOver;
+var playerStatus = {};
+var characterStatus = [];
+var particleSystems = {};
+var deadNPC = [];
 
-var GROUND_LEVEL = -2.2;
-var WORLD_OFFSET = -5;
+var ALIVE = true;
+
+var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
+var npcSoundEffects = {};
+
+var alpha = 0;
+
+
+
+// var GROUND_LEVEL = -2.2;
+// var WORLD_OFFSET = -5;
 
 var ANGLE = Math.PI / 180;
 var UP_ANGLE_MAX = 135 * ANGLE;
@@ -26,28 +34,15 @@ var RADIUS = 1.5;
 
 var AIM_OFFSET = 7 * Math.PI/180;
 var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
-var alpha = 0;
 var SPACESHIP_ELLIPSOID;
 var TOTAL_BUILDINGS = 23;
 var CAMERA_TARGET_OFFSET = Math.PI / 2;
-
-var playerStatus = {};
-var characterStatus = [];
-var particleSystems = {};
-var deadNPC = [];
 
 var HEALTH_COLOR_FULL = "#86e01e";
 var HEALTH_COLOR_HIGH = "#f2d31b";
 var HEALTH_COLOR_HALF = "#f2b01e";
 var HEALTH_COLOR_LOW = "#f27011";
 var HEALTH_COLOR_VERY_LOW = "#f63a0f";
-
-var ALIVE = true;
-
-var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
-var npcSoundEffects = {};
-
-
 
 
 window.onload = function() {
