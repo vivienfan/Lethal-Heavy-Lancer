@@ -48,7 +48,7 @@ window.onload = function() {
 
   var ALIVE = true;
 
-  var shootingSound, npcSound, alarmSound, burningSound;
+  var shootingSound, npcSound, alarmSound, burningSound, explosionSound;
   var npcSoundEffects = {};
 
 
@@ -143,10 +143,11 @@ window.onload = function() {
   function loadAudio() {
     shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
     shootingSound.setVolume(0.2);
-    npcSound = new BABYLON.Sound("npc", "assets/audio/npc.mp3", scene, null, { loop: true, autoplay: false });
+    npcSound = new BABYLON.Sound("npc", "assets/audio/npc.mp3", scene, null, { loop: true, autoplay: false, maxDistance: 250});
     alarmSound = new BABYLON.Sound("alarm", "assets/audio/alarm.wav", scene, null, { loop: true, autoplay: false});
     alarmSound.setVolume(0.08);
-    burningSound = new BABYLON.Sound("burning", "assets/audio/burning.wav", scene, null, { loop: true, autoplay: false});
+    burningSound = new BABYLON.Sound("burning", "assets/audio/burning.wav", scene, null, { loop: true, autoplay: false, maxDistance: 250});
+    explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
   }
 
   function createSkybox() {
@@ -477,7 +478,10 @@ window.onload = function() {
     npcSoundEffects[id].dispose();
     particleSystems[id][0].dispose();
     particleSystems[id][1].dispose();
-    deadNPC.push({counter: 12, mesh: scene.getMeshByName(id), particleSystems: null}); // 12 frames
+    var mesh = scene.getMeshByName(id)
+    var newExplosionSound = explosionSound.clone();
+    newExplosionSound.attachToMesh(mesh)
+    deadNPC.push({counter: 10, mesh: mesh, particleSystems: null, sound: newExplosionSound}); // 10 frames
   }
 
   function displayGameLose() {
@@ -589,14 +593,20 @@ window.onload = function() {
 
   function deadNPCAnimation() {
     deadNPC.forEach(function(npc, index) {
+      if (npc.counter === -2) {
+        npc.sound.dispose();
+        deadNPC.splice(index, 1);
+      }
       if(npc.counter === 0) {
         npc.mesh.dispose();
-        deadNPC.splice(index, 1);
       } else {
-        if (npc.counter > 2) {
+        if (npc.counter > 1) {
           npc.mesh.scaling.x /= 1.2;
           npc.mesh.scaling.y /= 1.2;
           npc.mesh.scaling.z /= 1.2;
+        }
+        if (npc.counter === 1) {
+          npc.sound.play();
         }
         npc.counter--;
       }
