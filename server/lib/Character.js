@@ -159,7 +159,7 @@ class Character {
     if ( path && path.length <= 2 ) {
       this.target = closest
     } else if ( !this.target || this.target instanceof Character && this.target.isDead() || this.isWithinRange(this.range, this.target) ) {
-      this.target = {position: mission.map.generateEnemyPosition() }
+      this.target = {position: mission.map.generateEnemyMovePosition() }
     }
   }
 
