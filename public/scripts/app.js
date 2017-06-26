@@ -48,6 +48,9 @@ window.onload = function() {
 
   var ALIVE = true;
 
+  var shootingSound;
+
+
   window.addEventListener("resize", function() {
     engine.resize();
   })
@@ -104,6 +107,8 @@ window.onload = function() {
     scene = new BABYLON.Scene(engine);
     flame = new BABYLON.Texture("Fire.png", scene);
 
+    loadAudio();
+
     createSkybox();
     createSun();
     createGround();
@@ -132,6 +137,10 @@ window.onload = function() {
     })
 
     return scene;
+  }
+
+  function loadAudio() {
+    shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
   }
 
   function createSkybox() {
@@ -720,6 +729,7 @@ window.onload = function() {
               if ( type === "keydown" && !this.isPressed[event.key] ) {
                 this.isPressed[event.key] = true
                 castRay();
+                shootingSound.play();
               } else if (type === "keyup") {
                 this.isPressed[event.key] = false;
               }
