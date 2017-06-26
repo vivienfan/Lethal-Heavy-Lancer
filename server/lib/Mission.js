@@ -76,6 +76,17 @@ class Mission {
     }
   }
 
+  removePlayer(player) {
+    let index = this.players.findIndex(function(element) {
+      return element.id === player.id;
+    });
+    if (index > -1) {
+      player.currentMission = null
+      this.players.splice(index, 1)
+    }
+    this.removeCharacter(player)
+  }
+
   removeCharacter(character) {
     let index = this.characters.findIndex(function(element) {
       return element.id === character.id;
@@ -104,11 +115,11 @@ class Mission {
         'character': character.messageFormat()
       })
       this.broadcast(deathMessage);
-      console.log('sent remove')
       if (this.enemies.length <= 0){
         let winMessage = JSON.stringify({
           'type': CONSTANTS.MESSAGE_TYPE.GAME_END
         })
+        console.log('sent win')
         this.broadcast(winMessage)
       }
     }
