@@ -235,8 +235,8 @@ window.onload = function() {
 
   function createNPCMesh() {
     var npcMaterial = new BABYLON.StandardMaterial('columnsmat', scene);
-    // npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/npc.jpg", scene);
-    npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/blue_red_flame.jpg", scene);
+    npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/npc.jpg", scene);
+    // npcMaterial.emissiveTexture = new BABYLON.Texture("assets/texture/blue_red_flame.jpg", scene);
     npcMaterial.bumpTexture = new BABYLON.Texture("assets/texture/npc_normal.png", scene);
     npcMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
     npcMaterial.specularColor = new BABYLON.Color3(1, 0, 0);
