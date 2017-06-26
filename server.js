@@ -35,8 +35,8 @@ wss.broadcast = function broadcast(data, except) {
   });
 };
 
-let mission = new Mission()
-missions.push(mission)
+// let mission = new Mission()
+// missions.push(mission)
 
 let prevTime = Date.now()
 // const timer = setInterval(function() {
