@@ -157,21 +157,17 @@ class GameMap {
     return this.convertToGameCoords({x: x, z: z})
   }
 
-  generateEnemySpawnPosition() {
+  generateEnemySpawnPosition(players) {
     let x = 0
     let z = 0
     let valid
     let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
     do {
-      cutoff--;
-      if ( cutoff <= 0 ) {
-        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
-        safeDist /= 2
-      }
       x = this.GetRandom(1, this.grid.length - 2)
       z = this.GetRandom(1, this.grid.length[0] - 2)
-      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 3
+      // valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 3
+      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && this.isAwayFromPlayers(players, {x: x, z: z})
     } while (!valid)
     return this.convertToGameCoords({x: x, z: z})
   }
@@ -190,14 +186,19 @@ class GameMap {
       }
       x = this.GetRandom(1, this.mapSize - 2)
       z = this.GetRandom(1, this.mapSize - 2)
-      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && !this.isWithinPathSteps({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}, 3)
+      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist && !this.isWithinPathSteps({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}, 3)
       // valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 3
     } while (!valid)
     return this.convertToGameCoords({x: x, z: z})
   }
 
   isAwayFromPlayers(players, target) {
-
+    for (var i = 0; i < players.length; i++) {
+      if (this.isWithinPathSteps(this.convertToMapCoords(players[i].position), target, 3) ) {
+        return false
+      }
+    }
+    return true
   }
 
   isWithinPathSteps(origin, target, steps) {
