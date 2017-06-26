@@ -108,7 +108,6 @@ class Character {
       'id': this.id,
       'type': this.type,
       'firing': this.firing,
-      'range': this.range,
       'aggro': this.target instanceof Character,
       'position': this.position,
       'rotation': this.rotation,
