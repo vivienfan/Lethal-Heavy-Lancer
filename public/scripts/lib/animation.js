@@ -65,3 +65,64 @@ function npcMovingAnimation(id, position) {
   particleSystems[id][1].emitter.position.z = -2 * Math.sin(alpha) + position.z;
   alpha += 0.05 * scene.getAnimationRatio();
 }
+
+function burningSpaceshipAnimation(position) {
+  var emitter = BABYLON.Mesh.CreateBox("emitter", 0.1, scene);
+  emitter.position.x = position.x;
+  emitter.position.y = CONSTANTS.WORLD_OFFSET;
+  emitter.position.z = position.z;
+  emitter.isVisible = false;
+
+  var flame_ps = new BABYLON.ParticleSystem("particles", 2000, scene);
+  flame_ps.particleTexture = new BABYLON.Texture("assets/texture/red_blue_flame.jpg", scene);
+  flame_ps.minSize = 1;
+  flame_ps.maxSize = 2;
+  flame_ps.minLifeTime = 0.3;
+  flame_ps.maxLifeTime = 1.5;
+  flame_ps.minEmitPower = 1;
+  flame_ps.maxEmitPower = 3;
+  flame_ps.minAngularSpeed = 0;
+  flame_ps.maxAngularSpeed = Math.PI;
+  flame_ps.emitter = emitter;
+  flame_ps.emitRate = 800;
+  flame_ps.updateSpeed = 0.05;
+  flame_ps.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+  flame_ps.direction1 = new BABYLON.Vector3(-7, 8, 3);
+  flame_ps.direction2 = new BABYLON.Vector3(7, 8, -3);
+  flame_ps.minEmitBox = new BABYLON.Vector3(-5, 0, -5);
+  flame_ps.maxEmitBox = new BABYLON.Vector3(5, 0, 5);
+  flame_ps.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+  flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+  flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+  flame_ps.start();
+
+  return emitter;
+}
+
+function createParticles(id) {
+  particleSystems[id] = [];
+  createOneLayer("Fire.png", id, 0, 0.2, 0.3);
+  createOneLayer("Fire.png", id, 1, 0.2, 0.4);
+}
+
+function createOneLayer(filePath, id, level, minSize, maxSize) {
+  var emitter = BABYLON.Mesh.CreateBox("emitter" + level, 0.1, scene);
+  emitter.isVisible = false;
+
+  particleSystems[id][level] = new BABYLON.ParticleSystem("particles", 1000, scene);
+  particleSystems[id][level].particleTexture = new BABYLON.Texture(filePath, scene);
+  particleSystems[id][level].minSize = minSize;
+  particleSystems[id][level].maxSize = maxSize;
+  particleSystems[id][level].minEmitPower = 1;
+  particleSystems[id][level].maxEmitPower = 2;
+  particleSystems[id][level].minLifeTime = 0.7;
+  particleSystems[id][level].maxLifeTime = 1;
+  particleSystems[id][level].emitter = emitter;
+  particleSystems[id][level].emitRate = 100;
+  particleSystems[id][level].blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+  particleSystems[id][level].minEmitBox = new BABYLON.Vector3(0, 0, 0);
+  particleSystems[id][level].maxEmitBox = new BABYLON.Vector3(0, 0, 0);
+  particleSystems[id][level].direction1 = new BABYLON.Vector3(0, 0, 0);
+  particleSystems[id][level].direction2 = new BABYLON.Vector3(0, 0, 0);
+  particleSystems[id][level].start();
+}

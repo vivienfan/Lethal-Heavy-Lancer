@@ -23,143 +23,87 @@ function createPlayerMesh() {
 }
 
 function displayPlayerFire(id) {
-    var player = scene.getMeshByName(id);
-    var direction = new BABYLON.Vector3(
-      -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)),
-      Math.sin(player.rotation.x),
-      -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)));
-    createBeam(player.position, direction, -0.5);
-  }
+  var player = scene.getMeshByName(id);
+  var direction = new BABYLON.Vector3(
+    -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)),
+    Math.sin(player.rotation.x),
+    -Math.cos(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)));
+  createBeam(player.position, direction, -0.5);
+}
 
-  function buildNewNPC(character) {
-    var newNPC = npcMesh.clone(character.id);
-    newNPC.position = character.position;
-    newNPC.rotation = character.rotation;
-    newNPC.checkCollisions = true;
+function buildNewNPC(character) {
+  var newNPC = npcMesh.clone(character.id);
+  newNPC.position = character.position;
+  newNPC.rotation = character.rotation;
+  newNPC.checkCollisions = true;
 
-    createParticles(character.id)
+  createParticles(character.id)
 
-    var newNPCSound = npcSound.clone();
-    newNPCSound.attachToMesh(newNPC);
-    newNPCSound.autoplay = true;
-    npcSoundEffects[character.id] = newNPCSound;
-    ground.material.reflectionTexture.renderList.push(newNPC);
-  }
+  var newNPCSound = npcSound.clone();
+  newNPCSound.attachToMesh(newNPC);
+  newNPCSound.autoplay = true;
+  npcSoundEffects[character.id] = newNPCSound;
+  ground.material.reflectionTexture.renderList.push(newNPC);
+}
 
-  function createParticles(id) {
-    particleSystems[id] = [];
-    createOneLayer("Fire.png", id, 0, 0.2, 0.3);
-    createOneLayer("Fire.png", id, 1, 0.2, 0.4);
-  }
+function buildNewPlayer(character) {
+  var newPlayer = playerMesh.clone(character.id);
+  newPlayer.position.x = character.position.x;
+  newPlayer.position.y = 0;
+  newPlayer.position.z = character.position.z;
+  newPlayer.rotation = character.rotation;
+  newPlayer.checkCollisions = true;
+  ground.material.reflectionTexture.renderList.push(newPlayer);
+}
 
-  function createOneLayer(filePath, id, level, minSize, maxSize) {
-    var emitter = BABYLON.Mesh.CreateBox("emitter" + level, 0.1, scene);
-    emitter.isVisible = false;
-
-    particleSystems[id][level] = new BABYLON.ParticleSystem("particles", 1000, scene);
-    particleSystems[id][level].particleTexture = new BABYLON.Texture(filePath, scene);
-    particleSystems[id][level].minSize = minSize;
-    particleSystems[id][level].maxSize = maxSize;
-    particleSystems[id][level].minEmitPower = 1;
-    particleSystems[id][level].maxEmitPower = 2;
-    particleSystems[id][level].minLifeTime = 0.7;
-    particleSystems[id][level].maxLifeTime = 1;
-    particleSystems[id][level].emitter = emitter;
-    particleSystems[id][level].emitRate = 100;
-    particleSystems[id][level].blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-    particleSystems[id][level].minEmitBox = new BABYLON.Vector3(0, 0, 0);
-    particleSystems[id][level].maxEmitBox = new BABYLON.Vector3(0, 0, 0);
-    particleSystems[id][level].direction1 = new BABYLON.Vector3(0, 0, 0);
-    particleSystems[id][level].direction2 = new BABYLON.Vector3(0, 0, 0);
-    particleSystems[id][level].start();
-  }
-
-  function buildNewPlayer(character) {
-    var newPlayer = playerMesh.clone(character.id);
-    newPlayer.position.x = character.position.x;
-    newPlayer.position.y = 0;
-    newPlayer.position.z = character.position.z;
-    newPlayer.rotation = character.rotation;
-    newPlayer.checkCollisions = true;
-    ground.material.reflectionTexture.renderList.push(newPlayer);
-  }
-
-  function removeCharacter(character) {
-    if (character.id === playerStatus.id) {
-      displayGameLose();
+function removeCharacter(character) {
+  if (character.id === playerStatus.id) {
+    displayGameLose();
+  } else {
+    if (character.type === CONSTANTS.CHAR_TYPE.PLAYER) {
+      removePlayer(character.id);
     } else {
-      if (character.type === CONSTANTS.CHAR_TYPE.PLAYER) {
-        removePlayer(character.id);
-      } else {
-        removeNPC(character.id);
-      }
+      removeNPC(character.id);
     }
   }
+}
 
-  function removePlayer(id) {
-    var player = scene.getMeshByName(id);
-    player.position.y = CONSTANTS.WORLD_OFFSET;
+function removePlayer(id) {
+  var player = scene.getMeshByName(id);
+  player.position.y = CONSTANTS.WORLD_OFFSET;
+  var emitter = burningSpaceshipAnimation(player.position);
 
-    var emitter = BABYLON.Mesh.CreateBox("emitter", 0.1, scene);
-    emitter.position.x = player.position.x;
-    emitter.position.y = CONSTANTS.WORLD_OFFSET;
-    emitter.position.z = player.position.z;
-    emitter.isVisible = false;
+  var newBurningSound = burningSound.clone();
+  newBurningSound.play();
+  newBurningSound.attachToMesh(emitter);
+}
 
-    var flame_ps = new BABYLON.ParticleSystem("particles", 2000, scene);
-    flame_ps.particleTexture = new BABYLON.Texture("assets/texture/red_blue_flame.jpg", scene);
-    flame_ps.minSize = 1;
-    flame_ps.maxSize = 2;
-    flame_ps.minLifeTime = 0.3;
-    flame_ps.maxLifeTime = 1.5;
-    flame_ps.minEmitPower = 1;
-    flame_ps.maxEmitPower = 3;
-    flame_ps.minAngularSpeed = 0;
-    flame_ps.maxAngularSpeed = Math.PI;
-    flame_ps.emitter = emitter;
-    flame_ps.emitRate = 800;
-    flame_ps.updateSpeed = 0.05;
-    flame_ps.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-    flame_ps.direction1 = new BABYLON.Vector3(-7, 8, 3);
-    flame_ps.direction2 = new BABYLON.Vector3(7, 8, -3);
-    flame_ps.minEmitBox = new BABYLON.Vector3(-5, 0, -5);
-    flame_ps.maxEmitBox = new BABYLON.Vector3(5, 0, 5);
-    flame_ps.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
-    flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
-    flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
-    flame_ps.start();
+function removeNPC(id) {
+  npcSoundEffects[id].dispose();
+  particleSystems[id][0].dispose();
+  particleSystems[id][1].dispose();
+  var mesh = scene.getMeshByName(id)
+  var newExplosionSound = explosionSound.clone();
+  newExplosionSound.attachToMesh(mesh)
+  deadNPC.push({counter: 5, mesh: mesh, particleSystems: null, sound: newExplosionSound}); // 10 frames
+}
 
-    var newBurningSound = burningSound.clone();
-    newBurningSound.play();
-    newBurningSound.attachToMesh(emitter);
-  }
-
-  function removeNPC(id) {
-    npcSoundEffects[id].dispose();
-    particleSystems[id][0].dispose();
-    particleSystems[id][1].dispose();
-    var mesh = scene.getMeshByName(id)
-    var newExplosionSound = explosionSound.clone();
-    newExplosionSound.attachToMesh(mesh)
-    deadNPC.push({counter: 5, mesh: mesh, particleSystems: null, sound: newExplosionSound}); // 10 frames
-  }
-
-  function updateCharacterOriendtation() {
-    characterStatus.forEach(function(character) {
-      if (character.id !== playerStatus.id) {
-        var char = scene.getMeshByName(character.id);
-          if (char) {
-            char.rotation.y += character.rotYSpeed * scene.getAnimationRatio();
-            char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.z += character.fwdSpeed * Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.x += character.sideSpeed * -Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            char.position.z += character.sideSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
-            // there is a particle for this mesh -> npc, rotate the particle;
-            if (particleSystems[character.id]) {
-              npcMovingAnimation(character.id, char.position);
-            }
+function updateCharacterOriendtation() {
+  characterStatus.forEach(function(character) {
+    if (character.id !== playerStatus.id) {
+      var char = scene.getMeshByName(character.id);
+        if (char) {
+          char.rotation.y += character.rotYSpeed * scene.getAnimationRatio();
+          char.position.x += character.fwdSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+          char.position.z += character.fwdSpeed * Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+          char.position.x += character.sideSpeed * -Math.cos(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+          char.position.z += character.sideSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
+          // there is a particle for this mesh -> npc, rotate the particle;
+          if (particleSystems[character.id]) {
+            npcMovingAnimation(character.id, char.position);
           }
         }
-    });
-  }
+      }
+  });
+}
 
