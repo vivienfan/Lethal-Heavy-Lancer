@@ -19,8 +19,7 @@ var npcSoundEffects = {};
 
 var alpha = 0;
 
-var AIM_OFFSET = 7 * Math.PI/180;
-var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
+// var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
 var SPACESHIP_ELLIPSOID;
 var TOTAL_BUILDINGS = 23;
 var CAMERA_TARGET_OFFSET = Math.PI / 2;

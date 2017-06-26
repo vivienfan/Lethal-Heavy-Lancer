@@ -17,7 +17,7 @@ function InputManager() {
           case "W":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.fwdSpeed = SPEED
+              player.fwdSpeed = CONSTANTS.PLAYER.MAX_SPEED
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false;
               player.fwdSpeed = 0
@@ -27,7 +27,7 @@ function InputManager() {
           case "S":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.fwdSpeed = -(SPEED)
+              player.fwdSpeed = -(CONSTANTS.PLAYER.MAX_SPEED)
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.fwdSpeed = 0
@@ -37,7 +37,7 @@ function InputManager() {
           case "A":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.sideSpeed = SPEED
+              player.sideSpeed = CONSTANTS.PLAYER.MAX_SPEED
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.sideSpeed = 0
@@ -47,7 +47,7 @@ function InputManager() {
           case "D":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.sideSpeed = -SPEED
+              player.sideSpeed = -CONSTANTS.PLAYER.MAX_SPEED
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.sideSpeed = 0

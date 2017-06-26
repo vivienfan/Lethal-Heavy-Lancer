@@ -71,9 +71,9 @@ var CONSTANTS = {
     ALPHA_OFFSET: -Math.PI / 2,
     BETA_OFFSET:  Math.PI / 2 + 5 * Math.PI / 180,
     RADIUS: 1.5
-  }
+  },
 
-  // AIM_OFFSET:
+  AIM_OFFSET: 7 * Math.PI/180
 
   // SPACESHIP_ELLIPSOID:
 
