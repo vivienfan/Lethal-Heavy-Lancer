@@ -48,7 +48,8 @@ window.onload = function() {
 
   var ALIVE = true;
 
-  var shootingSound;
+  var shootingSound, npcSound;
+  var npcSoundEffects = {};
 
 
   window.addEventListener("resize", function() {
@@ -141,6 +142,8 @@ window.onload = function() {
 
   function loadAudio() {
     shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
+    shootingSound.setVolume(0.3);
+    npcSound = new BABYLON.Sound("npc", "assets/audio/npc.mp3", scene, null, { loop: true, autoplay: false });
   }
 
   function createSkybox() {
@@ -367,8 +370,18 @@ window.onload = function() {
     newNPC.position = character.position;
     newNPC.rotation = character.rotation;
     newNPC.checkCollisions = true;
-    ground.material.reflectionTexture.renderList.push(newNPC);
+
     createParticles(character.id)
+
+    var newNPCSound = npcSound.clone();
+    // newNPCSound.setVolume(0.5);
+    newNPCSound.attachToMesh(newNPC);
+    newNPCSound.autoplay = true;
+    npcSoundEffects[character.id] = newNPCSound;
+    console.log(newNPCSound);
+    console.log(npcSoundEffects);
+
+    ground.material.reflectionTexture.renderList.push(newNPC);
   }
 
   function createParticles(id) {
@@ -416,43 +429,52 @@ window.onload = function() {
       displayGameLose();
     } else {
       if (character.type === CONSTANTS.CHAR_TYPE.PLAYER) {
-        var player = scene.getMeshByName(character.id);
-        player.position.y = WORLD_OFFSET;
-
-        var emitter = BABYLON.Mesh.CreateBox("emitter", 0.1, scene);
-        emitter.position.x = player.position.x;
-        emitter.position.y = WORLD_OFFSET;
-        emitter.position.z = player.position.z;
-        emitter.isVisible = false;
-
-        var flame_ps = new BABYLON.ParticleSystem("particles", 2000, scene);
-        flame_ps.particleTexture = new BABYLON.Texture("assets/texture/red_blue_flame.jpg", scene);
-        flame_ps.minSize = 1;
-        flame_ps.maxSize = 2;
-        flame_ps.minLifeTime = 0.3;
-        flame_ps.maxLifeTime = 1.5;
-        flame_ps.minEmitPower = 1;
-        flame_ps.maxEmitPower = 3;
-        flame_ps.minAngularSpeed = 0;
-        flame_ps.maxAngularSpeed = Math.PI;
-        flame_ps.emitter = emitter;
-        flame_ps.emitRate = 800;
-        flame_ps.updateSpeed = 0.05;
-        flame_ps.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-        flame_ps.direction1 = new BABYLON.Vector3(-7, 8, 3);
-        flame_ps.direction2 = new BABYLON.Vector3(7, 8, -3);
-        flame_ps.minEmitBox = new BABYLON.Vector3(-5, 0, -5);
-        flame_ps.maxEmitBox = new BABYLON.Vector3(5, 0, 5);
-        flame_ps.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
-        flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
-        flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
-        flame_ps.start();
+        removePlayer(character.id);
       } else {
-        particleSystems[character.id][0].dispose();
-        particleSystems[character.id][1].dispose();
-        deadNPC.push({counter: 12, mesh: scene.getMeshByName(character.id), particleSystems: null}); // 12 frames
+        removeNPC(character.id);
       }
     }
+  }
+
+  function removePlayer(id) {
+    var player = scene.getMeshByName(id);
+    player.position.y = WORLD_OFFSET;
+
+    var emitter = BABYLON.Mesh.CreateBox("emitter", 0.1, scene);
+    emitter.position.x = player.position.x;
+    emitter.position.y = WORLD_OFFSET;
+    emitter.position.z = player.position.z;
+    emitter.isVisible = false;
+
+    var flame_ps = new BABYLON.ParticleSystem("particles", 2000, scene);
+    flame_ps.particleTexture = new BABYLON.Texture("assets/texture/red_blue_flame.jpg", scene);
+    flame_ps.minSize = 1;
+    flame_ps.maxSize = 2;
+    flame_ps.minLifeTime = 0.3;
+    flame_ps.maxLifeTime = 1.5;
+    flame_ps.minEmitPower = 1;
+    flame_ps.maxEmitPower = 3;
+    flame_ps.minAngularSpeed = 0;
+    flame_ps.maxAngularSpeed = Math.PI;
+    flame_ps.emitter = emitter;
+    flame_ps.emitRate = 800;
+    flame_ps.updateSpeed = 0.05;
+    flame_ps.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    flame_ps.direction1 = new BABYLON.Vector3(-7, 8, 3);
+    flame_ps.direction2 = new BABYLON.Vector3(7, 8, -3);
+    flame_ps.minEmitBox = new BABYLON.Vector3(-5, 0, -5);
+    flame_ps.maxEmitBox = new BABYLON.Vector3(5, 0, 5);
+    flame_ps.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+    flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+    flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+    flame_ps.start();
+  }
+
+  function removeNPC(id) {
+    npcSoundEffects[id].dispose();
+    particleSystems[id][0].dispose();
+    particleSystems[id][1].dispose();
+    deadNPC.push({counter: 12, mesh: scene.getMeshByName(id), particleSystems: null}); // 12 frames
   }
 
   function displayGameLose() {
