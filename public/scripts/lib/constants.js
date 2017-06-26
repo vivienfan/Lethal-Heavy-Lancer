@@ -30,7 +30,8 @@ var CONSTANTS = {
   MISSION: {
     MAX_PLAYERS: 4,
     MIN_ENEMIES: 12,
-    MAX_ENEMIES: 15
+    MAX_ENEMIES: 15,
+    CONCURRENT_ENEMIES: 12
   },
 
 // Player attributes
@@ -51,11 +52,11 @@ var CONSTANTS = {
   MAP: {
     DEFAULT_SIZE: 70,
     ELEMENT_SIZE: 25,
-    MIN_ROOMS: 14,
-    MAX_ROOMS: 18,
+    MIN_ROOMS: 16,
+    MAX_ROOMS: 20,
     MIN_ROOM_SIZE: 4,
     MAX_ROOM_SIZE: 10,
-    FAIL_CUTOFF: 100,
+    FAIL_CUTOFF: 200,
     SAFE_DISTANCE: 6
   },
 

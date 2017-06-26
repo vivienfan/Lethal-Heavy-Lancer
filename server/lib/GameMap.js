@@ -25,6 +25,7 @@ class GameMap {
       // diagonalMovement: PF.DiagonalMovement.IfAtMostOneObstacle
       diagonalMovement: PF.DiagonalMovement.OnlyWhenNoObstacles
     });
+    // this.trimGrid()
     // this.update(props);
   }
 
@@ -46,7 +47,6 @@ class GameMap {
       this.grid[x] = []
       for (var z = 0; z < size; z++) {
         this.grid[x][z] = new MapElement()
-        // this.block(x, z)
       }
     }
     if ( seed === 'empty' ){
@@ -93,6 +93,20 @@ class GameMap {
 
   trimGrid() {
     // TODO
+    for (var x = 0; x < this.grid.length; x++) {
+      if (this.isColumnEmpty(x)) {
+        this.grid.splice(x)
+        break
+      }
+    }
+    for (var z = 0; z < this.grid[0].length; z++) {
+      if(this.isRowEmpty(z)) {
+        for (var x = 0; x < this.grid.length; x++) {
+          this.grid[x].splice(z)
+        }
+        break
+      }
+    }
   }
 
   isObstacle(x, z) {
@@ -135,8 +149,8 @@ class GameMap {
         cutoff = CONSTANTS.MAP.FAIL_CUTOFF
         safeDist /= 2
       }
-      x = this.GetRandom(1, this.mapSize - 2)
-      z = this.GetRandom(1, this.mapSize - 2)
+      x = this.GetRandom(1, this.grid.length - 2)
+      z = this.GetRandom(1, this.grid[0].length - 2)
       valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 3
     } while (!valid)
     // return {x: (x + 0.5) * this.elementSize, z: (z + 0.5) * this.elementSize}
@@ -155,8 +169,8 @@ class GameMap {
         cutoff = CONSTANTS.MAP.FAIL_CUTOFF
         safeDist /= 2
       }
-      x = this.GetRandom(1, this.mapSize - 2)
-      z = this.GetRandom(1, this.mapSize - 2)
+      x = this.GetRandom(1, this.grid.length - 2)
+      z = this.GetRandom(1, this.grid.length[0] - 2)
       valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 3
     } while (!valid)
     return this.convertToGameCoords({x: x, z: z})

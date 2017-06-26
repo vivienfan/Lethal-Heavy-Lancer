@@ -73,7 +73,7 @@ class Character {
     }
     if ( diffAngle < Math.PI/2 && diffAngle <= Math.PI || diffAngle > ( 2 * Math.PI - Math.PI/2) && diffAngle > Math.PI) {
       let distSqr = diffPositionX * diffPositionX + diffPositionZ * diffPositionZ
-      let rangeSqr = this.range * this.range * .8
+      let rangeSqr = this.range * this.range * .64
       this.fwdSpeed = Math.max(0, Math.min(this.fwdSpeedMax, ( distSqr - rangeSqr ) / 24 * this.fwdSpeedMax))
     }
   }

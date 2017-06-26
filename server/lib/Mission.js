@@ -18,6 +18,7 @@ class Mission {
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
     this.map = new GameMap()
     this.characters = []
+    this.remainingEnemies = CONSTANTS.MISSION.MIN_ENEMIES
     this.enemies = []
     this.allies = []
     this.playerChars = []
@@ -64,8 +65,12 @@ class Mission {
       player.position = this.map.getStartPosition()
       this.addCharacter(player)
 
-      if (this.enemies.length < CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers) {
-        this.spawnEnemies(CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers)
+      // this.remainingEnemies += CONSTANTS.MISSION.MIN_ENEMIES
+      if (this.remainingEnemies < CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers) {
+        this.remainingEnemies += CONSTANTS.MISSION.MIN_ENEMIES
+      }
+      if (this.enemies.length < Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES)) {
+        this.spawnEnemies(Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES) - this.enemies.length)
       }
 
       // TODO: Remove below line, and instead tie in to socket message from client done loading.
@@ -74,6 +79,7 @@ class Mission {
   }
 
   spawnEnemies(num = CONSTANTS.MISSION.MIN_ENEMIES) {
+    console.log('spawning Enemies')
     for (var i = 0; i < num; i++) {
       this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
     }
@@ -105,11 +111,15 @@ class Mission {
       this.characters.splice(index, 1)
 
       if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
+        this.remainingEnemies--;
         index = this.enemies.findIndex(function(element) {
           return element.id === character.id;
         });
         if (index > -1) {
           this.enemies.splice(index, 1)
+        }
+        if (this.enemies.length < Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES)) {
+          this.spawnEnemies(Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES) - this.enemies.length)
         }
 
       } else {

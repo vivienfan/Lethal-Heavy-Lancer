@@ -33,7 +33,7 @@ function printMap(map) {
   for (var x = 0; x < map.grid.length; x++) {
     let output = ''
     for (var z = 0; z < map.grid[x].length; z++) {
-      output += drawMap[z][x]
+      output += drawMap[x][z]
     }
     console.log(output)
   }
