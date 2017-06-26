@@ -156,38 +156,10 @@ function displayPlayerFire(id) {
             char.position.z += character.sideSpeed * Math.sin(character.rotation.y + Math.PI) * scene.getAnimationRatio();
             // there is a particle for this mesh -> npc, rotate the particle;
             if (particleSystems[character.id]) {
-              particleSystems[character.id][0].emitter.position.x = 3.5 * Math.cos(alpha) + char.position.x;
-              particleSystems[character.id][0].emitter.position.y = 0.5;
-              particleSystems[character.id][0].emitter.position.z = 3.5 * Math.sin(alpha) + char.position.z;
-
-              particleSystems[character.id][1].emitter.position.x = -2 * Math.cos(alpha) + char.position.x;
-              particleSystems[character.id][1].emitter.position.y = 0.8;
-              particleSystems[character.id][1].emitter.position.z = -2 * Math.sin(alpha) + char.position.z;
-              alpha += 0.05 * scene.getAnimationRatio();
+              npcMovingAnimation(character.id, char.position);
             }
           }
         }
     });
   }
 
-  function deadNPCAnimation() {
-    deadNPC.forEach(function(npc, index) {
-      if (npc.counter === -2) {
-        npc.sound.dispose();
-        deadNPC.splice(index, 1);
-      }
-      if(npc.counter === 0) {
-        npc.mesh.dispose();
-      } else {
-        if (npc.counter > 2) {
-          npc.mesh.scaling.x /= 1.7;
-          npc.mesh.scaling.y /= 1.7;
-          npc.mesh.scaling.z /= 1.7;
-        }
-        if (npc.counter === 2) {
-          npc.sound.play();
-        }
-        npc.counter--;
-      }
-    });
-  }
