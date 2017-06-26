@@ -35,24 +35,8 @@ wss.broadcast = function broadcast(data, except) {
   });
 };
 
-let mission = new Mission()
-missions.push(mission)
+// let prevTime = Date.now()
 
-let prevTime = Date.now()
-// const timer = setInterval(function() {
-//   let triggers = []
-//   let currTime = Date.now()
-//   let updateRatio = (currTime - prevTime) * 0.06 // following Babylon's definition of the animationRatio: dt * ( 60/1000 )
-//   prevTime = currTime
-//   mission.update(updateRatio)
-//   let message = JSON.stringify({
-//     'type': CONSTANTS.MESSAGE_TYPE.GAME_STATE,
-//     'mission': mission.messageFormat(),
-//     'triggers': triggers
-//   })
-//   // console.log(mission._characters)
-//   wss.broadcast(message);
-// }, DT);
 
 wss.on('connection', (ws) => {
   console.log('Client connected')
@@ -68,8 +52,6 @@ wss.on('connection', (ws) => {
   } else {
     existingMission = player.joinMission(mission)
   }
-  // player.joinMission(mission)
-  // mission.characters[0].setTarget(mission.characters[1])
 
   // send player their player data after connection
   ws.send(JSON.stringify({
@@ -80,8 +62,6 @@ wss.on('connection', (ws) => {
   }))
   console.log('sent player info')
 
-  // console.log("player char:", playerCharacter.messageFormat())
-  // console.log("mission: ", mission)
 
   ws.on('message', function incoming(message) {
     message = JSON.parse(message)
@@ -101,16 +81,7 @@ wss.on('connection', (ws) => {
           'data': player.messageFormat(),
         }), ws)
         player.currentMission.fireOn(player, message.target)
-        // let targetDied = player.currentMission.fireOn(player, message.target)
 
-        // if (targetDied) {
-        //   mission.removeCharacter(message.target)
-        //   let deathMessage = JSON.stringify({
-        //     'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
-        //     'character': message.target
-        //   })
-        //   player.currentMission.broadcast(deathMessage);
-        // }
       } else if (message.type === CONSTANTS.MESSAGE_TYPE.PLAYER_READY) {
         player.currentMission.playerReady(player)
       }
@@ -120,24 +91,28 @@ wss.on('connection', (ws) => {
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('close', () => {
-    console.log('Client disconnected')
-    player.currentMission.removeCharacter(player)
-    // let message = JSON.stringify({
-    //   'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
-    //   'character': player.messageFormat()
-    // })
-    // console.log(mission._characters)
-    // wss.broadcast(message);
+    let index = missions.findIndex(function(element) {
+      return element.id === player.currentMission.id;
+    });
+    console.log('Client disconnected, numPlayers:', missions[index].numPlayers)
+    player.currentMission.removePlayer(player)
+    console.log('Client disconnected, numPlayers:', missions[index].numPlayers)
+    if (index > -1 && missions[index].numPlayers <= 0) {
+      console.log('removed mission from list')
+      missions.splice(index, 1)
+    }
   });
 });
 
 function findOpenMission() {
   for (var i = 0; i < missions.length; i++) {
     if (missions[i].numPlayers < CONSTANTS.MISSION.MAX_PLAYERS) {
+      console.log('found open mission')
       return missions[i]
     }
   }
   let newMission = new Mission()
+  console.log('creating new mission')
   missions.push(newMission)
   return newMission
 }

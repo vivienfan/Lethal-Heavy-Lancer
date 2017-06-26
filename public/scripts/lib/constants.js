@@ -41,7 +41,8 @@ var CONSTANTS = {
 
 // NPC attributes
   NPC: {
-    MAX_FWD_SPEED: 2.5,
+    WANDER_SPEED: .38,
+    ATTACK_MOVE_SPEED: .8,
     DETECTION_RANGE: 8
   },
 
