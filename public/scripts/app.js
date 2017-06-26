@@ -19,17 +19,12 @@ var npcSoundEffects = {};
 
 var alpha = 0;
 
-
-
-// var GROUND_LEVEL = -2.2;
-// var WORLD_OFFSET = -5;
-
-var ANGLE = Math.PI / 180;
-var UP_ANGLE_MAX = 135 * ANGLE;
-var DOWN_ANGLE_MAX = 80 * ANGLE;
+// var ANGLE = Math.PI / 180;
+var UP_ANGLE_MAX = 135 * CONSTANTS.ANGLE;
+var DOWN_ANGLE_MAX = 80 * CONSTANTS.ANGLE;
 var CAM_OFFSET = 1.5;
 var ALPHA_OFFSET = -Math.PI / 2;
-var BETA_OFFSET = Math.PI / 2 + 5 * ANGLE;
+var BETA_OFFSET = Math.PI / 2 + 5 * CONSTANTS.ANGLE;
 var RADIUS = 1.5;
 
 var AIM_OFFSET = 7 * Math.PI/180;

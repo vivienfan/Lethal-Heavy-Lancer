@@ -6,8 +6,8 @@ function InputManager() {
     if (ALIVE) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" && !!document.pointerLockElement) {
-        player.rotationY += event.movementX * ANGLE
-        player.rotationX += event.movementY * ANGLE
+        player.rotationY += event.movementX * CONSTANTS.ANGLE;
+        player.rotationX += event.movementY * CONSTANTS.ANGLE;
       } else {
         // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
         // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
@@ -56,7 +56,7 @@ function InputManager() {
           case "ArrowRight":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.rotYSpeed = ANGLE
+              player.rotYSpeed = CONSTANTS.ANGLE
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotYSpeed = 0
@@ -65,7 +65,7 @@ function InputManager() {
           case "ArrowLeft":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.rotYSpeed = -(ANGLE)
+              player.rotYSpeed = -(CONSTANTS.ANGLE)
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotYSpeed = 0
@@ -74,7 +74,7 @@ function InputManager() {
           case "ArrowUp":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.rotXSpeed = -(ANGLE)
+              player.rotXSpeed = -(CONSTANTS.ANGLE)
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotXSpeed = 0
@@ -83,7 +83,7 @@ function InputManager() {
           case "ArrowDown":
             if ( type === "keydown" && !this.isPressed[event.key] ) {
               this.isPressed[event.key] = true
-              player.rotXSpeed = ANGLE
+              player.rotXSpeed = CONSTANTS.ANGLE
             } else if ( type === "keyup" ){
               this.isPressed[event.key] = false
               player.rotXSpeed = 0

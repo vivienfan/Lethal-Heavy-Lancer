@@ -60,7 +60,33 @@ var CONSTANTS = {
   // client side constants:
   GROUND_LEVEL: -2.2,
 
-  WORLD_OFFSET: -5
+  WORLD_OFFSET: -5,
+
+  ANGLE: Math.PI / 180
+
+  // CAMERA: {
+  //   UP_ANGLE_MAX:
+  //   DOWN_ANGLE_MAX:
+  //   HEIGHT_OFFSET:
+  //   ALPHA_OFFSET:
+  //   BETA_OFFSET:
+  //   RADIUS:
+  // }
+
+  // AIM_OFFSET:
+
+  // SPACESHIP_ELLIPSOID:
+
+  // TOTAL_BUILDINGS:
+
+  // HEALTH_COLOR: {
+  //   FULL:
+  //   HIGHT:
+  //   HALF:
+  //   LOW:
+  //   VERY_LOW:
+  // }
+
 }
 
 if (typeof module !== "undefined" && module.exports) {
