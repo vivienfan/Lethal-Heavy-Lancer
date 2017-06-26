@@ -19,14 +19,6 @@ var npcSoundEffects = {};
 
 var alpha = 0;
 
-// var ANGLE = Math.PI / 180;
-var UP_ANGLE_MAX = 135 * CONSTANTS.ANGLE;
-var DOWN_ANGLE_MAX = 80 * CONSTANTS.ANGLE;
-var CAM_OFFSET = 1.5;
-var ALPHA_OFFSET = -Math.PI / 2;
-var BETA_OFFSET = Math.PI / 2 + 5 * CONSTANTS.ANGLE;
-var RADIUS = 1.5;
-
 var AIM_OFFSET = 7 * Math.PI/180;
 var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
 var SPACESHIP_ELLIPSOID;

@@ -21,7 +21,7 @@ function createAvatar() {
     aim.parent = cameraTarget;
     initFocus();
 
-    camera = new BABYLON.ArcRotateCamera("arcCam", ALPHA_OFFSET, BETA_OFFSET, RADIUS, cameraTarget, scene);
+    camera = new BABYLON.ArcRotateCamera("arcCam", CONSTANTS.CAMERA.ALPHA_OFFSET, CONSTANTS.CAMERA.BETA_OFFSET, CONSTANTS.CAMERA.RADIUS, cameraTarget, scene);
     scene.activeCamera = camera;
   });
 }
@@ -36,7 +36,7 @@ function initFocus() {
   avatar.rotation.z = playerStatus.rotation.z;
 
   cameraTarget.position.x = playerStatus.position.x;
-  cameraTarget.position.y = playerStatus.position.y + CAM_OFFSET;
+  cameraTarget.position.y = playerStatus.position.y + CONSTANTS.CAMERA.HEIGHT_OFFSET;
   cameraTarget.position.z = playerStatus.position.z;
   cameraTarget.rotation.x = playerStatus.rotation.x + CAMERA_TARGET_OFFSET;
   cameraTarget.rotation.y = playerStatus.rotation.y;
@@ -72,14 +72,14 @@ function updatePlayerOrientation() {
   playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
   avatar.rotation.y = playerStatus.rotation.y;
   cameraTarget.rotation.y = playerStatus.rotation.y;
-  camera.alpha = - (playerStatus.rotation.y + ALPHA_OFFSET);
+  camera.alpha = - (playerStatus.rotation.y + CONSTANTS.CAMERA.ALPHA_OFFSET);
 
   // rotation on x-axis
   var tmp_angle = camera.beta - player.rotationX;
   tmp_angle = camera.beta - player.rotXSpeed * scene.getAnimationRatio();
   player.rotationX = 0;
-  camera.beta = Math.min(Math.max(tmp_angle, DOWN_ANGLE_MAX), UP_ANGLE_MAX);
-  avatar.rotation.x = camera.beta - BETA_OFFSET;
+  camera.beta = Math.min(Math.max(tmp_angle, CONSTANTS.CAMERA.DOWN_ANGLE_MAX), CONSTANTS.CAMERA.UP_ANGLE_MAX);
+  avatar.rotation.x = camera.beta - CONSTANTS.CAMERA.BETA_OFFSET;
   cameraTarget.rotation.x = avatar.rotation.x + CAMERA_TARGET_OFFSET;
 
   // move forward/backward
@@ -99,7 +99,7 @@ function updatePlayerOrientation() {
   // collision engine auto-adjust position when collision happens
   // avatar.position.y = 0;
   cameraTarget.position.x = avatar.position.x;
-  cameraTarget.position.y = avatar.position.y + CAM_OFFSET;
+  cameraTarget.position.y = avatar.position.y + CONSTANTS.CAMERA.HEIGHT_OFFSET;
   cameraTarget.position.z = avatar.position.z;
   playerStatus.position.x = avatar.position.x;
   playerStatus.position.y = avatar.position.y;

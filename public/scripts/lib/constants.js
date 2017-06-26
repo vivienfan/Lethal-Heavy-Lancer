@@ -62,16 +62,16 @@ var CONSTANTS = {
 
   WORLD_OFFSET: -5,
 
-  ANGLE: Math.PI / 180
+  ANGLE: Math.PI / 180,
 
-  // CAMERA: {
-  //   UP_ANGLE_MAX:
-  //   DOWN_ANGLE_MAX:
-  //   HEIGHT_OFFSET:
-  //   ALPHA_OFFSET:
-  //   BETA_OFFSET:
-  //   RADIUS:
-  // }
+  CAMERA: {
+    UP_ANGLE_MAX: 135 * Math.PI / 180,
+    DOWN_ANGLE_MAX: 80 * Math.PI / 180,
+    HEIGHT_OFFSET: 1.5,
+    ALPHA_OFFSET: -Math.PI / 2,
+    BETA_OFFSET:  Math.PI / 2 + 5 * Math.PI / 180,
+    RADIUS: 1.5
+  }
 
   // AIM_OFFSET:
 
