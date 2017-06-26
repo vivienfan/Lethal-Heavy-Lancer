@@ -48,7 +48,7 @@ window.onload = function() {
 
   var ALIVE = true;
 
-  var shootingSound, npcSound, alarmSound, burningSound, explosionSound;
+  var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
   var npcSoundEffects = {};
 
 
@@ -121,9 +121,10 @@ window.onload = function() {
     createAvatar();
 
     scene.executeWhenReady(function() {
+      socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
+
       health.classList.remove("hide");
       bloodBlur.classList.remove("hide");
-      socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
 
       engine.hideLoadingUI();
       engine.runRenderLoop(function(){
@@ -141,6 +142,9 @@ window.onload = function() {
   }
 
   function loadAudio() {
+    bgm = new BABYLON.Sound("bgm", "assets/audio/moon.mp3", scene, null, {loop: true, autoplay: true});
+    bgm.setVolume(1.2);
+
     shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
     shootingSound.setVolume(0.2);
 
@@ -154,6 +158,7 @@ window.onload = function() {
     burningSound.setVolume(2);
 
     explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
+    explosionSound.setVolume(0.8);
   }
 
   function createSkybox() {
@@ -488,7 +493,7 @@ window.onload = function() {
     var mesh = scene.getMeshByName(id)
     var newExplosionSound = explosionSound.clone();
     newExplosionSound.attachToMesh(mesh)
-    deadNPC.push({counter: 10, mesh: mesh, particleSystems: null, sound: newExplosionSound}); // 10 frames
+    deadNPC.push({counter: 5, mesh: mesh, particleSystems: null, sound: newExplosionSound}); // 10 frames
   }
 
   function displayGameLose() {
@@ -607,12 +612,12 @@ window.onload = function() {
       if(npc.counter === 0) {
         npc.mesh.dispose();
       } else {
-        if (npc.counter > 1) {
-          npc.mesh.scaling.x /= 1.2;
-          npc.mesh.scaling.y /= 1.2;
-          npc.mesh.scaling.z /= 1.2;
+        if (npc.counter > 2) {
+          npc.mesh.scaling.x /= 1.7;
+          npc.mesh.scaling.y /= 1.7;
+          npc.mesh.scaling.z /= 1.7;
         }
-        if (npc.counter === 1) {
+        if (npc.counter === 2) {
           npc.sound.play();
         }
         npc.counter--;
