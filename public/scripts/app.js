@@ -511,18 +511,6 @@ window.onload = function() {
     deadNPC.push({counter: 5, mesh: mesh, particleSystems: null, sound: newExplosionSound}); // 10 frames
   }
 
-  function displayGameLose() {
-    ALIVE = false;
-    healthBar.style.width = "0%";
-    bloodBlur.style.opacity = 0.7;
-    alarmSound.dispose();
-    gameOver.classList.remove("hide");
-  }
-
-  function displayGameWin() {
-
-  }
-
   function updateScene() {
     if (scene && scene.getAnimationRatio()) {
       if (ALIVE) {
@@ -533,8 +521,6 @@ window.onload = function() {
       deadNPCAnimation();
     }
   }
-
-
 
   function updateCharacterOriendtation() {
     characterStatus.forEach(function(character) {

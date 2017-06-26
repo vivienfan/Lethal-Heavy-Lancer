@@ -77,3 +77,15 @@ function sendPlayerState() {
     socket.send(JSON.stringify(msg));
   }
 }
+
+function displayGameLose() {
+  ALIVE = false;
+  healthBar.style.width = "0%";
+  bloodBlur.style.opacity = 0.7;
+  alarmSound.dispose();
+  gameOver.classList.remove("hide");
+}
+
+function displayGameWin() {
+
+}
