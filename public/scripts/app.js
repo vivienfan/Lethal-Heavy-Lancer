@@ -48,7 +48,7 @@ window.onload = function() {
 
   var ALIVE = true;
 
-  var shootingSound, npcSound;
+  var shootingSound, npcSound, alarmSound;
   var npcSoundEffects = {};
 
 
@@ -142,8 +142,10 @@ window.onload = function() {
 
   function loadAudio() {
     shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
-    shootingSound.setVolume(0.3);
+    shootingSound.setVolume(0.2);
     npcSound = new BABYLON.Sound("npc", "assets/audio/npc.mp3", scene, null, { loop: true, autoplay: false });
+    alarmSound = new BABYLON.Sound("alarm", "assets/audio/alarm.wav", scene, null, { loop: true, autoplay: false});
+    alarmSound.setVolume(0.08);
   }
 
   function createSkybox() {
@@ -343,6 +345,7 @@ window.onload = function() {
         } else if (healthPercent >= 60) {
           healthBar.style.backgroundColor = HEALTH_COLOR_HIGH;
         } else if (healthPercent >= 40) {
+          alarmSound.play();
           healthBar.style.backgroundColor = HEALTH_COLOR_HALF;
         } else if (healthPercent >= 20) {
           healthBar.style.backgroundColor = HEALTH_COLOR_LOW;
@@ -350,7 +353,7 @@ window.onload = function() {
           healthBar.style.backgroundColor = HEALTH_COLOR_VERY_LOW;
         }
         if (healthPercent <= 75) {
-          bloodBlur.style.opacity = 1 - healthPercent / 100;
+          bloodBlur.style.opacity = (1 - healthPercent / 100) * 0.7;
         }
       }
     });
@@ -374,13 +377,9 @@ window.onload = function() {
     createParticles(character.id)
 
     var newNPCSound = npcSound.clone();
-    // newNPCSound.setVolume(0.5);
     newNPCSound.attachToMesh(newNPC);
     newNPCSound.autoplay = true;
     npcSoundEffects[character.id] = newNPCSound;
-    console.log(newNPCSound);
-    console.log(npcSoundEffects);
-
     ground.material.reflectionTexture.renderList.push(newNPC);
   }
 
@@ -420,8 +419,6 @@ window.onload = function() {
     newPlayer.rotation = character.rotation;
     newPlayer.checkCollisions = true;
     ground.material.reflectionTexture.renderList.push(newPlayer);
-    console.log(ground.material.reflectionTexture.renderList);
-    console.log(newPlayer);
   }
 
   function removeCharacter(character) {
@@ -480,7 +477,8 @@ window.onload = function() {
   function displayGameLose() {
     ALIVE = false;
     healthBar.style.width = "0%";
-    bloodBlur.style.opacity = 1;
+    bloodBlur.style.opacity = 0.7;
+    alarmSound.dispose();
     gameOver.classList.remove("hide");
   }
 
@@ -508,7 +506,7 @@ window.onload = function() {
     cameraTarget.rotation.y = playerStatus.rotation.y;
     camera.alpha = - (playerStatus.rotation.y + ALPHA_OFFSET);
 
-    // // rotation on x-axis
+    // rotation on x-axis
     var tmp_angle = camera.beta - player.rotationX;
     tmp_angle = camera.beta - player.rotXSpeed * scene.getAnimationRatio();
     player.rotationX = 0;
