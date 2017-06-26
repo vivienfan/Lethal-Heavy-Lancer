@@ -143,10 +143,16 @@ window.onload = function() {
   function loadAudio() {
     shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
     shootingSound.setVolume(0.2);
+
     npcSound = new BABYLON.Sound("npc", "assets/audio/npc.mp3", scene, null, { loop: true, autoplay: false, maxDistance: 250});
-    alarmSound = new BABYLON.Sound("alarm", "assets/audio/alarm.wav", scene, null, { loop: true, autoplay: false});
-    alarmSound.setVolume(0.08);
+    npcSound.setVolume(0.8);
+
+    alarmSound = new BABYLON.Sound("alarm", "assets/audio/alarm.wav", scene, null, { loop: true, autoplay: false, playbackRate: 2});
+    alarmSound.setVolume(0.2);
+
     burningSound = new BABYLON.Sound("burning", "assets/audio/burning.wav", scene, null, { loop: true, autoplay: false, maxDistance: 250});
+    burningSound.setVolume(2);
+
     explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
   }
 
@@ -347,7 +353,9 @@ window.onload = function() {
         } else if (healthPercent >= 60) {
           healthBar.style.backgroundColor = HEALTH_COLOR_HIGH;
         } else if (healthPercent >= 40) {
-          alarmSound.play();
+          if (!alarmSound.isPlaying) {
+            alarmSound.play();
+          }
           healthBar.style.backgroundColor = HEALTH_COLOR_HALF;
         } else if (healthPercent >= 20) {
           healthBar.style.backgroundColor = HEALTH_COLOR_LOW;
@@ -470,7 +478,6 @@ window.onload = function() {
 
     var newBurningSound = burningSound.clone();
     newBurningSound.play();
-    newBurningSound.setVolume(2);
     newBurningSound.attachToMesh(emitter);
   }
 
