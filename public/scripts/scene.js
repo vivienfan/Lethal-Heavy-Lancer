@@ -9,8 +9,6 @@ function createBasicScene() {
   createPlayerMesh();
   createAvatar();
 
-  console.log(scene);
-
   scene.executeWhenReady(function() {
     engine.hideLoadingUI();
     engine.runRenderLoop(function(){
@@ -26,6 +24,24 @@ function createBasicScene() {
 }
 
 function createLobbyScene() {
+  var sphereMat = new BABYLON.StandardMaterial("sphereMat", scene);
+  sphereMat.bumpTexture = new BABYLON.Texture("assets/texture/normal_map.jpg", scene);
+  sphereMat.bumpTexture.vScale = 7;
+  sphereMat.bumpTexture.uScale = 7;
+  sphereMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+  sphereMat.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
+  sphereMat.specularColor = new BABYLON.Color3(0, 0, 0);
+  sphereMat.backFaceCulling = false;
+  sphereMat.alpha = 0.8;
+
+  var tutorialSphere = BABYLON.Mesh.CreateSphere("tutorialSphere", 20, 50, scene);
+  tutorialSphere.material = sphereMat;
+  tutorialSphere.position = new BABYLON.Vector3(30, 0, -150);
+
+  var gameSphere = BABYLON.Mesh.CreateSphere("gameSphere", 20, 50, scene);
+  gameSphere.material = sphereMat;
+  gameSphere.position = new BABYLON.Vector3(-30, 0, -150);
+
 
 }
 
@@ -175,7 +191,6 @@ function createBuildings(map) {
   });
 }
 
-
 function updateCharacters(characters) {
   characterStatus = [];
   characters.forEach(function(character, index) {
@@ -225,13 +240,24 @@ function updateCharacters(characters) {
 
 function updateScene() {
   if (scene && scene.getAnimationRatio()) {
-    if (ALIVE) {
-      updatePlayerOrientation();
-    }
-    if (STATE === "GAME") {
-      sendPlayerState();
-      updateCharacterOriendtation();
-      deadNPCAnimation();
+    switch (STATE) {
+      case "GAME":
+        if (ALIVE) {
+          updatePlayerOrientation();
+        }
+        sendPlayerState();
+        updateCharacterOriendtation();
+        deadNPCAnimation();
+        break;
+      case "LOBBY":
+        updatePlayerOrientation();
+        checkPlayerChoice();
+        break;
+      case "TUTORIAL":
+        updatePlayerOrientation();
+        break;
+      default:
+        break;
     }
   }
 }

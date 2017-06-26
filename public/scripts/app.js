@@ -19,7 +19,7 @@ var particleSystems = {};
 
 var inputManager = new InputManager();
 
-var STATE = "lobby";
+var STATE = "LOBBY";
 
 //
 window.onload = function() {
