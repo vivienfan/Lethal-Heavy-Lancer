@@ -29,7 +29,8 @@ var CONSTANTS = {
 
   MISSION: {
     MAX_PLAYERS: 4,
-    NUM_ENEMIES: 12
+    MIN_ENEMIES: 12,
+    MAX_ENEMIES: 15
   },
 
 // Player attributes
@@ -41,7 +42,7 @@ var CONSTANTS = {
 
 // NPC attributes
   NPC: {
-    WANDER_SPEED: .38,
+    WANDER_SPEED: .3,
     ATTACK_MOVE_SPEED: .8,
     DETECTION_RANGE: 8
   },

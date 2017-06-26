@@ -60,7 +60,6 @@ wss.on('connection', (ws) => {
     'mission': player.currentMission.messageFormat(),
     'map': player.currentMission.map.messageFormat()
   }))
-  console.log('sent player info')
 
 
   ws.on('message', function incoming(message) {
@@ -94,7 +93,6 @@ wss.on('connection', (ws) => {
     let index = missions.findIndex(function(element) {
       return element.id === player.currentMission.id;
     });
-    console.log('Client disconnected, numPlayers:', missions[index].numPlayers)
     player.currentMission.removePlayer(player)
     console.log('Client disconnected, numPlayers:', missions[index].numPlayers)
     if (index > -1 && missions[index].numPlayers <= 0) {

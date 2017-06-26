@@ -5,7 +5,7 @@ const GameMap = require("./GameMap");
 // const PF = require('pathfinding')
 const CONSTANTS   = require('../../public/scripts/lib/constants');
 
-let map = new GameMap({notseed: 'not-test'})
+let map = new GameMap({seed: 'not-test'})
 
 function printMap(map) {
   // let line = BresenhamLine({x:1,z:3}, {x:12, z:30})

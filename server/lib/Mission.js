@@ -29,9 +29,9 @@ class Mission {
       })
     }
 
-    for (var i = 0; i < CONSTANTS.MISSION.NUM_ENEMIES; i++) {
-      this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
-    }
+    // for (var i = 0; i < CONSTANTS.MISSION.MIN_ENEMIES; i++) {
+    //   this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
+    // }
 
     this.prevTime = Date.now()
     this.timer = this.missionTimer()
@@ -49,7 +49,7 @@ class Mission {
       this.playerChars.push(character)
     } else if ( character.type === CONSTANTS.CHAR_TYPE.ENEMY ) {
       this.enemies.push(character)
-      character.update({ position: this.map.generateEnemyPosition() })
+      character.update({ position: this.map.generateEnemySpawnPosition() })
     } else {
       this.allies.push(character)
     }
@@ -64,8 +64,18 @@ class Mission {
       player.position = this.map.getStartPosition()
       this.addCharacter(player)
 
+      if (this.enemies.length < CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers) {
+        this.spawnEnemies(CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers)
+      }
+
       // TODO: Remove below line, and instead tie in to socket message from client done loading.
       // this.playerReady(player)
+    }
+  }
+
+  spawnEnemies(num = CONSTANTS.MISSION.MIN_ENEMIES) {
+    for (var i = 0; i < num; i++) {
+      this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
     }
   }
 
@@ -115,7 +125,7 @@ class Mission {
         'character': character.messageFormat()
       })
       this.broadcast(deathMessage);
-      if (this.enemies.length <= 0){
+      if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && this.enemies.length <= 0){
         let winMessage = JSON.stringify({
           'type': CONSTANTS.MESSAGE_TYPE.GAME_END
         })
