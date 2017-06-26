@@ -20,7 +20,9 @@ class Character {
     this.position = { x: 0, y: 5, z: 0 };
     this.rotation = { x: 0, y: 0, z: 0 };
     this.fwdSpeed = 0;
-    this.fwdSpeedMax = 0.34;
+    this.fwdSpeedMax = CONSTANTS.NPC.WANDER_SPEED;
+    this.wanderSpeed = CONSTANTS.NPC.WANDER_SPEED;
+    this.attackMoveSpeed = CONSTANTS.NPC.ATTACK_MOVE_SPEED;
     this.rotYSpeedMax = 0.04;
     this.rotYSpeed = 0;
     this.sideSpeed = 0;
@@ -165,6 +167,11 @@ class Character {
     this.determineTarget(mission)
     this.fwdSpeed = 0
       if (this.target && this.target.position) {
+        if (this.target instanceof Character) {
+          this.fwdSpeedMax = this.attackMoveSpeed
+        } else {
+          this.fwdSpeedMax = this.wanderSpeed
+        }
         let path = mission.map.getGamePath(this.position, this.target.position)
         if ( path && path.length > 2 ) {
           this.movePosition = path[1]
