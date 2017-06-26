@@ -1,55 +1,70 @@
 // app.js
-window.onload = function() {
-  var socket = new WebSocket(`ws://${window.location.hostname}:8080`);
+var socket;
 
-  var canvas = document.getElementById("canvas");
-  var engine = new BABYLON.Engine(canvas, true);
+var canvas;
+var engine;
+
+var scene, camera, playerMesh, npcMesh, ground, skybox, flame;
+var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
+var inputManager = new InputManager();
+
+var healthBar;
+var health;
+var bloodBlur;
+var gameOver;
+
+var GROUND_LEVEL = -2.2;
+var WORLD_OFFSET = -5;
+
+var ANGLE = Math.PI / 180;
+var UP_ANGLE_MAX = 135 * ANGLE;
+var DOWN_ANGLE_MAX = 80 * ANGLE;
+var CAM_OFFSET = 1.5;
+var ALPHA_OFFSET = -Math.PI / 2;
+var BETA_OFFSET = Math.PI / 2 + 5 * ANGLE;
+var RADIUS = 1.5;
+
+var AIM_OFFSET = 7 * Math.PI/180;
+var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
+var alpha = 0;
+var SPACESHIP_ELLIPSOID;
+var TOTAL_BUILDINGS = 23;
+var CAMERA_TARGET_OFFSET = Math.PI / 2;
+
+var playerStatus = {};
+var characterStatus = [];
+var particleSystems = {};
+var deadNPC = [];
+
+var HEALTH_COLOR_FULL = "#86e01e";
+var HEALTH_COLOR_HIGH = "#f2d31b";
+var HEALTH_COLOR_HALF = "#f2b01e";
+var HEALTH_COLOR_LOW = "#f27011";
+var HEALTH_COLOR_VERY_LOW = "#f63a0f";
+
+var ALIVE = true;
+
+var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
+var npcSoundEffects = {};
+
+
+
+
+
+
+window.onload = function() {
+  socket = new WebSocket(`ws://${window.location.hostname}:8080`);
+
+  canvas = document.getElementById("canvas");
+  engine = new BABYLON.Engine(canvas, true);
   engine.displayLoadingUI();
 
-  // var gravityVector = new BABYLON.Vector3(0, -9.8, 0);
-  // var physicsPlugin = new BABYLON.CannonJSPlugin();
-  var scene, camera, playerMesh, npcMesh, ground, skybox, flame;
-  var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
-  var inputManager = new InputManager()
+  healthBar = document.getElementById("health-bar");
+  health = document.getElementById("health");
+  bloodBlur = document.getElementById("blood-blur");
+  gameOver = document.getElementById("game-over");
 
-  var healthBar = document.getElementById("health-bar");
-  var health = document.getElementById("health");
-  var bloodBlur = document.getElementById("blood-blur");
-  var gameOver = document.getElementById("game-over");
-
-  var GROUND_LEVEL = -2.2;
-  var WORLD_OFFSET = -5;
-
-  var ANGLE = Math.PI / 180;
-  var UP_ANGLE_MAX = 135 * ANGLE;
-  var DOWN_ANGLE_MAX = 80 * ANGLE;
-  var CAM_OFFSET = 1.5;
-  var ALPHA_OFFSET = -Math.PI / 2;
-  var BETA_OFFSET = Math.PI / 2 + 5 * ANGLE;
-  var RADIUS = 1.5;
-
-  var AIM_OFFSET = 7 * Math.PI/180;
-  var SPEED = CONSTANTS.PLAYER.MAX_SPEED;
-  var alpha = 0;
-  var SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
-  var TOTAL_BUILDINGS = 23;
-  var CAMERA_TARGET_OFFSET = Math.PI / 2;
-
-  var playerStatus = {};
-  var characterStatus = [];
-  var particleSystems = {};
-  var deadNPC = [];
-
-  var HEALTH_COLOR_FULL = "#86e01e";
-  var HEALTH_COLOR_HIGH = "#f2d31b";
-  var HEALTH_COLOR_HALF = "#f2b01e";
-  var HEALTH_COLOR_LOW = "#f27011";
-  var HEALTH_COLOR_VERY_LOW = "#f63a0f";
-
-  var ALIVE = true;
-
-  var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
-  var npcSoundEffects = {};
+  SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
 
 
   window.addEventListener("resize", function() {
@@ -625,27 +640,27 @@ window.onload = function() {
     });
   }
 
-  function castRay(){
-    var length = 100;
-    var origin = cameraTarget.position;
-    var direction = new BABYLON.Vector3(
-      -Math.sin(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)),
-      Math.sin(avatar.rotation.x + AIM_OFFSET),
-      -Math.cos(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)));
-    createBeam(cameraTarget.position, direction, -2);
+  // function castRay(){
+  //   var length = 100;
+  //   var origin = cameraTarget.position;
+  //   var direction = new BABYLON.Vector3(
+  //     -Math.sin(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)),
+  //     Math.sin(avatar.rotation.x + AIM_OFFSET),
+  //     -Math.cos(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + AIM_OFFSET)));
+  //   createBeam(cameraTarget.position, direction, -2);
 
-    var ray = new BABYLON.Ray(origin, direction, length);
-    var hit = scene.pickWithRay(ray);
+  //   var ray = new BABYLON.Ray(origin, direction, length);
+  //   var hit = scene.pickWithRay(ray);
 
-    var msg = {
-      type: CONSTANTS.MESSAGE_TYPE.FIRE,
-      target: {}
-    }
-    if (hit.pickedMesh){
-      msg.target.id = hit.pickedMesh.name;
-    }
-    socket.send(JSON.stringify(msg));
-  }
+  //   var msg = {
+  //     type: CONSTANTS.MESSAGE_TYPE.FIRE,
+  //     target: {}
+  //   }
+  //   if (hit.pickedMesh){
+  //     msg.target.id = hit.pickedMesh.name;
+  //   }
+  //   socket.send(JSON.stringify(msg));
+  // }
 
   function createBeam(position, direction, offset) {
     var hilt = BABYLON.Mesh.CreateCylinder("beam", 0.5, 0.5, 0.5, 12, scene);
@@ -682,113 +697,5 @@ window.onload = function() {
     }, 200);
   }
 
-  function InputManager() {
-    this.isPressed = {}
-    this.lastY = 0
 
-    this.process = function(type, event) {
-      if (ALIVE) {
-        // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
-        if ( type === "mousemove" && !!document.pointerLockElement) {
-          player.rotationY += event.movementX * ANGLE
-          player.rotationX += event.movementY * ANGLE
-        } else {
-          // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
-          // apply, so it can be used on the next update call. Allows smooth movement independent of framerate
-          // and input frequency
-          switch ( event.key ) {
-            case "w":
-            case "W":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                player.fwdSpeed = SPEED
-              } else if ( type === "keyup" ){
-                this.isPressed[event.key] = false;
-                player.fwdSpeed = 0
-              }
-              break;
-            case "s":
-            case "S":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                player.fwdSpeed = -(SPEED)
-              } else if ( type === "keyup" ){
-                this.isPressed[event.key] = false
-                player.fwdSpeed = 0
-              }
-              break;
-            case "a":
-            case "A":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                player.sideSpeed = SPEED
-              } else if ( type === "keyup" ){
-                this.isPressed[event.key] = false
-                player.sideSpeed = 0
-              }
-              break;
-            case "d":
-            case "D":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                player.sideSpeed = -SPEED
-              } else if ( type === "keyup" ){
-                this.isPressed[event.key] = false
-                player.sideSpeed = 0
-              }
-              break;
-            case "ArrowRight":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                player.rotYSpeed = ANGLE
-              } else if ( type === "keyup" ){
-                this.isPressed[event.key] = false
-                player.rotYSpeed = 0
-              }
-              break;
-            case "ArrowLeft":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                player.rotYSpeed = -(ANGLE)
-              } else if ( type === "keyup" ){
-                this.isPressed[event.key] = false
-                player.rotYSpeed = 0
-              }
-              break;
-            case "ArrowUp":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                player.rotXSpeed = -(ANGLE)
-              } else if ( type === "keyup" ){
-                this.isPressed[event.key] = false
-                player.rotXSpeed = 0
-              }
-              break;
-            case "ArrowDown":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                player.rotXSpeed = ANGLE
-              } else if ( type === "keyup" ){
-                this.isPressed[event.key] = false
-                player.rotXSpeed = 0
-              }
-              break;
-            case " ":
-              if ( type === "keydown" && !this.isPressed[event.key] ) {
-                this.isPressed[event.key] = true
-                castRay();
-                shootingSound.play();
-              } else if (type === "keyup") {
-                this.isPressed[event.key] = false;
-              }
-              break;
-          } // end of switch statement
-        } // end of key input
-      } else {
-        if (event.key === "r" || event.key === "R") {
-          // restart the game? redirect to lobby?
-        }
-      }
-    } // end of process method
-  } // end of InputManager class
 }
