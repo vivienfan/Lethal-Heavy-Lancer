@@ -1,4 +1,3 @@
-
 function createScene(map) {
   scene = new BABYLON.Scene(engine);
   flame = new BABYLON.Texture("Fire.png", scene);

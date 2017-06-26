@@ -1,4 +1,4 @@
-// app.js
+// global constants
 var socket;
 
 var canvas, healthBar, health, bloodBlur, gameOver;
@@ -19,6 +19,8 @@ var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 
 var alpha = 0;
 var deadNPC = [];
 var particleSystems = {};
+
+
 
 window.onload = function() {
   socket = new WebSocket(`ws://${window.location.hostname}:8080`);
@@ -85,6 +87,4 @@ window.onload = function() {
     playerStatus = new Player(player, mission);
     createScene(map);
   }
-
-
 }
