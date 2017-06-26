@@ -48,7 +48,7 @@ window.onload = function() {
 
   var ALIVE = true;
 
-  var shootingSound, npcSound, alarmSound;
+  var shootingSound, npcSound, alarmSound, burningSound;
   var npcSoundEffects = {};
 
 
@@ -146,6 +146,7 @@ window.onload = function() {
     npcSound = new BABYLON.Sound("npc", "assets/audio/npc.mp3", scene, null, { loop: true, autoplay: false });
     alarmSound = new BABYLON.Sound("alarm", "assets/audio/alarm.wav", scene, null, { loop: true, autoplay: false});
     alarmSound.setVolume(0.08);
+    burningSound = new BABYLON.Sound("burning", "assets/audio/burning.wav", scene, null, { loop: true, autoplay: false});
   }
 
   function createSkybox() {
@@ -465,6 +466,11 @@ window.onload = function() {
     flame_ps.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
     flame_ps.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
     flame_ps.start();
+
+    var newBurningSound = burningSound.clone();
+    newBurningSound.play();
+    newBurningSound.setVolume(2);
+    newBurningSound.attachToMesh(emitter);
   }
 
   function removeNPC(id) {
