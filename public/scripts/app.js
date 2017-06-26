@@ -299,51 +299,6 @@ window.onload = function() {
     });
   }
 
-  function createAvatar() {
-    BABYLON.SceneLoader.ImportMesh("", "", "Spaceship.babylon", scene, function (newMeshes,) {
-      avatar = newMeshes[0];
-      avatar.id = playerStatus.id;
-      avatar.name = playerStatus.id;
-      avatar.isPickable = false;
-      avatar.backFaceCulling = false;
-
-      // collision
-      avatar.ellipsoid = SPACESHIP_ELLIPSOID;
-      avatar.checkCollisions = true;
-
-      avatar.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
-
-      cameraTarget = BABYLON.Mesh.CreateTorus("snipper-aim", 0.15, 0.01, 20, scene, false, BABYLON.Mesh.DEFAULTSIDE);
-      cameraTarget.isPickable = false;
-      cameraTarget.ellipsoid = SPACESHIP_ELLIPSOID;
-      cameraTarget.checkCollisions = true;
-      var aim = BABYLON.Mesh.CreateSphere("aim-point", 1, 0.02, scene);
-      aim.isPickable = false;
-      aim.parent = cameraTarget;
-      initFocus();
-
-      camera = new BABYLON.ArcRotateCamera("arcCam", ALPHA_OFFSET, BETA_OFFSET, RADIUS, cameraTarget, scene);
-      scene.activeCamera = camera;
-    });
-  }
-
-  function initFocus() {
-    playerStatus.position.y = 0;
-    avatar.position.x = playerStatus.position.x;
-    avatar.position.y = playerStatus.position.y;
-    avatar.position.z = playerStatus.position.z;
-    avatar.rotation.x = playerStatus.rotation.x;
-    avatar.rotation.y = playerStatus.rotation.y;
-    avatar.rotation.z = playerStatus.rotation.z;
-
-    cameraTarget.position.x = playerStatus.position.x;
-    cameraTarget.position.y = playerStatus.position.y + CAM_OFFSET;
-    cameraTarget.position.z = playerStatus.position.z;
-    cameraTarget.rotation.x = playerStatus.rotation.x + CAMERA_TARGET_OFFSET;
-    cameraTarget.rotation.y = playerStatus.rotation.y;
-    cameraTarget.rotation.z = playerStatus.rotation.z;
-  }
-
   function updateCharacters(characters) {
     characterStatus = [];
     characters.forEach(function(character, index) {
