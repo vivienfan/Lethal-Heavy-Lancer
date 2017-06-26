@@ -1,18 +1,39 @@
-function createScene(map) {
+function createBasicScene() {
   scene = new BABYLON.Scene(engine);
-  flame = new BABYLON.Texture("Fire.png", scene);
-
   loadAudio();
-
   createSkybox();
   createSun();
   createGround();
-  createBuildings(map);
-  // viewAllBuildingTextures(CONSTANTS.TOTAL_BUILDINGS, scene, CONSTANTS.WORLD_OFFSET);
 
   createNPCMesh();
   createPlayerMesh();
   createAvatar();
+
+  console.log(scene);
+
+  scene.executeWhenReady(function() {
+    engine.hideLoadingUI();
+    engine.runRenderLoop(function(){
+      if (scene && scene.activeCamera) {
+        scene.render();
+      }
+    });
+  });
+
+  scene.registerBeforeRender(function() {
+    updateScene();
+  });
+}
+
+function createLobbyScene() {
+
+}
+
+function createGameScene(map) {
+  createBuildings(map);
+  // viewAllBuildingTextures(CONSTANTS.TOTAL_BUILDINGS, scene, CONSTANTS.WORLD_OFFSET)
+
+  updateAvatar();
 
   scene.executeWhenReady(function() {
     socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
@@ -30,9 +51,7 @@ function createScene(map) {
 
   scene.registerBeforeRender(function() {
     updateScene();
-  })
-
-  return scene;
+  });
 }
 
 function loadAudio() {
@@ -54,9 +73,6 @@ function loadAudio() {
   explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
   explosionSound.setVolume(0.8);
 }
-
-
-
 
 function createSkybox() {
   // Create skybox
@@ -90,6 +106,7 @@ function createGround() {
   ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
   ground.position.y = CONSTANTS.GROUND_LEVEL + CONSTANTS.WORLD_OFFSET;
   ground.isPickable = false;
+  ground.checkCollisions = true;
 
   var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
   mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
@@ -211,8 +228,10 @@ function updateScene() {
     if (ALIVE) {
       updatePlayerOrientation();
     }
-    sendPlayerState();
-    updateCharacterOriendtation();
-    deadNPCAnimation();
+    if (STATE === "GAME") {
+      sendPlayerState();
+      updateCharacterOriendtation();
+      deadNPCAnimation();
+    }
   }
 }

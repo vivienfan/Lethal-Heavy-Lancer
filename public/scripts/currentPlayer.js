@@ -5,29 +5,35 @@ function createAvatar() {
     avatar.name = playerStatus.id;
     avatar.isPickable = false;
     avatar.backFaceCulling = false;
-
-    // collision
-    avatar.ellipsoid = SPACESHIP_ELLIPSOID;
-    avatar.checkCollisions = true;
-
     avatar.scaling = new BABYLON.Vector3(0.01, 0.01, 0.01);
 
     cameraTarget = BABYLON.Mesh.CreateTorus("snipper-aim", 0.15, 0.01, 20, scene, false, BABYLON.Mesh.DEFAULTSIDE);
     cameraTarget.isPickable = false;
-    cameraTarget.ellipsoid = SPACESHIP_ELLIPSOID;
-    cameraTarget.checkCollisions = true;
     var aim = BABYLON.Mesh.CreateSphere("aim-point", 1, 0.02, scene);
     aim.isPickable = false;
     aim.parent = cameraTarget;
     initFocus();
 
+    // collision
+    var spaceshipEllipsoid = new BABYLON.Vector3(10, 10, 10);
+    avatar.ellipsoid = spaceshipEllipsoid;
+    avatar.checkCollisions = true;
+    cameraTarget.ellipsoid = spaceshipEllipsoid;
+    cameraTarget.checkCollisions = true;
+
     camera = new BABYLON.ArcRotateCamera("arcCam", CONSTANTS.CAMERA.ALPHA_OFFSET, CONSTANTS.CAMERA.BETA_OFFSET, CONSTANTS.CAMERA.RADIUS, cameraTarget, scene);
     scene.activeCamera = camera;
+
   });
 }
 
+function updateAvatar() {
+  avatar.id = playerStatus.id;
+  avatar.name = playerStatus.id;
+  initFocus();
+}
+
 function initFocus() {
-  playerStatus.position.y = 0;
   avatar.position.x = playerStatus.position.x;
   avatar.position.y = playerStatus.position.y;
   avatar.position.z = playerStatus.position.z;
@@ -53,16 +59,19 @@ function castRay(){
   createBeam(cameraTarget.position, direction, -2);
 
   var ray = new BABYLON.Ray(origin, direction, length);
-  var hit = scene.pickWithRay(ray);
 
-  var msg = {
-    type: CONSTANTS.MESSAGE_TYPE.FIRE,
-    target: {}
+  if (STATE === "GAME") {
+    var hit = scene.pickWithRay(ray);
+
+    var msg = {
+      type: CONSTANTS.MESSAGE_TYPE.FIRE,
+      target: {}
+    }
+    if (hit.pickedMesh){
+      msg.target.id = hit.pickedMesh.name;
+    }
+    socket.send(JSON.stringify(msg));
   }
-  if (hit.pickedMesh){
-    msg.target.id = hit.pickedMesh.name;
-  }
-  socket.send(JSON.stringify(msg));
 }
 
 function updatePlayerOrientation() {

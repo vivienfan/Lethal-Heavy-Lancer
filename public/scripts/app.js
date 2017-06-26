@@ -1,40 +1,35 @@
-// global constants
-var socket;
+// global variables
+var engine;
+var scene, camera, ground, skybox;
 
-var canvas, healthBar, health, bloodBlur, gameOver;
+var avatar, cameraTarget;
+var ALIVE = true;
+var playerStatus = {id: "currentPlayer", position: {x: 0, y:0, z:0}, rotation: {x: 0, y: 0, z:0}};
+var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
 
-var engine, scene, camera, playerMesh, npcMesh, ground, skybox, flame;
-var inputManager = new InputManager();
+var playerMesh, npcMesh;
+var characterStatus = [];
 
 var npcSoundEffects = {};
 var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
-
-var ALIVE = true;
-var SPACESHIP_ELLIPSOID;
-
-var playerStatus = {};
-var characterStatus = [];
-var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
 
 var alpha = 0;
 var deadNPC = [];
 var particleSystems = {};
 
+var inputManager = new InputManager();
 
+var STATE = "lobby";
 
+//
 window.onload = function() {
-  socket = new WebSocket(`ws://${window.location.hostname}:8080`);
-
   canvas = document.getElementById("canvas");
   engine = new BABYLON.Engine(canvas, true);
-  engine.displayLoadingUI();
 
   healthBar = document.getElementById("health-bar");
   health = document.getElementById("health");
   bloodBlur = document.getElementById("blood-blur");
   gameOver = document.getElementById("game-over");
-
-  SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
 
   window.addEventListener("resize", function() {
     engine.resize();
@@ -56,35 +51,5 @@ window.onload = function() {
     inputManager.process("keydown", event)
   });
 
-  socket.onopen = function (event) {
-  }
-
-  socket.onmessage = (event) => {
-    var data = JSON.parse(event.data);
-    switch(data.type) {
-      case CONSTANTS.MESSAGE_TYPE.PLAYER_INFO:
-        initWorld(data.data, data.mission, data.map.grid);
-        break;
-      case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        updateCharacters(data.mission.characters);
-        break;
-      case CONSTANTS.MESSAGE_TYPE.FIRE:
-        displayPlayerFire(data.data.id);
-        break;
-      case CONSTANTS.MESSAGE_TYPE.REMOVE:
-        removeCharacter(data.character);
-        break;
-      case CONSTANTS.MESSAGE_TYPE.GAME_END:
-        displayGameWin();
-        break;
-      default:
-        break;
-    }
-  }
-
-  function initWorld(player, mission, map) {
-    console.log("init world: ", player, mission);
-    playerStatus = new Player(player, mission);
-    createScene(map);
-  }
+  createLobby();
 }

@@ -3,6 +3,7 @@ function InputManager() {
   this.lastY = 0
 
   this.process = function(type, event) {
+    console.log("InputManager");
     if (ALIVE) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" && !!document.pointerLockElement) {
