@@ -3,7 +3,8 @@ var socket;
 
 var canvas, healthBar, health, bloodBlur, gameOver;
 
-var engine, scene, camera, playerMesh, npcMesh, ground, skybox, flame;
+var engine, scene, camera, avatar, cameraTarget, playerMesh, npcMesh, ground, skybox;
+
 var inputManager = new InputManager();
 
 var npcSoundEffects = {};
@@ -12,7 +13,7 @@ var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
 var ALIVE = true;
 var SPACESHIP_ELLIPSOID;
 
-var playerStatus = {};
+var playerStatus = { };
 var characterStatus = [];
 var player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
 
@@ -56,9 +57,12 @@ window.onload = function() {
 
   FSM.transite("LOBBY");
 
-  if (true) {
+  setTimeout(function() {
     FSM.transite("GAME");
-  } else if (false) {
-    FSM.transite("TUTORIAL");
-  }
+  }, 5000);
+  // if (true) {
+  //   FSM.transite("GAME");
+  // } else if (false) {
+  //   FSM.transite("TUTORIAL");
+  // }
 }

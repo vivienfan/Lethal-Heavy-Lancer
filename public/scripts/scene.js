@@ -1,6 +1,37 @@
+function createLobbyScene() {
+  scene = new BABYLON.Scene(engine);
+  loadAudio();
+
+
+  createSkybox();
+  createSun();
+  createGround();
+
+  createAvatar();
+  scene.executeWhenReady(function() {
+    engine.hideLoadingUI();
+    engine.runRenderLoop(function() {
+      if (scene && scene.activeCamera) {
+        scene.render();
+      }
+    });
+  });
+}
+
+function createTutorialScene() {
+  var map = [];
+  for (var x = -100; x <= 100; x++) {
+    for (var z = -100; z <= 100; z++) {
+      var point = { isObstacle: false };
+      if (x === -100 || x === 100 || z === -100 || z === 100) {
+        point.isObstacle = true;
+      }
+    }
+  }
+}
+
 function createGameScene(map) {
   scene = new BABYLON.Scene(engine);
-  flame = new BABYLON.Texture("Fire.png", scene);
 
   loadAudio();
 

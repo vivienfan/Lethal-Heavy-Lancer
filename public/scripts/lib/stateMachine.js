@@ -6,17 +6,19 @@ function StateMachine() {
     switch (this.STATE){
       case "IDLE":
         if (nextState === "LOBBY") {
-          // createLobby();
+          createLobby();
           console.log("create lobby");
           this.STATE = "LOBBY";
         }
         break;
       case "LOBBY":
         if (nextState === "TUTORIAL") {
+          disposeLobby();
           // startTutorial();
           console.log("start tutorial");
           this.STATE = "TUTORIAL";
         } else if (nextState === "GAME") {
+          disposeLobby();
           startGame();
           console.log("start game");
           this.STATE = "GAME";
@@ -24,14 +26,16 @@ function StateMachine() {
         break;
       case "GAME":
         if (nextState === "LOBBY") {
-          // createLobby();
+          // disposeGame();
+          createLobby();
           console.log("create lobby");
           this.STATE = "LOBBY";
         }
         break;
       case "TUTORIAL":
         if (nextState === "LOBBY") {
-          // createLobby();
+          // disposeGame();
+          createLobby();
           console.log("create lobby");
           this.STATE = "TUTORIAL";
         }
