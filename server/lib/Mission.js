@@ -18,6 +18,7 @@ class Mission {
     this.type = props.type || CONSTANTS.MISSION_TYPE.KILL;
     this.map = new GameMap()
     this.characters = []
+    this.totalEnemies = CONSTANTS.MISSION.MIN_ENEMIES
     this.remainingEnemies = CONSTANTS.MISSION.MIN_ENEMIES
     this.enemies = []
     this.allies = []
@@ -29,10 +30,6 @@ class Mission {
         this.addCharacter(character)
       })
     }
-
-    // for (var i = 0; i < CONSTANTS.MISSION.MIN_ENEMIES; i++) {
-    //   this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
-    // }
 
     this.prevTime = Date.now()
     this.timer = this.missionTimer()
@@ -65,34 +62,32 @@ class Mission {
       player.position = this.map.getStartPosition()
       this.addCharacter(player)
 
-      // this.remainingEnemies += CONSTANTS.MISSION.MIN_ENEMIES
-      if (this.remainingEnemies < CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers) {
+      if (this.totalEnemies < CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers) {
         this.remainingEnemies += CONSTANTS.MISSION.MIN_ENEMIES
+        this.totalEnemies += CONSTANTS.MISSION.MIN_ENEMIES
       }
       console.log('remaining:', this.remainingEnemies)
       if (this.enemies.length < Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES)) {
         this.spawnEnemies(Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES) - this.enemies.length)
       }
 
-      // TODO: Remove below line, and instead tie in to socket message from client done loading.
-      // this.playerReady(player)
     }
   }
 
   spawnEnemies(num = CONSTANTS.MISSION.MIN_ENEMIES) {
-    console.log('spawning Enemies, num:', num)
-    console.log('remainingEnemies', this.remainingEnemies)
+    // console.log('spawning Enemies, num:', num)
+    console.log('remainingEnemies', this.remainingEnemies, "/", this.totalEnemies)
     for (var i = 0; i < num; i++) {
-      console.log('spawn')
+      // console.log('spawn')
       this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
-      console.log('spawned')
+      // console.log('spawned')
     }
   }
 
   playerReady(player) {
     let playerChar = this.findCharacter(player)
     if (playerChar) {
-      this.allies.push(playerChar)
+      this.allies.push(playerChar) // Enemies only pick targets from the allies list. This could include friendly npcs as well later on.
     }
   }
 
@@ -134,11 +129,13 @@ class Mission {
           this.allies.splice(index, 1)
         }
       }
+
       let deathMessage = JSON.stringify({
         'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
         'character': character.messageFormat()
       })
       this.broadcast(deathMessage);
+
       if (character.type === CONSTANTS.CHAR_TYPE.ENEMY && this.enemies.length <= 0){
         let winMessage = JSON.stringify({
           'type': CONSTANTS.MESSAGE_TYPE.GAME_END
@@ -212,17 +209,8 @@ class Mission {
           if ( this.canHit(origin, target) ) {
             target.takeDamage(origin.damage);
           }
-          // return target.isDead()
-          // let targetDied = player.currentMission.fireOn(player, message.target)
-
-          // if (targetDied) {
           if (target.isDead()) {
             this.removeCharacter(target)
-            // let deathMessage = JSON.stringify({
-            //   'type': CONSTANTS.MESSAGE_TYPE.REMOVE,
-            //   'character': target
-            // })
-            // this.broadcast(deathMessage);
           }
         }
       }
@@ -242,6 +230,9 @@ class Mission {
     let result = {
       'id': this.id,
       'type': this.type,
+      'remainingEnemies': this.remainingEnemies,
+      'totalEnemies': this.totalEnemies,
+      'numPlayers': this.numPlayers,
       'characters': this.characters.map(character => {
         return character.messageFormat();
       })
@@ -253,10 +244,6 @@ class Mission {
   update(dt) {
     this.characters.forEach((character, i) => {
       if (character.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-        // let closest = this.findClosest(character, this.allies)
-        // if (closest) character.target = closest
-        // console.log(closest )
-        // mission.characters[0].setTarget(mission.characters[1])
         character.process(dt, this)
       }
     })

@@ -31,7 +31,7 @@ var CONSTANTS = {
     MAX_PLAYERS: 4,
     MIN_ENEMIES: 24,
     MAX_ENEMIES: 30,
-    CONCURRENT_ENEMIES: 12
+    CONCURRENT_ENEMIES: 10
   },
 
 // Player attributes
@@ -53,13 +53,14 @@ var CONSTANTS = {
 
 // Map attributes
   MAP: {
-    DEFAULT_SIZE: 200,
+    DEFAULT_SIZE: 175,
     ELEMENT_SIZE: 25,
-    MIN_ROOMS: 20,
-    MAX_ROOMS: 24,
-    MIN_ROOM_SIZE: 3,
-    MAX_ROOM_SIZE: 9,
-    FAIL_CUTOFF: 256,
+    MIN_ROOMS: 16,
+    MAX_ROOMS: 20,
+    MIN_ROOM_SIZE: 4,
+    MAX_ROOM_SIZE: 7,
+    CONNECTION_CHANCE: 0.3,
+    FAIL_CUTOFF: 1000,
     SAFE_DISTANCE: 6
   },
 

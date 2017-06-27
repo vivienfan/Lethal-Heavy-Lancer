@@ -26,7 +26,7 @@ function printMap(map) {
   // dest.x = Math.floor(dest.x / CONSTANTS.MAP.ELEMENT_SIZE)
   // dest.z = Math.floor(dest.z / CONSTANTS.MAP.ELEMENT_SIZE)
   let path = map.getPath({x:1, z:1}, map.convertToMapCoords(dest) )
-  console.log(path.length)
+  console.log("path length:", path.length, "num rooms:", map.rooms.length)
   for (var i = 0; i < path.length; i++) {
     drawMap[path[i][0]][path[i][1]] = '.'
   }
