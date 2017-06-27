@@ -14,10 +14,10 @@ function StateMachine() {
       case "LOBBY":
         if (nextState === "TUTORIAL") {
           console.log("start tutorial");
-          // disposeLobby(startTutorial);
+          disposeScene(startTutorial);
           this.STATE = "TUTORIAL";
         } else if (nextState === "GAME") {
-          disposeLobby(startGame);
+          disposeScene(startGame);
           this.STATE = "GAME";
         }
         break;

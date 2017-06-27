@@ -48,14 +48,47 @@ function createLounge() {
 
 function createTutorialScene() {
   var map = [];
-  for (var x = -100; x <= 100; x++) {
-    for (var z = -100; z <= 100; z++) {
+  for (var x = 0; x < 10; x++) {
+    var row = [];
+    for (var z = 0; z < 25; z++) {
       var point = { isObstacle: false };
-      if (x === -100 || x === 100 || z === -100 || z === 100) {
+      if (x === 0 || x === 9 || z === 0|| z === 24) {
+        // edge
         point.isObstacle = true;
       }
+      if (z === 7 && (x === 4 || x === 5 || x === 6)) {
+        point.isObstacle = true;
+      }
+      if (z === 10 && x !== 5) {
+        // room seperate
+        point.isObstacle = true;
+      }
+      row.push(point);
     }
+    map.push(row);
   }
+  console.log(map);
+
+  scene = new BABYLON.Scene(engine);
+  loadAudio();
+
+  createSkybox();
+  createSun();
+  createGround();
+  createBuildings(map);
+
+  createAvatar();
+
+  scene.executeWhenReady(function() {
+    engine.hideLoadingUI();
+    engine.runRenderLoop(function() {
+      scene.render();
+    });
+  });
+
+  scene.registerBeforeRender(function() {
+    updateTutorialScene();
+  });
 }
 
 function createGameScene(map) {
@@ -274,4 +307,20 @@ function updateLobbyScene() {
     updatePlayerOrientation();
     checkPlayerChoice();
   }
+}
+
+function updateTutorialScene() {
+  if (scene && scene.getAnimationRatio() && scene.activeCamera) {
+    updatePlayerOrientation();
+    // checkTutorialChoice();
+  }
+}
+
+function disposeScene(callback) {
+  engine.stopRenderLoop();
+  engine.displayLoadingUI();
+  setTimeout(function () {
+    scene.dispose();
+    callback();
+  }, 5);
 }
