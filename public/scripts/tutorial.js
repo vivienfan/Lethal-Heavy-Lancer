@@ -57,6 +57,7 @@ var dummyPlayer = {
 };
 
 var BUILT = false;
+var BUILT2 = false;
 
 function checkTutorialStage() {
   if (avatar.position.z <= 220) {
@@ -65,11 +66,9 @@ function checkTutorialStage() {
   // look up and down
   // move around
   // drop building -> collision
-    console.log("stage 1");
   } else if (avatar.position.z <= 400) {
-    if (! BUILT) {
+    if (!BUILT) {
       // stage 2:
-      console.log("stage 2");
       BUILT = true;
       // drop npc and player
       buildNewNPC(dummyNPC);
@@ -80,8 +79,12 @@ function checkTutorialStage() {
       simulateBattle();
     }
   } else if (avatar.position.z <= 560) {
-    simulateDamage();
+    if (!BUILT2) {
+      simulateDamage();
+      BUILT2 = true;
+    }
   } else {
+    health.classList.add("hide");
     FSM.transite("LOBBY");
   }
 }
@@ -105,5 +108,32 @@ function simulateBattle() {
 }
 
 function simulateDamage() {
+  health.classList.remove("hide");
+  setTimeout(function() {
+    updateHealthBar(100, 100);
+  }, 500);
 
+  setTimeout(function() {
+    updateHealthBar(80, 100);
+  }, 1000);
+
+  setTimeout(function() {
+    updateHealthBar(60, 100);
+  }, 1500);
+
+  setTimeout(function() {
+    updateHealthBar(40, 100);
+  }, 2000);
+
+  setTimeout(function() {
+    updateHealthBar(20, 100);
+  }, 2500);
+
+  setTimeout(function() {
+    updateHealthBar(10, 100);
+  }, 3000);
+
+  setTimeout(function() {
+    updateHealthBar(5, 100);
+  }, 3500);
 }

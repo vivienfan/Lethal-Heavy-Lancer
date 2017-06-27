@@ -37,8 +37,6 @@ function buildNewNPC(character) {
   newNPC.rotation = character.rotation;
   newNPC.checkCollisions = true;
 
-  console.log(newNPC);
-
   createParticles(character.id)
 
   var newNPCSound = npcSound.clone();
@@ -46,8 +44,6 @@ function buildNewNPC(character) {
   newNPCSound.autoplay = true;
   npcSoundEffects[character.id] = newNPCSound;
   ground.material.reflectionTexture.renderList.push(newNPC);
-
-  console.log(newNPCSound);
 }
 
 function buildNewPlayer(character) {

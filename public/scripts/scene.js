@@ -75,7 +75,6 @@ function createTutorialScene() {
     }
     map.push(row);
   }
-  console.log(map);
 
   scene = new BABYLON.Scene(engine);
   loadAudio();
@@ -278,13 +277,14 @@ function updateCharacters(characters) {
         }
       }
     } else {  // update client info
-      updateHealthBar();
+      updateHealthBar(character.currentHealth, character.totalHealth);
     }
   });
 }
 
-function updateHealthBar() {
-  var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
+function updateHealthBar(currentHealth, totalHealth) {
+  console.log("update health bar:", currentHealth, totalHealth);
+  var healthPercent = Math.round((currentHealth / totalHealth) * 100);
   healthBar.style.width = healthPercent + "%";
   if (healthPercent >= 80) {
     healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.FULL;
@@ -327,7 +327,6 @@ function updateTutorialScene() {
   if (scene && scene.getAnimationRatio() && scene.activeCamera) {
     checkTutorialStage();
     updatePlayerOrientation();
-    // updateCharacterOrientation();
     deadNPCAnimation();
   }
 }
