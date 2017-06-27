@@ -69,6 +69,7 @@ class Mission {
       if (this.remainingEnemies < CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers) {
         this.remainingEnemies += CONSTANTS.MISSION.MIN_ENEMIES
       }
+      console.log('remaining:', this.remainingEnemies)
       if (this.enemies.length < Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES)) {
         this.spawnEnemies(Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES) - this.enemies.length)
       }
@@ -79,9 +80,12 @@ class Mission {
   }
 
   spawnEnemies(num = CONSTANTS.MISSION.MIN_ENEMIES) {
-    console.log('spawning Enemies')
+    console.log('spawning Enemies, num:', num)
+    console.log('remainingEnemies', this.remainingEnemies)
     for (var i = 0; i < num; i++) {
+      console.log('spawn')
       this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
+      console.log('spawned')
     }
   }
 

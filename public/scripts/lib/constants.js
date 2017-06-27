@@ -38,25 +38,28 @@ var CONSTANTS = {
   PLAYER: {
     INITIAL_HEALTH: 200,
     MAX_SPEED: 0.9,
-    RANGE: 100
+    RANGE: 100,
+    DAMAGE: 50
   },
 
 // NPC attributes
   NPC: {
     WANDER_SPEED: .3,
     ATTACK_MOVE_SPEED: .8,
-    DETECTION_RANGE: 8
+    DETECTION_RANGE: 8,
+    ATTACK_SPEED: 1.25,
+    DAMAGE: 25
   },
 
 // Map attributes
   MAP: {
-    DEFAULT_SIZE: 70,
+    DEFAULT_SIZE: 200,
     ELEMENT_SIZE: 25,
-    MIN_ROOMS: 16,
-    MAX_ROOMS: 20,
-    MIN_ROOM_SIZE: 4,
-    MAX_ROOM_SIZE: 10,
-    FAIL_CUTOFF: 200,
+    MIN_ROOMS: 20,
+    MAX_ROOMS: 24,
+    MIN_ROOM_SIZE: 3,
+    MAX_ROOM_SIZE: 9,
+    FAIL_CUTOFF: 256,
     SAFE_DISTANCE: 6
   },
 
