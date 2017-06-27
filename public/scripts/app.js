@@ -56,13 +56,4 @@ window.onload = function() {
   });
 
   FSM.transite("LOBBY");
-
-  setTimeout(function() {
-    FSM.transite("GAME");
-  }, 5000);
-  // if (true) {
-  //   FSM.transite("GAME");
-  // } else if (false) {
-  //   FSM.transite("TUTORIAL");
-  // }
 }

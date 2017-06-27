@@ -2,12 +2,14 @@ function createLobbyScene() {
   scene = new BABYLON.Scene(engine);
   loadAudio();
 
-
   createSkybox();
   createSun();
   createGround();
 
   createAvatar();
+
+  createLounge();
+
   scene.executeWhenReady(function() {
     engine.hideLoadingUI();
     engine.runRenderLoop(function() {
@@ -16,6 +18,32 @@ function createLobbyScene() {
       }
     });
   });
+
+  scene.registerBeforeRender(function() {
+    updateLobbyScene();
+  });
+
+  return scene;
+}
+
+function createLounge() {
+  var sphereMat = new BABYLON.StandardMaterial("sphereMat", scene);
+  sphereMat.bumpTexture = new BABYLON.Texture("assets/texture/normal_map.jpg", scene);
+  sphereMat.bumpTexture.vScale = 7;
+  sphereMat.bumpTexture.uScale = 7;
+  sphereMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+  sphereMat.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
+  sphereMat.specularColor = new BABYLON.Color3(0, 0, 0);
+  sphereMat.backFaceCulling = false;
+  sphereMat.alpha = 0.8;
+
+  tutorialLounge = BABYLON.Mesh.CreateSphere("tutorialSphere", 20, 50, scene);
+  tutorialLounge.material = sphereMat;
+  tutorialLounge.position = new BABYLON.Vector3(30, 0, 150);
+
+  gameLounge = BABYLON.Mesh.CreateSphere("gameSphere", 20, 50, scene);
+  gameLounge.material = sphereMat;
+  gameLounge.position = new BABYLON.Vector3(-30, 0, 150);
 }
 
 function createTutorialScene() {
@@ -32,7 +60,6 @@ function createTutorialScene() {
 
 function createGameScene(map) {
   scene = new BABYLON.Scene(engine);
-
   loadAudio();
 
   createSkybox();
@@ -232,12 +259,19 @@ function updateCharacters(characters) {
 }
 
 function updateScene() {
-  if (scene && scene.getAnimationRatio()) {
+  if (scene && scene.getAnimationRatio() && scene.activeCamera) {
     if (ALIVE) {
       updatePlayerOrientation();
     }
     sendPlayerState();
     updateCharacterOriendtation();
     deadNPCAnimation();
+  }
+}
+
+function updateLobbyScene() {
+  if (scene && scene.getAnimationRatio() && scene.activeCamera) {
+    updatePlayerOrientation();
+    checkPlayerChoice();
   }
 }

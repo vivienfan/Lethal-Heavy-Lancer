@@ -52,17 +52,19 @@ function castRay(){
     -Math.cos(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + CONSTANTS.AIM_OFFSET)));
   createBeam(cameraTarget.position, direction, -2);
 
-  var ray = new BABYLON.Ray(origin, direction, length);
-  var hit = scene.pickWithRay(ray);
+  if (FSM.STATE === "GAME") {
+    var ray = new BABYLON.Ray(origin, direction, length);
+    var hit = scene.pickWithRay(ray);
 
-  var msg = {
-    type: CONSTANTS.MESSAGE_TYPE.FIRE,
-    target: {}
+    var msg = {
+      type: CONSTANTS.MESSAGE_TYPE.FIRE,
+      target: {}
+    }
+    if (hit.pickedMesh){
+      msg.target.id = hit.pickedMesh.name;
+    }
+    socket.send(JSON.stringify(msg));
   }
-  if (hit.pickedMesh){
-    msg.target.id = hit.pickedMesh.name;
-  }
-  socket.send(JSON.stringify(msg));
 }
 
 function updatePlayerOrientation() {
