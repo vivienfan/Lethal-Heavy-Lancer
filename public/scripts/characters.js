@@ -37,6 +37,8 @@ function buildNewNPC(character) {
   newNPC.rotation = character.rotation;
   newNPC.checkCollisions = true;
 
+  console.log(newNPC);
+
   createParticles(character.id)
 
   var newNPCSound = npcSound.clone();
@@ -44,6 +46,8 @@ function buildNewNPC(character) {
   newNPCSound.autoplay = true;
   npcSoundEffects[character.id] = newNPCSound;
   ground.material.reflectionTexture.renderList.push(newNPC);
+
+  console.log(newNPCSound);
 }
 
 function buildNewPlayer(character) {
@@ -88,7 +92,7 @@ function removeNPC(id) {
   deadNPC.push({counter: 5, mesh: mesh, particleSystems: null, sound: newExplosionSound}); // 10 frames
 }
 
-function updateCharacterOriendtation() {
+function updateCharacterOrientation() {
   characterStatus.forEach(function(character) {
     if (character.id !== playerStatus.id) {
       var char = scene.getMeshByName(character.id);

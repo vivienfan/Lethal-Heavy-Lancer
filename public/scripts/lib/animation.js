@@ -100,6 +100,7 @@ function burningSpaceshipAnimation(position) {
 }
 
 function createParticles(id) {
+  console.log("createParticles for", id)
   particleSystems[id] = [];
   createOneLayer("Fire.png", id, 0, 0.2, 0.3);
   createOneLayer("Fire.png", id, 1, 0.2, 0.4);

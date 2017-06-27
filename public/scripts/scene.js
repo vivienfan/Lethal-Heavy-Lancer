@@ -52,15 +52,23 @@ function createTutorialScene() {
     var row = [];
     for (var z = 0; z < 25; z++) {
       var point = { isObstacle: false };
-      if (x === 0 || x === 9 || z === 0|| z === 24) {
+      if (x === 0 || x === 9 || z === 0) {
         // edge
         point.isObstacle = true;
       }
       if (z === 7 && (x === 4 || x === 5 || x === 6)) {
+        // collision demo building
         point.isObstacle = true;
       }
       if (z === 10 && x !== 5) {
         // room seperate
+        point.isObstacle = true;
+      }
+      if (z === 17 && x !== 5) {
+        // room seperate
+        point.isObstacle = true;
+      }
+      if (z === 24 && x !== 5) {
         point.isObstacle = true;
       }
       row.push(point);
@@ -77,6 +85,8 @@ function createTutorialScene() {
   createGround();
   createBuildings(map);
 
+  createNPCMesh();
+  createPlayerMesh();
   createAvatar();
 
   scene.executeWhenReady(function() {
@@ -268,27 +278,31 @@ function updateCharacters(characters) {
         }
       }
     } else {  // update client info
-      var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
-      healthBar.style.width = healthPercent + "%";
-      if (healthPercent >= 80) {
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.FULL;
-      } else if (healthPercent >= 60) {
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HIGH;
-      } else if (healthPercent >= 40) {
-        if (!alarmSound.isPlaying) {
-          alarmSound.play();
-        }
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HALF;
-      } else if (healthPercent >= 20) {
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.LOW;
-      } else {
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.VERY_LOW;
-      }
-      if (healthPercent <= 75) {
-        bloodBlur.style.opacity = (1 - healthPercent / 100) * 0.7;
-      }
+      updateHealthBar();
     }
   });
+}
+
+function updateHealthBar() {
+  var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
+  healthBar.style.width = healthPercent + "%";
+  if (healthPercent >= 80) {
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.FULL;
+  } else if (healthPercent >= 60) {
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HIGH;
+  } else if (healthPercent >= 40) {
+    if (!alarmSound.isPlaying) {
+      alarmSound.play();
+    }
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HALF;
+  } else if (healthPercent >= 20) {
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.LOW;
+  } else {
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.VERY_LOW;
+  }
+  if (healthPercent <= 75) {
+    bloodBlur.style.opacity = (1 - healthPercent / 100) * 0.7;
+  }
 }
 
 function updateScene() {
@@ -297,7 +311,7 @@ function updateScene() {
       updatePlayerOrientation();
     }
     sendPlayerState();
-    updateCharacterOriendtation();
+    updateCharacterOrientation();
     deadNPCAnimation();
   }
 }
@@ -311,8 +325,10 @@ function updateLobbyScene() {
 
 function updateTutorialScene() {
   if (scene && scene.getAnimationRatio() && scene.activeCamera) {
+    checkTutorialStage();
     updatePlayerOrientation();
-    // checkTutorialChoice();
+    // updateCharacterOrientation();
+    deadNPCAnimation();
   }
 }
 

@@ -24,14 +24,14 @@ function StateMachine() {
       case "GAME":
         if (nextState === "LOBBY") {
           console.log("create lobby");
-          // disposeGame(createLobby);
+          // disposeScene(createLobby);
           this.STATE = "LOBBY";
         }
         break;
       case "TUTORIAL":
         if (nextState === "LOBBY") {
           console.log("create lobby");
-          // disposeGame(createLobby);
+          disposeScene(createLobby);
           this.STATE = "TUTORIAL";
         }
         break;
