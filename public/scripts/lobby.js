@@ -8,7 +8,7 @@ function createLobby() {
     },
     rotation: {
       x: 0,
-      y: 0,
+      y: Math.PI,
       z: 0
     }
   };
