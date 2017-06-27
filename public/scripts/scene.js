@@ -23,53 +23,6 @@ function createBasicScene() {
   });
 }
 
-function createLobbyScene() {
-  var sphereMat = new BABYLON.StandardMaterial("sphereMat", scene);
-  sphereMat.bumpTexture = new BABYLON.Texture("assets/texture/normal_map.jpg", scene);
-  sphereMat.bumpTexture.vScale = 7;
-  sphereMat.bumpTexture.uScale = 7;
-  sphereMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
-  sphereMat.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
-  sphereMat.specularColor = new BABYLON.Color3(0, 0, 0);
-  sphereMat.backFaceCulling = false;
-  sphereMat.alpha = 0.8;
-
-  var tutorialSphere = BABYLON.Mesh.CreateSphere("tutorialSphere", 20, 50, scene);
-  tutorialSphere.material = sphereMat;
-  tutorialSphere.position = new BABYLON.Vector3(30, 0, -150);
-
-  var gameSphere = BABYLON.Mesh.CreateSphere("gameSphere", 20, 50, scene);
-  gameSphere.material = sphereMat;
-  gameSphere.position = new BABYLON.Vector3(-30, 0, -150);
-
-
-}
-
-function createGameScene(map) {
-  createBuildings(map);
-  // viewAllBuildingTextures(CONSTANTS.TOTAL_BUILDINGS, scene, CONSTANTS.WORLD_OFFSET)
-
-  updateAvatar();
-
-  scene.executeWhenReady(function() {
-    socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
-
-    health.classList.remove("hide");
-    bloodBlur.classList.remove("hide");
-
-    engine.hideLoadingUI();
-    engine.runRenderLoop(function(){
-      if (scene && scene.activeCamera) {
-        scene.render();
-      }
-    });
-  });
-
-  scene.registerBeforeRender(function() {
-    updateScene();
-  });
-}
-
 function loadAudio() {
   bgm = new BABYLON.Sound("bgm", "assets/audio/moon.mp3", scene, null, {loop: true, autoplay: true});
   bgm.setVolume(1.2);
@@ -122,7 +75,6 @@ function createGround() {
   ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 1, scene, false);
   ground.position.y = CONSTANTS.GROUND_LEVEL + CONSTANTS.WORLD_OFFSET;
   ground.isPickable = false;
-  ground.checkCollisions = true;
 
   var mirrorMaterial = new BABYLON.StandardMaterial("mat", scene);
   mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture("mirror", 512, scene, true);
@@ -134,6 +86,60 @@ function createGround() {
   mirrorMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
   ground.material = mirrorMaterial;
   ground.infiniteDistance = true;
+}
+
+function createLobbyScene() {
+  var sphereMat = new BABYLON.StandardMaterial("sphereMat", scene);
+  sphereMat.bumpTexture = new BABYLON.Texture("assets/texture/normal_map.jpg", scene);
+  sphereMat.bumpTexture.vScale = 7;
+  sphereMat.bumpTexture.uScale = 7;
+  sphereMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+  sphereMat.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
+  sphereMat.specularColor = new BABYLON.Color3(0, 0, 0);
+  sphereMat.backFaceCulling = false;
+  sphereMat.alpha = 0.8;
+
+  tutorialLounge = BABYLON.Mesh.CreateSphere("tutorialSphere", 20, 50, scene);
+  tutorialLounge.material = sphereMat;
+  tutorialLounge.position = new BABYLON.Vector3(30, 0, -150);
+
+  gameLounge = BABYLON.Mesh.CreateSphere("gameSphere", 20, 50, scene);
+  gameLounge.material = sphereMat;
+  gameLounge.position = new BABYLON.Vector3(-30, 0, -150);
+}
+
+function disposeLobbyScene() {
+  tutorialLounge.dispose();
+  gameLounge.dispose();
+  avatar.dispose();
+  cameraTarget.dispose();
+}
+
+function createGameScene(map) {
+  createBuildings(map);
+  // viewAllBuildingTextures(CONSTANTS.TOTAL_BUILDINGS, scene, CONSTANTS.WORLD_OFFSET)
+
+  createAvatar();
+
+  scene.executeWhenReady(function() {
+    GAME_SCENE_READY = true;
+
+    socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
+
+    health.classList.remove("hide");
+    bloodBlur.classList.remove("hide");
+
+    engine.hideLoadingUI();
+    engine.runRenderLoop(function(){
+      if (scene && scene.activeCamera) {
+        scene.render();
+      }
+    });
+  });
+
+  scene.registerBeforeRender(function() {
+    updateScene();
+  });
 }
 
 function createBuildings(map) {
@@ -148,8 +154,7 @@ function createBuildings(map) {
     materials.push(newMaterial);
   }
 
-  var buildingMesh = BABYLON.Mesh.CreateBox("buildingMesh", CONSTANTS.MAP.ELEMENT_SIZE - 4, scene);
-  buildingMesh.checkCollisions = true;
+  var buildingMesh = BABYLON.Mesh.CreateBox("buildingMesh", CONSTANTS.MAP.ELEMENT_SIZE - 3, scene);
   buildingMesh.isPickable = false;
   buildingMesh.setEnabled(false);
 
@@ -186,9 +191,17 @@ function createBuildings(map) {
         newObstacleBase.position.y = CONSTANTS.WORLD_OFFSET;
         newObstacleBase.position.z = newObstacle.position.z;
         ground.material.reflectionTexture.renderList.push(newObstacleBase);
+
+        newObstacle.checkCollisions = true;
+        // newObstacleBase.checkCollisions = true;
       }
     });
   });
+}
+
+function disposeGameScene() {
+  playerMesh.dispose();
+  npcMesh.dispose();
 }
 
 function updateCharacters(characters) {
@@ -236,18 +249,18 @@ function updateCharacters(characters) {
   });
 }
 
-
-
 function updateScene() {
   if (scene && scene.getAnimationRatio()) {
     switch (STATE) {
       case "GAME":
-        if (ALIVE) {
-          updatePlayerOrientation();
+        if (GAME_SCENE_READY) {
+          if (ALIVE) {
+            updatePlayerOrientation();
+          }
+          sendPlayerState();
+          updateCharacterOriendtation();
+          deadNPCAnimation();
         }
-        sendPlayerState();
-        updateCharacterOriendtation();
-        deadNPCAnimation();
         break;
       case "LOBBY":
         updatePlayerOrientation();
@@ -261,3 +274,4 @@ function updateScene() {
     }
   }
 }
+

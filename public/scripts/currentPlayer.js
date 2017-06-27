@@ -23,14 +23,7 @@ function createAvatar() {
 
     camera = new BABYLON.ArcRotateCamera("arcCam", CONSTANTS.CAMERA.ALPHA_OFFSET, CONSTANTS.CAMERA.BETA_OFFSET, CONSTANTS.CAMERA.RADIUS, cameraTarget, scene);
     scene.activeCamera = camera;
-
   });
-}
-
-function updateAvatar() {
-  avatar.id = playerStatus.id;
-  avatar.name = playerStatus.id;
-  initFocus();
 }
 
 function initFocus() {
@@ -81,7 +74,7 @@ function updatePlayerOrientation() {
   playerStatus.rotation.y = playerStatus.rotation.y % (2 * Math.PI);
   avatar.rotation.y = playerStatus.rotation.y;
   cameraTarget.rotation.y = playerStatus.rotation.y;
-  camera.alpha = - (playerStatus.rotation.y + CONSTANTS.CAMERA.ALPHA_OFFSET);
+  camera.alpha = -(playerStatus.rotation.y + CONSTANTS.CAMERA.ALPHA_OFFSET);
 
   // rotation on x-axis
   var tmp_angle = camera.beta - player.rotationX;
@@ -106,7 +99,7 @@ function updatePlayerOrientation() {
   avatar.moveWithCollisions(direction);
 
   // collision engine auto-adjust position when collision happens
-  // avatar.position.y = 0;
+  avatar.position.y = 0;
   cameraTarget.position.x = avatar.position.x;
   cameraTarget.position.y = avatar.position.y + CONSTANTS.CAMERA.HEIGHT_OFFSET;
   cameraTarget.position.z = avatar.position.z;

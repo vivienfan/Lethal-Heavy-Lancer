@@ -3,7 +3,6 @@ var socket;
 
 function startGame() {
   socket = new WebSocket(`ws://${window.location.hostname}:8080`);
-  engine.displayLoadingUI();
 
   socket.onopen = function (event) {
   }
@@ -33,8 +32,6 @@ function startGame() {
 }
 
 function initGame(player, mission, map) {
-  engine.displayLoadingUI();
-  console.log("init world: ", player, mission);
   playerStatus = new Player(player, mission);
   playerStatus.position.y = 0;  // over write this
   createGameScene(map);

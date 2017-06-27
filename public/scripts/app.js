@@ -20,6 +20,9 @@ var particleSystems = {};
 var inputManager = new InputManager();
 
 var STATE = "LOBBY";
+var GAME_SCENE_READY = false;
+
+var tutorialLounge, gameLounge;
 
 //
 window.onload = function() {
