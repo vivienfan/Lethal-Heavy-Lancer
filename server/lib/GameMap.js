@@ -161,13 +161,22 @@ class GameMap {
     let x = 0
     let z = 0
     let valid
+    let steps = 3
     let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
     do {
-      x = this.GetRandom(1, this.grid.length - 2)
-      z = this.GetRandom(1, this.grid.length[0] - 2)
+      cutoff--
+      if (cutoff <= 0) {
+        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+        steps--
+      }
+      let pickedRoom = this.rooms[this.GetRandom(1,this.rooms.length - 1)]
+      // x = this.GetRandom(1, this.grid.length - 2)
+      // z = this.GetRandom(1, this.grid.length[0] - 2)
+      x = this.GetRandom(pickedRoom.x, pickedRoom.x + pickedRoom.w)
+      z = this.GetRandom(pickedRoom.y, pickedRoom.y + pickedRoom.h)
       // valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 3
-      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && this.isAwayFromPlayers(players, {x: x, z: z})
+      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && this.isAwayFromPlayers(players, {x: x, z: z}, steps)
     } while (!valid)
     return this.convertToGameCoords({x: x, z: z})
   }
@@ -192,9 +201,9 @@ class GameMap {
     return this.convertToGameCoords({x: x, z: z})
   }
 
-  isAwayFromPlayers(players, target) {
+  isAwayFromPlayers(players, target, steps) {
     for (var i = 0; i < players.length; i++) {
-      if (this.isWithinPathSteps(this.convertToMapCoords(players[i].position), target, 3) ) {
+      if (this.isWithinPathSteps(this.convertToMapCoords(players[i].position), target, steps) ) {
         return false
       }
     }

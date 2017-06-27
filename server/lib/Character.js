@@ -14,8 +14,8 @@ class Character {
     this.range = 3;
     this.moveRange = 3
     this.attackRange = 15
-    this.damage = 50;
-    this.attackSpeed = 0.75 * 1000
+    this.damage = CONSTANTS.NPC.DAMAGE;
+    this.attackSpeed = CONSTANTS.NPC.ATTACK_SPEED * 1000
     this.lastAttack = 0
     this.position = { x: 0, y: 5, z: 0 };
     this.rotation = { x: 0, y: 0, z: 0 };

@@ -17,6 +17,7 @@ class Player {
     this.range = 100;
     this.totalHealth = props.totalHealth || CONSTANTS.PLAYER.INITIAL_HEALTH;
     this.currentHealth = props.currentHealth || CONSTANTS.PLAYER.INITIAL_HEALTH;
+    this.damage = props.damage || CONSTANTS.PLAYER.DAMAGE
     this.rotation = {x: 0, y: Math.PI * -1/4, z: 0}
     this.position = {x: 0, y:0, z:0}
     this.ws = props.ws || null
