@@ -32,7 +32,7 @@ function StateMachine() {
         if (nextState === "LOBBY") {
           console.log("create lobby");
           disposeScene(createLobby);
-          this.STATE = "TUTORIAL";
+          this.STATE = "LOBBY";
         }
         break;
       default:

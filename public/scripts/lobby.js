@@ -16,6 +16,7 @@ function createLobby() {
 }
 
 function checkPlayerChoice() {
+  console.log(avatar.position);
   if (avatar.position.x >= 20 && avatar.position.x <= 40
     && avatar.position.z >= 135 && avatar.position.z <= 165) {
     FSM.transite("GAME");
