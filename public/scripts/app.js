@@ -20,11 +20,9 @@ var alpha = 0;
 var deadNPC = [];
 var particleSystems = {};
 
-
+var FSM = new StateMachine();
 
 window.onload = function() {
-  socket = new WebSocket(`ws://${window.location.hostname}:8080`);
-
   canvas = document.getElementById("canvas");
   engine = new BABYLON.Engine(canvas, true);
   engine.displayLoadingUI();
@@ -56,35 +54,11 @@ window.onload = function() {
     inputManager.process("keydown", event)
   });
 
-  socket.onopen = function (event) {
-  }
+  FSM.transite("LOBBY");
 
-  socket.onmessage = (event) => {
-    var data = JSON.parse(event.data);
-    switch(data.type) {
-      case CONSTANTS.MESSAGE_TYPE.PLAYER_INFO:
-        initWorld(data.data, data.mission, data.map.grid);
-        break;
-      case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
-        updateCharacters(data.mission.characters);
-        break;
-      case CONSTANTS.MESSAGE_TYPE.FIRE:
-        displayPlayerFire(data.data.id);
-        break;
-      case CONSTANTS.MESSAGE_TYPE.REMOVE:
-        removeCharacter(data.character);
-        break;
-      case CONSTANTS.MESSAGE_TYPE.GAME_END:
-        displayGameWin();
-        break;
-      default:
-        break;
-    }
-  }
-
-  function initWorld(player, mission, map) {
-    console.log("init world: ", player, mission);
-    playerStatus = new Player(player, mission);
-    createScene(map);
+  if (true) {
+    FSM.transite("GAME");
+  } else if (false) {
+    FSM.transite("TUTORIAL");
   }
 }

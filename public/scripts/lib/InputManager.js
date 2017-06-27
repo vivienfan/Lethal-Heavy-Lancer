@@ -6,8 +6,8 @@ function InputManager() {
     if (ALIVE) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" && !!document.pointerLockElement) {
-        player.rotationY += event.movementX * CONSTANTS.ANGLE;
-        player.rotationX += event.movementY * CONSTANTS.ANGLE;
+        // player.rotationY += event.movementX * CONSTANTS.ANGLE;
+        // player.rotationX += event.movementY * CONSTANTS.ANGLE;
       } else {
         // otherwise, it is a key input. From here, determine the key, modify the relevant speed, and
         // apply, so it can be used on the next update call. Allows smooth movement independent of framerate

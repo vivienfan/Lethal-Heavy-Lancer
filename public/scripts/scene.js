@@ -1,4 +1,4 @@
-function createScene(map) {
+function createGameScene(map) {
   scene = new BABYLON.Scene(engine);
   flame = new BABYLON.Texture("Fire.png", scene);
 
@@ -54,9 +54,6 @@ function loadAudio() {
   explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
   explosionSound.setVolume(0.8);
 }
-
-
-
 
 function createSkybox() {
   // Create skybox
@@ -158,7 +155,6 @@ function createBuildings(map) {
   });
 }
 
-
 function updateCharacters(characters) {
   characterStatus = [];
   characters.forEach(function(character, index) {
@@ -203,8 +199,6 @@ function updateCharacters(characters) {
     }
   });
 }
-
-
 
 function updateScene() {
   if (scene && scene.getAnimationRatio()) {
