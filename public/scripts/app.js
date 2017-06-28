@@ -1,7 +1,7 @@
 // global constants
 var socket;
 
-var canvas, healthBar, health, bloodBlur, gameOver, stats, npcStats, playerStats;
+var canvas, healthBar, health, bloodBlur, gameOver, gameWin, stats, npcStats, playerStats;
 
 var engine, scene, camera, avatar, cameraTarget, playerMesh, npcMesh, ground, skybox, highlight;
 
@@ -35,6 +35,7 @@ window.onload = function() {
   playerStats = document.getElementById("player-stats");
   bloodBlur = document.getElementById("blood-blur");
   gameOver = document.getElementById("game-over");
+  gameWin = document.getElementById("game-win");
 
   SPACESHIP_ELLIPSOID = new BABYLON.Vector3(10, 10, 10);
 
