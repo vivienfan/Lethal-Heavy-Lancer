@@ -63,7 +63,7 @@ class Mission {
       this.addCharacter(player)
 
       if (this.totalEnemies < CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers) {
-        this.remainingEnemies += CONSTANTS.MISSION.MIN_ENEMIES
+        this.remainingEnemies += this.map.GetRandom(CONSTANTS.MISSION.MIN_ENEMIES, CONSTANTS.MISSION.MAX_ENEMIES)
         this.totalEnemies += CONSTANTS.MISSION.MIN_ENEMIES
       }
       console.log('remaining:', this.remainingEnemies)
@@ -76,11 +76,9 @@ class Mission {
 
   spawnEnemies(num = CONSTANTS.MISSION.MIN_ENEMIES) {
     // console.log('spawning Enemies, num:', num)
-    console.log('remainingEnemies', this.remainingEnemies, "/", this.totalEnemies)
+    // console.log('remainingEnemies', this.remainingEnemies, "/", this.totalEnemies)
     for (var i = 0; i < num; i++) {
-      // console.log('spawn')
       this.addCharacter({type: CONSTANTS.CHAR_TYPE.ENEMY})
-      // console.log('spawned')
     }
   }
 

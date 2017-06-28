@@ -123,8 +123,6 @@ class Character {
 
   process(dt, mission) {
     if (this.type !== CONSTANTS.CHAR_TYPE.PLAYER) {
-      // this.rotYSpeed = 0.02;
-      // this.fwdSpeed = .5;
       this.processAI(mission)
 
       this.rotation.y += this.rotYSpeed * dt
@@ -133,18 +131,25 @@ class Character {
                  this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
       let newZ = this.position.z + this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt +
                  this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
+      let newXtest, newZtest
+      if ( newX > this.position.x) {
+        newXtest = newX + CONSTANTS.MAP.ELEMENT_SIZE / 5
+      } else {
+        newXtest = newX - CONSTANTS.MAP.ELEMENT_SIZE / 5
+      }
+      if ( newZ > this.position.z) {
+        newZtest = newZ + CONSTANTS.MAP.ELEMENT_SIZE / 5
+      } else {
+        newZtest = newZ - CONSTANTS.MAP.ELEMENT_SIZE / 5
+      }
 
-      if (!mission.map.isGameObstacle(newX, this.position.z)) {
+      if (!mission.map.isGameObstacle(newXtest, this.position.z)) {
         this.position.x = newX
       }
-      if (!mission.map.isGameObstacle(this.position.x, newZ)) {
+      if (!mission.map.isGameObstacle(this.position.x, newZtest)) {
         this.position.z = newZ
       }
 
-      // this.position.x += this.fwdSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
-      // this.position.z += this.fwdSpeed * Math.cos(this.rotation.y + Math.PI) * dt;
-      // this.position.x += this.sideSpeed * -Math.cos(this.rotation.y + Math.PI) * dt;
-      // this.position.z += this.sideSpeed * Math.sin(this.rotation.y + Math.PI) * dt;
 
     } else {
 

@@ -23,10 +23,11 @@ class GameMap {
     this.generateMap(this.mapSize, this.seed)
     this.finder = new PF.AStarFinder({
       // diagonalMovement: PF.DiagonalMovement.IfAtMostOneObstacle
-      diagonalMovement: PF.DiagonalMovement.OnlyWhenNoObstacles
+      // diagonalMovement: PF.DiagonalMovement.OnlyWhenNoObstacles
+      allowDiagonal: true,
+      dontCrossCorners: true
     });
     // this.trimGrid()
-    // this.update(props);
   }
 
   messageFormat() {
@@ -54,7 +55,7 @@ class GameMap {
     } else if ( seed === 'test' ) {
       this.block(4,6)
     } else {
-      this.generateSquashedSeriesRooms()
+      this.generateSquashedRooms()
     }
   }
 
@@ -128,8 +129,6 @@ class GameMap {
   }
 
   getStartPosition() {
-    // let startX = (this.startPos[0] + 0.5) * this.elementSize
-    // let startZ = (this.startPos[1] + 0.5) * this.elementSize
     return this.convertToGameCoords({x: this.startPos[0], y: 0, z: this.startPos[1]})
   }
 
@@ -141,19 +140,18 @@ class GameMap {
     let x = 0
     let z = 0
     let valid
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
     do {
       cutoff--;
       if ( cutoff <= 0 ) {
-        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+        cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
         safeDist /= 2
       }
       x = this.GetRandom(1, this.grid.length - 2)
       z = this.GetRandom(1, this.grid[0].length - 2)
       valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 3
     } while (!valid)
-    // return {x: (x + 0.5) * this.elementSize, z: (z + 0.5) * this.elementSize}
     return this.convertToGameCoords({x: x, z: z})
   }
 
@@ -162,17 +160,15 @@ class GameMap {
     let z = 0
     let valid
     let steps = 3
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
     do {
       cutoff--
       if (cutoff <= 0) {
-        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+        cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
         steps--
       }
       let pickedRoom = this.rooms[this.GetRandom(1,this.rooms.length - 1)]
-      // x = this.GetRandom(1, this.grid.length - 2)
-      // z = this.GetRandom(1, this.grid.length[0] - 2)
       x = this.GetRandom(pickedRoom.x, pickedRoom.x + pickedRoom.w)
       z = this.GetRandom(pickedRoom.y, pickedRoom.y + pickedRoom.h)
       valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && this.isAwayFromPlayers(players, {x: x, z: z}, steps)
@@ -184,18 +180,18 @@ class GameMap {
     let x = 0
     let z = 0
     let valid
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
     do {
       cutoff--;
       if ( cutoff <= 0 ) {
-        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+        cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
         safeDist /= 2
       }
       x = this.GetRandom(1, this.mapSize - 2)
       z = this.GetRandom(1, this.mapSize - 2)
-      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist && !this.isWithinPathSteps({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}, 3)
-      // valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && this.getPath({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}).length > 3
+      valid = !this.isObstacle(x,z) && !this.isBlank(x,z) && x > safeDist && z > safeDist &&
+              !this.isWithinPathSteps({x:this.startPos[0], z:this.startPos[1]}, {x: x, z: z}, 3)
     } while (!valid)
     return this.convertToGameCoords({x: x, z: z})
   }
@@ -251,95 +247,15 @@ class GameMap {
         this[index] = props[index];
         if(index === "position") {}
       }
+    }
   }
-}
-
-  generateSquashedRooms() { // adapted from https://jsfiddle.net/bigbadwaffle/YeazH/
-    // genroomstart
-    let room_count = this.GetRandom(10, 12);
-    let minSize = CONSTANTS.MAP.MIN_ROOM_SIZE;
-    let maxSize = CONSTANTS.MAP.MAX_ROOM_SIZE;
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
-
-    for (let i = 0; i < room_count && cutoff > 0; i++) {
-      let room = {};
-
-      room.x = this.GetRandom(1, this.mapSize - maxSize - 1);
-      room.y = this.GetRandom(1, this.mapSize - maxSize - 1);
-      room.w = this.GetRandom(minSize, maxSize);
-      room.h = this.GetRandom(minSize, maxSize);
-
-      if (this.DoesCollide(room)) {
-        i--;
-        cutoff--;
-        continue;
-      }
-      room.w--;
-      room.h--;
-
-      this.rooms.push(room);
-    }
-    room_count = this.rooms.length
-    this.SquashRooms();
-
-    for (let i = 0; i < room_count; i++) {
-      let roomA = this.rooms[i];
-      let roomB = this.FindClosestRoom(roomA, this.rooms);
-
-      let pointA = {
-        x: this.GetRandom(roomA.x, roomA.x + roomA.w),
-        y: this.GetRandom(roomA.y, roomA.y + roomA.h)
-      };
-      let pointB = {
-        x: this.GetRandom(roomB.x, roomB.x + roomB.w),
-        y: this.GetRandom(roomB.y, roomB.y + roomB.h)
-      };
-
-      while ((pointB.x != pointA.x) || (pointB.y != pointA.y)) {
-        if (pointB.x != pointA.x) {
-          if (pointB.x > pointA.x) pointB.x--;
-          else pointB.x++;
-        } else if (pointB.y != pointA.y) {
-          if (pointB.y > pointA.y) pointB.y--;
-          else pointB.y++;
-        }
-
-        // this.map[pointB.x][pointB.y] = 1;
-        this.open(pointB.x, pointB.y)
-      }
-    }
-
-    for (let i = 0; i < room_count; i++) {
-      let room = this.rooms[i];
-      for (let x = room.x; x < room.x + room.w; x++) {
-        for (let y = room.y; y < room.y + room.h; y++) {
-            // this.map[x][y] = 1;
-            this.open(x,y)
-          }
-        }
-      }
-
-      for (let x = 0; x < this.mapSize; x++) {
-        for (let y = 0; y < this.mapSize; y++) {
-        // if (this.map[x][y] == 1) {
-          if (!this.isObstacle(x,y) && !this.isBlank(x,y)) {
-            for (let xx = x - 1; xx <= x + 1; xx++) {
-              for (let yy = y - 1; yy <= y + 1; yy++) {
-                // if (this.map[xx][yy] == 0) this.map[xx][yy] = 2;
-                if (this.grid[xx] && this.grid[xx][yy] && this.isBlank(xx,yy)) this.block(xx,yy);
-              }
-            }
-          }
-        }
-      }
-    }
 
   generateSquashedSeriesRooms() { // adapted from https://jsfiddle.net/bigbadwaffle/YeazH/
     // genroomstart
     let room_count = this.GetRandom(CONSTANTS.MAP.MIN_ROOMS, CONSTANTS.MAP.MAX_ROOMS);
     let minSize = CONSTANTS.MAP.MIN_ROOM_SIZE;
     let maxSize = CONSTANTS.MAP.MAX_ROOM_SIZE;
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.ROOM_FAIL_CUTOFF
 
     let startRoom = new Room(this, 6, 6, 'start')
     this.SquashSingleRoom(startRoom)
@@ -357,7 +273,7 @@ class GameMap {
       room.w--;
       room.h--;
 
-      if (this.rooms.length > 0) this.ConnectRoom(room, this.rooms)
+      if (this.rooms.length > 0) this.ConnectRooms(room, this.rooms)
 
       this.rooms.push(room);
     }
@@ -368,26 +284,15 @@ class GameMap {
       this.rooms[i].process(this)
     }
 
-    for (let x = 0; x < this.mapSize; x++) {
-      for (let y = 0; y < this.mapSize; y++) {
-      // if (this.map[x][y] == 1) {
-        if (!this.isObstacle(x,y) && !this.isBlank(x,y)) {
-          for (let xx = x - 1; xx <= x + 1; xx++) {
-            for (let yy = y - 1; yy <= y + 1; yy++) {
-              // if (this.map[xx][yy] == 0) this.map[xx][yy] = 2;
-              if (this.grid[xx] && this.grid[xx][yy] && this.isBlank(xx,yy)) this.block(xx,yy);
-            }
-          }
-        }
-      }
-    }
+    this.renderWalls()
   }
-  generateSquashedRoomsNew() { // adapted from https://jsfiddle.net/bigbadwaffle/YeazH/
+
+  generateSquashedRooms() { // adapted from https://jsfiddle.net/bigbadwaffle/YeazH/
     // genroomstart
     let room_count = this.GetRandom(CONSTANTS.MAP.MIN_ROOMS, CONSTANTS.MAP.MAX_ROOMS);
     let minSize = CONSTANTS.MAP.MIN_ROOM_SIZE;
     let maxSize = CONSTANTS.MAP.MAX_ROOM_SIZE;
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.ROOM_FAIL_CUTOFF
 
     let startRoom = new Room(this, 6, 6, 'start')
     this.SquashSingleRoom(startRoom)
@@ -395,7 +300,6 @@ class GameMap {
 
     for (let i = 1; i < room_count && cutoff > 0; i++) {
       let room  = new Room(this, minSize, maxSize)
-
       if (this.DoesCollide(room)) {
         i--;
         cutoff--;
@@ -403,26 +307,25 @@ class GameMap {
       }
       room.w--;
       room.h--;
-
       this.rooms.push(room);
     }
-    if (cutoff <= 0) console.log("reached cutoff")
     room_count = this.rooms.length
 
     this.SquashRooms()
 
-    for (let i = 0; i < room_count; i++) {
-      if (this.rooms.length > 0) this.ConnectRoom(this.rooms[i], this.rooms)
+    for (let i = room_count - 1; i >= 0; i--) {
       this.rooms[i].process(this)
     }
 
+    this.renderWalls()
+  }
+
+  renderWalls() {
     for (let x = 0; x < this.mapSize; x++) {
       for (let y = 0; y < this.mapSize; y++) {
-      // if (this.map[x][y] == 1) {
         if (!this.isObstacle(x,y) && !this.isBlank(x,y)) {
           for (let xx = x - 1; xx <= x + 1; xx++) {
             for (let yy = y - 1; yy <= y + 1; yy++) {
-              // if (this.map[xx][yy] == 0) this.map[xx][yy] = 2;
               if (this.grid[xx] && this.grid[xx][yy] && this.isBlank(xx,yy)) this.block(xx,yy);
             }
           }
@@ -432,25 +335,7 @@ class GameMap {
   }
 
   FindClosestRoom(room, rooms) {
-    let mid = {
-      x: room.x + (room.w / 2),
-      y: room.y + (room.h / 2)
-    };
-    let closest = null;
-    let closestDistance = 1000;
-    for (let i = 0; i < rooms.length; i++) {
-      let check = rooms[i];
-      if (check == room) continue;
-      let check_mid = {
-        x: check.x + (check.w / 2),
-        y: check.y + (check.h / 2)
-      };
-      let distance = Math.min(Math.abs(mid.x - check_mid.x) - (room.w / 2) - (check.w / 2), Math.abs(mid.y - check_mid.y) - (room.h / 2) - (check.h / 2));
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closest = check;
-      }
-    }
+    let closest = rooms[this.FindClosestRoomIndex(room, rooms)]
     return closest;
   }
   FindClosestRoomIndex(room, rooms) {
@@ -467,7 +352,7 @@ class GameMap {
         x: check.x + (check.w / 2),
         y: check.y + (check.h / 2)
       };
-      let distance = Math.min(Math.abs(mid.x - check_mid.x) - (room.w / 2) - (check.w / 2), Math.abs(mid.y - check_mid.y) - (room.h / 2) - (check.h / 2));
+      let distance = Math.min(Math.abs(Math.abs(mid.x - check_mid.x) - (room.w / 2) - (check.w / 2)), Math.abs(Math.abs(mid.y - check_mid.y) - (room.h / 2) - (check.h / 2)) );
       if (distance < closestDistance) {
         closestDistance = distance;
         closestIndex = i;
@@ -513,11 +398,16 @@ class GameMap {
     }
     return room
   }
-  ConnectRoom(roomA, rooms) {
-    // let roomA = room;
+  ConnectRooms(roomA, rooms) {
     let roomBIndex = this.FindClosestRoomIndex(roomA, rooms);
     let roomB = rooms[roomBIndex]
+    this.ConnectRoom(roomA, roomB)
+    if(rooms.length === this.rooms.length && this.CheckOdds(CONSTANTS.MAP.CONNECTION_CHANCE)) {
+      this.ConnectRooms(roomA, rooms.slice().splice(roomBIndex,1))
+    }
+  }
 
+  ConnectRoom(roomA, roomB) {
     let pointA = {
       x: this.GetRandom(roomA.x, roomA.x + roomA.w),
       y: this.GetRandom(roomA.y, roomA.y + roomA.h)
@@ -535,12 +425,7 @@ class GameMap {
         if (pointB.y > pointA.y) pointB.y--;
         else pointB.y++;
       }
-
-      // this.map[pointB.x][pointB.y] = 1;
       this.open(pointB.x, pointB.y)
-    }
-    if(rooms.length === this.rooms.length && this.CheckOdds(CONSTANTS.MAP.CONNECTION_CHANCE)) {
-      this.ConnectRoom(roomA, rooms.slice().splice(roomBIndex,1))
     }
   }
   DoesCollide(room, ignore) {
@@ -553,9 +438,10 @@ class GameMap {
 
     return false;
   }
+
   GetRandom(low, high) {
-    return Math.floor(this.rng() * (high - low) + low); // ~~ = equivalent to Math.floor(), usually faster
-  } // see http://rocha.la/JavaScript-bitwise-operators-in-practice
+    return Math.floor(this.rng() * (high - low) + low);
+  }
   GetRandomNormalDistribution(low, high, iterations) {
     let sum = 0
     for (var i = 0; i < iterations; i++) {
@@ -572,7 +458,6 @@ class GameMap {
 class MapElement {
   constructor(props) {
     props = props || {}
-    // this.isObstacle = props.isObstacle ? props.isObstacle : false
     this.isObstacle = false
     this.isBlank = true
   }
@@ -602,19 +487,27 @@ class MapElement {
 
 class Room {
   constructor(map, minSize, maxSize, type = 'default') {
-    this.x = map.GetRandomNormalDistribution(1, map.mapSize - maxSize - 1, 4);
-    this.y = map.GetRandomNormalDistribution(1, map.mapSize - maxSize - 1, 4);
+    this.x = map.GetRandomNormalDistribution(1, map.mapSize - maxSize - 1, 3);
+    this.y = map.GetRandomNormalDistribution(1, map.mapSize - maxSize - 1, 3);
     this.w = map.GetRandom(minSize, maxSize);
     this.h = map.GetRandom(minSize, maxSize);
     this.type = type
     this.connections = []
 
-    if (type === 'start') {
-
+    if (type !== 'start') {
+      let closestIndex = map.FindClosestRoomIndex(this, map.rooms)
+      this.connections.push(map.rooms[closestIndex])
+      if (map.rooms.length > 1 && map.CheckOdds(CONSTANTS.MAP.CONNECTION_CHANCE)) {
+        closestIndex = map.FindClosestRoomIndex(this, map.rooms.slice().splice(closestIndex,1) )
+        this.connections.push(map.rooms[closestIndex])
+      }
     }
   }
 
   process(map) {
+    for (var i = 0; i < this.connections.length; i++) {
+      map.ConnectRoom(this, this.connections[i])
+    }
     for (let x = this.x; x < this.x + this.w; x++) {
       for (let y = this.y; y < this.y + this.h; y++) {
         if ( this.type === 'start' && this.isStartBox(x, y)) {

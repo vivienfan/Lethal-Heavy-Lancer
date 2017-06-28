@@ -5,13 +5,14 @@ const GameMap = require("./GameMap");
 // const PF = require('pathfinding')
 const CONSTANTS   = require('../../public/scripts/lib/constants');
 
-let map = new GameMap({seed: 'not-test'})
+let map = new GameMap({notseed: 'not-test'})
 
 function printMap(map) {
   // let line = BresenhamLine({x:1,z:3}, {x:12, z:30})
   // for (var i = 0; i < line.length; i++) {
   //   map.block(line[i].x, line[i].z)
   // }
+  map.trimGrid()
   let drawMap = map.grid.map(x => {
     return x.map(y => {
       if ( y.isObstacle ) {
