@@ -121,6 +121,24 @@ function createTutorialScene() {
   createPlayerMesh();
   createAvatar();
 
+  var dividerMat = new BABYLON.StandardMaterial("dividerMat", scene);
+  dividerMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+  dividerMat.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
+  dividerMat.specularColor = new BABYLON.Color3(0, 0, 0);
+  dividerMat.alpha = 0.8;
+
+  var divider0 = BABYLON.Mesh.CreatePlane("stage1", 40.0, scene);
+  divider0.position = new BABYLON.Vector3(115, 3, 230);
+  divider0.scaling.y = 0.2;
+  divider0.backFaceCulling = false;
+  divider0.material = dividerMat;
+
+  var divider1 = BABYLON.Mesh.CreatePlane("stage2", 40.0, scene);
+  divider1.position = new BABYLON.Vector3(115, 3, 405);
+  divider1.scaling.y = 0.2;
+  divider1.backFaceCulling = false;
+  divider1.material = dividerMat;
+
   highlight = new BABYLON.HighlightLayer("npcHighlight", scene);
 
   scene.executeWhenReady(function() {

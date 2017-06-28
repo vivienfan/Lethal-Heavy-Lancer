@@ -90,6 +90,7 @@ function checkTutorialStage() {
 }
 
 function simulateBattle() {
+  scene.getMeshByName("stage1").dispose();
   var npc_mesh = scene.getMeshByName("dummyNPC");
 
   highlight.addMesh(npc_mesh, BABYLON.Color3.Red());
