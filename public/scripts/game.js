@@ -2,7 +2,6 @@ function startGame() {
   console.log("start gmae");
 
   socket = new WebSocket(`ws://${window.location.hostname}:8080`);
-
   socket.onopen = function (event) {
   }
 
@@ -31,7 +30,7 @@ function startGame() {
 }
 
 function initWorld(player, mission, map) {
-  console.log("init world: ", player, mission);
+  console.log("init world");
   playerStatus = new Player(player, mission);
   createGameScene(map);
 }
