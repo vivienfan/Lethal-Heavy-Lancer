@@ -88,6 +88,8 @@ function createTutorialScene() {
   createPlayerMesh();
   createAvatar();
 
+  highlight = new BABYLON.HighlightLayer("npcHighlight", scene);
+
   scene.executeWhenReady(function() {
     engine.hideLoadingUI();
     engine.runRenderLoop(function() {

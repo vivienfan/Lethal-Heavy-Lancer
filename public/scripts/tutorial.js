@@ -90,6 +90,10 @@ function checkTutorialStage() {
 }
 
 function simulateBattle() {
+  var npc_mesh = scene.getMeshByName("dummyNPC");
+
+  highlight.addMesh(npc_mesh, BABYLON.Color3.Red());
+
   setTimeout(function() {
     displayPlayerFire("dummyPlayer");
   }, 200);
@@ -104,6 +108,7 @@ function simulateBattle() {
 
   setTimeout(function() {
     removePlayer("dummyPlayer");
+    highlight.removeMesh(npc_mesh);
   }, 2500);
 }
 
