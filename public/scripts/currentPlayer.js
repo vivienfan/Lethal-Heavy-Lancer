@@ -148,5 +148,4 @@ function displayGameLose() {
 function displayGameWin() {
   GAME_OVER = true;
   gameWin.classList.remove("hide");
-  console.log("you win page shall display there");
 }
