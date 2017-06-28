@@ -42,11 +42,33 @@ function createLounge() {
 
   tutorialLounge = BABYLON.Mesh.CreateSphere("tutorialSphere", 20, 50, scene);
   tutorialLounge.material = sphereMat;
-  tutorialLounge.position = new BABYLON.Vector3(30, 0, 150);
+  tutorialLounge.position = new BABYLON.Vector3(-30, 0, 150);
 
   gameLounge = BABYLON.Mesh.CreateSphere("gameSphere", 20, 50, scene);
   gameLounge.material = sphereMat;
-  gameLounge.position = new BABYLON.Vector3(-30, 0, 150);
+  gameLounge.position = new BABYLON.Vector3(30, 0, 150);
+
+  var canvas2d = new BABYLON.ScreenSpaceCanvas2D(scene, { id: "ScreenCanvas" });
+
+  new BABYLON.Group2D({
+    parent: canvas2d, id: "tut", width: 200, height: 100, trackNode: tutorialLounge, origin: BABYLON.Vector2.Zero(),
+    children: [
+      new BABYLON.Rectangle2D({ id: "tut", width: 200, height: 50, x: -100, y: 130, origin: BABYLON.Vector2(0, 0), border: "#FFFFFFFF", fill: "#80808080", children: [
+          new BABYLON.Text2D("Tutorial", { marginAlignment: "h: center, v:center", fontName: "20px Arial", fontSuperSample: true })
+        ]
+      })
+    ]
+  });
+
+  new BABYLON.Group2D({
+    parent: canvas2d, id: "game", width: 200, height: 100, trackNode: gameLounge, origin: BABYLON.Vector2.Zero(),
+    children: [
+      new BABYLON.Rectangle2D({ id: "game", width: 200, height: 50, x: -100, y: 130, origin: BABYLON.Vector2(0, 0), border: "#FFFFFFFF", fill: "#80808080", children: [
+          new BABYLON.Text2D("Game", { marginAlignment: "h: center, v:center", fontName: "20px Arial", fontSuperSample: true })
+        ]
+      })
+    ]
+  });
 }
 
 function createTutorialScene() {
