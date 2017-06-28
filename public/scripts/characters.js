@@ -70,6 +70,7 @@ function removeCharacter(character) {
 
 function removePlayer(id) {
   var player = scene.getMeshByName(id);
+  player.rotation.x = 0;
   player.position.y = CONSTANTS.WORLD_OFFSET;
   var emitter = burningSpaceshipAnimation(player.position);
 

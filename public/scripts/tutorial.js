@@ -110,9 +110,13 @@ function simulateBattle() {
   }, 1600);
 
   setTimeout(function() {
+    displayPlayerFire("dummyPlayer");
+  }, 2300);
+
+  setTimeout(function() {
     removePlayer("dummyPlayer");
     highlight.removeMesh(npc_mesh);
-  }, 2500);
+  }, 3200);
 }
 
 function simulateDamage() {
