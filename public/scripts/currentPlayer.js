@@ -135,6 +135,13 @@ function displayGameLose() {
   healthBar.style.width = "0%";
   bloodBlur.style.opacity = 0.7;
   alarmSound.dispose();
+  if (!gameOverSound.isPlaying) {
+    scene.soundTracks[0].soundCollection.forEach(function(sound) {
+      sound.setVolume(0.2);
+    });
+    gameOverSound.setVolume(1);
+    gameOverSound.play();
+  }
   gameOver.classList.remove("hide");
 }
 

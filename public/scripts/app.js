@@ -8,7 +8,7 @@ var engine, scene, camera, avatar, cameraTarget, playerMesh, npcMesh, ground, sk
 var inputManager = new InputManager();
 
 var npcSoundEffects = {};
-var shootingSound, npcSound, alarmSound, burningSound, explosionSound, bgm;
+var shootingSound, npcSound, alarmSound, burningSound, explosionSound, gameOverSound, bgm;
 
 var ALIVE = true;
 var SPACESHIP_ELLIPSOID;

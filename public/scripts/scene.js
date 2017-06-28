@@ -141,7 +141,7 @@ function createGameScene(map) {
 
 function loadAudio() {
   bgm = new BABYLON.Sound("bgm", "assets/audio/moon.mp3", scene, null, {loop: true, autoplay: true});
-  bgm.setVolume(1.2);
+  bgm.setVolume(1.5);
 
   shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
   shootingSound.setVolume(0.2);
@@ -157,6 +157,8 @@ function loadAudio() {
 
   explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
   explosionSound.setVolume(0.8);
+
+  gameOverSound = new BABYLON.Sound("gameOver", "assets/audio/game_over.mp3", scene, null, {loop: false, autoplay: false});
 }
 
 function createSkybox() {
@@ -185,6 +187,8 @@ function createSun() {
   sun.diffuse = new BABYLON.Color3(0.5, 0.5, 0.5);
   sun.specular = new BABYLON.Color3(0.5, 0.5, 0.5);
   sun.groundColor = new BABYLON.Color3(0, 0, 0);
+  sun.intensity = 0.7;
+
 }
 
 function createGround() {
