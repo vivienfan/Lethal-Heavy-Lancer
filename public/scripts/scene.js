@@ -15,6 +15,7 @@ function createLobbyScene() {
 
   scene.executeWhenReady(function() {
     instruction.classList.remove("hide");
+    welcome.classList.remove("hide");
 
     engine.hideLoadingUI();
     engine.runRenderLoop(function() {
@@ -423,6 +424,7 @@ function updateTutorialScene() {
 function disposeScene(callback) {
   player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
 
+  welcome.classList.add("hide");
   instruction.classList.add("hide");
   health.classList.add("hide");
   stats.classList.add("hide");
