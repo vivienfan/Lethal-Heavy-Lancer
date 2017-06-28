@@ -84,7 +84,7 @@ function checkTutorialStage() {
       BUILT2 = true;
     }
   } else {
-    health.classList.add("hide");
+    // health.classList.add("hide");
     FSM.transite("LOBBY");
   }
 }

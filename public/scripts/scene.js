@@ -1,6 +1,9 @@
 function createLobbyScene() {
+  GAME_OVER = false;
+
   scene = new BABYLON.Scene(engine);
-  loadAudio();
+
+  loadLobbyAudio();
 
   createSkybox();
   createSun();
@@ -47,6 +50,8 @@ function createLounge() {
 }
 
 function createTutorialScene() {
+  GAME_OVER = false;
+
   var map = [];
   for (var x = 0; x < 10; x++) {
     var row = [];
@@ -103,7 +108,10 @@ function createTutorialScene() {
 }
 
 function createGameScene(map) {
+  GAME_OVER = false;
+
   scene = new BABYLON.Scene(engine);
+
   loadAudio();
 
   createSkybox();
@@ -123,6 +131,7 @@ function createGameScene(map) {
 
     health.classList.remove("hide");
     bloodBlur.classList.remove("hide");
+    stats.classList.remove("hide");
 
     engine.hideLoadingUI();
     engine.runRenderLoop(function(){
@@ -137,6 +146,11 @@ function createGameScene(map) {
   })
 
   return scene;
+}
+
+function loadLobbyAudio() {
+  bgm = new BABYLON.Sound("bgm", "assets/audio/moon.mp3", scene, null, {loop: true, autoplay: true});
+  bgm.setVolume(1.5);
 }
 
 function loadAudio() {
@@ -321,7 +335,7 @@ function updateHealthBar(currentHealth, totalHealth) {
 
 function updateScene() {
   if (scene && scene.getAnimationRatio() && scene.activeCamera) {
-    if (ALIVE) {
+    if (!GAME_OVER) {
       updatePlayerOrientation();
     }
     sendPlayerState();
@@ -346,6 +360,12 @@ function updateTutorialScene() {
 }
 
 function disposeScene(callback) {
+  health.classList.add("hide");
+  stats.classList.add("hide");
+  bloodBlur.classList.add("hide");
+  gameOver.classList.add("hide");
+  gameWin.classList.add("hide");
+
   engine.stopRenderLoop();
   engine.displayLoadingUI();
   setTimeout(function () {

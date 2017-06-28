@@ -2,7 +2,6 @@ function startGame() {
   console.log("start gmae");
 
   socket = new WebSocket(`ws://${window.location.hostname}:8080`);
-
   socket.onopen = function (event) {
   }
 
@@ -14,6 +13,7 @@ function startGame() {
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
         updateCharacters(data.mission.characters);
+        updateGameState(data.mission.numPlayers, data.mission.remainingEnemies, data.mission.totalEnemies);
         break;
       case CONSTANTS.MESSAGE_TYPE.FIRE:
         displayPlayerFire(data.data.id);
@@ -31,7 +31,12 @@ function startGame() {
 }
 
 function initWorld(player, mission, map) {
-  console.log("init world: ", player, mission);
+  console.log("init world");
   playerStatus = new Player(player, mission);
   createGameScene(map);
+}
+
+function updateGameState(numPlayers, remainingEnemies, totalEnemies) {
+  npcStats.innerHTML = remainingEnemies + "/" + totalEnemies;
+  playerStats.innerHTML = numPlayers;
 }

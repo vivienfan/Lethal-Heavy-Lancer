@@ -131,7 +131,7 @@ function sendPlayerState() {
 }
 
 function displayGameLose() {
-  ALIVE = false;
+  GAME_OVER = true;
   healthBar.style.width = "0%";
   bloodBlur.style.opacity = 0.7;
   alarmSound.dispose();
@@ -146,5 +146,6 @@ function displayGameLose() {
 }
 
 function displayGameWin() {
-  console.log("you win page shall display there");
+  GAME_OVER = true;
+  gameWin.classList.remove("hide");
 }

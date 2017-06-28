@@ -3,7 +3,7 @@ function InputManager() {
   this.lastY = 0
 
   this.process = function(type, event) {
-    if (ALIVE) {
+    if (!GAME_OVER) {
       // we want to update mousemove directly, as it is a direct relation to how far user moved mouse
       if ( type === "mousemove" && !!document.pointerLockElement) {
         // player.rotationY += event.movementX * CONSTANTS.ANGLE;
@@ -90,7 +90,7 @@ function InputManager() {
             }
             break;
           case " ":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
+            if ( type === "keydown" && !this.isPressed[event.key] && (FSM.STATE === "TUTORIAL" || FSM.STATE === "GAME")) {
               this.isPressed[event.key] = true
               castRay();
               shootingSound.play();
@@ -102,7 +102,11 @@ function InputManager() {
       } // end of key input
     } else {
       if (event.key === "r" || event.key === "R") {
-        // restart the game? redirect to lobby?
+        // health.classList.add("hide");
+        // gameOver.classList.add("hide");
+        // bloodBlur.classList.add("hide");
+        socket.close();
+        FSM.transite("LOBBY");
       }
     }
   } // end of process method
