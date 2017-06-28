@@ -114,6 +114,8 @@ function createGameScene(map) {
   createPlayerMesh();
   createAvatar();
 
+  highlight = new BABYLON.HighlightLayer("npcHighlight", scene);
+
   scene.executeWhenReady(function() {
     socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
 
@@ -266,6 +268,11 @@ function updateCharacters(characters) {
         char_mesh.rotation = character.rotation;
         if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
           char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
+          if(character.aggro) {
+            highlight.addMesh(char_mesh, BABYLON.Color3.Red());
+          } else {
+            highlight.removeMesh(char_mesh);
+          }
         } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER){
           char_mesh.position.y = 0;
         }
@@ -283,7 +290,6 @@ function updateCharacters(characters) {
 }
 
 function updateHealthBar(currentHealth, totalHealth) {
-  console.log("update health bar:", currentHealth, totalHealth);
   var healthPercent = Math.round((currentHealth / totalHealth) * 100);
   healthBar.style.width = healthPercent + "%";
   if (healthPercent >= 80) {

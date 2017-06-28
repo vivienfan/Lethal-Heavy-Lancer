@@ -3,7 +3,7 @@ var socket;
 
 var canvas, healthBar, health, bloodBlur, gameOver;
 
-var engine, scene, camera, avatar, cameraTarget, playerMesh, npcMesh, ground, skybox;
+var engine, scene, camera, avatar, cameraTarget, playerMesh, npcMesh, ground, skybox, highlight;
 
 var inputManager = new InputManager();
 
@@ -25,7 +25,7 @@ var FSM = new StateMachine();
 
 window.onload = function() {
   canvas = document.getElementById("canvas");
-  engine = new BABYLON.Engine(canvas, true);
+  engine = new BABYLON.Engine(canvas, true, { stencil: true });
   engine.displayLoadingUI();
 
   healthBar = document.getElementById("health-bar");
