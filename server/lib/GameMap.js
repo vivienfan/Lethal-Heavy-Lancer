@@ -140,12 +140,12 @@ class GameMap {
     let x = 0
     let z = 0
     let valid
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
     do {
       cutoff--;
       if ( cutoff <= 0 ) {
-        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+        cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
         safeDist /= 2
       }
       x = this.GetRandom(1, this.grid.length - 2)
@@ -160,12 +160,12 @@ class GameMap {
     let z = 0
     let valid
     let steps = 3
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
     do {
       cutoff--
       if (cutoff <= 0) {
-        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+        cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
         steps--
       }
       let pickedRoom = this.rooms[this.GetRandom(1,this.rooms.length - 1)]
@@ -180,12 +180,12 @@ class GameMap {
     let x = 0
     let z = 0
     let valid
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
     let safeDist = CONSTANTS.MAP.SAFE_DISTANCE
     do {
       cutoff--;
       if ( cutoff <= 0 ) {
-        cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+        cutoff = CONSTANTS.MAP.NPC_FAIL_CUTOFF
         safeDist /= 2
       }
       x = this.GetRandom(1, this.mapSize - 2)
@@ -255,7 +255,7 @@ class GameMap {
     let room_count = this.GetRandom(CONSTANTS.MAP.MIN_ROOMS, CONSTANTS.MAP.MAX_ROOMS);
     let minSize = CONSTANTS.MAP.MIN_ROOM_SIZE;
     let maxSize = CONSTANTS.MAP.MAX_ROOM_SIZE;
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.ROOM_FAIL_CUTOFF
 
     let startRoom = new Room(this, 6, 6, 'start')
     this.SquashSingleRoom(startRoom)
@@ -292,7 +292,7 @@ class GameMap {
     let room_count = this.GetRandom(CONSTANTS.MAP.MIN_ROOMS, CONSTANTS.MAP.MAX_ROOMS);
     let minSize = CONSTANTS.MAP.MIN_ROOM_SIZE;
     let maxSize = CONSTANTS.MAP.MAX_ROOM_SIZE;
-    let cutoff = CONSTANTS.MAP.FAIL_CUTOFF
+    let cutoff = CONSTANTS.MAP.ROOM_FAIL_CUTOFF
 
     let startRoom = new Room(this, 6, 6, 'start')
     this.SquashSingleRoom(startRoom)
