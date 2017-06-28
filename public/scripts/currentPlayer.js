@@ -139,7 +139,7 @@ function displayGameLose() {
     scene.soundTracks[0].soundCollection.forEach(function(sound) {
       sound.setVolume(0.2);
     });
-    gameOverSound.setVolume(1);
+    gameOverSound.setVolume(1.5);
     gameOverSound.play();
   }
   gameOver.classList.remove("hide");
