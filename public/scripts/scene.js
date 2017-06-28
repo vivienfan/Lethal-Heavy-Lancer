@@ -302,6 +302,8 @@ function updateHealthBar(currentHealth, totalHealth) {
   }
   if (healthPercent <= 75) {
     bloodBlur.style.opacity = (1 - healthPercent / 100) * 0.7;
+  } else {
+    bloodBlur.style.opacity = 0;
   }
 }
 

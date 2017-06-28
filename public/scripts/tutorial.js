@@ -109,31 +109,45 @@ function simulateBattle() {
 
 function simulateDamage() {
   health.classList.remove("hide");
-  setTimeout(function() {
-    updateHealthBar(100, 100);
-  }, 500);
+  updateHealthBar(100, 100);
 
   setTimeout(function() {
     updateHealthBar(80, 100);
-  }, 1000);
+  }, 400);
+
+  setTimeout(function() {
+    updateHealthBar(80, 100);
+  }, 800);
+
+  setTimeout(function() {
+    updateHealthBar(70, 100);
+  }, 1200);
 
   setTimeout(function() {
     updateHealthBar(60, 100);
-  }, 1500);
+  }, 1600);
 
   setTimeout(function() {
-    updateHealthBar(40, 100);
+    updateHealthBar(50, 100);
   }, 2000);
 
   setTimeout(function() {
+    updateHealthBar(40, 100);
+  }, 2400);
+
+  setTimeout(function() {
+    updateHealthBar(30, 100);
+  }, 2800);
+
+  setTimeout(function() {
     updateHealthBar(20, 100);
-  }, 2500);
+  }, 3200);
 
   setTimeout(function() {
     updateHealthBar(10, 100);
-  }, 3000);
+  }, 3600);
 
   setTimeout(function() {
     updateHealthBar(5, 100);
-  }, 3500);
+  }, 4000);
 }

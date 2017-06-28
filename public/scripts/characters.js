@@ -23,6 +23,7 @@ function createPlayerMesh() {
 }
 
 function displayPlayerFire(id) {
+  console.log("displayerfire:", id);
   var player = scene.getMeshByName(id);
   var direction = new BABYLON.Vector3(
     -Math.sin(player.rotation.y) * Math.abs(Math.cos(player.rotation.x)),
