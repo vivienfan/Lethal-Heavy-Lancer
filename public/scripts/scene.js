@@ -1,6 +1,9 @@
 function createLobbyScene() {
+  ALIVE = true;
+
   scene = new BABYLON.Scene(engine);
-  loadAudio();
+
+  loadLobbyAudio();
 
   createSkybox();
   createSun();
@@ -47,6 +50,8 @@ function createLounge() {
 }
 
 function createTutorialScene() {
+  ALIVE = true;
+
   var map = [];
   for (var x = 0; x < 10; x++) {
     var row = [];
@@ -103,7 +108,10 @@ function createTutorialScene() {
 }
 
 function createGameScene(map) {
+  ALIVE = true;
+
   scene = new BABYLON.Scene(engine);
+
   loadAudio();
 
   createSkybox();
@@ -137,6 +145,11 @@ function createGameScene(map) {
   })
 
   return scene;
+}
+
+function loadLobbyAudio() {
+  bgm = new BABYLON.Sound("bgm", "assets/audio/moon.mp3", scene, null, {loop: true, autoplay: true});
+  bgm.setVolume(1.5);
 }
 
 function loadAudio() {

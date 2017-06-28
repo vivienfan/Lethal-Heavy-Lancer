@@ -90,7 +90,7 @@ function InputManager() {
             }
             break;
           case " ":
-            if ( type === "keydown" && !this.isPressed[event.key] ) {
+            if ( type === "keydown" && !this.isPressed[event.key] && (FSM.STATE === "TUTORIAL" || FSM.STATE === "GAME")) {
               this.isPressed[event.key] = true
               castRay();
               shootingSound.play();
@@ -103,6 +103,11 @@ function InputManager() {
     } else {
       if (event.key === "r" || event.key === "R") {
         // restart the game? redirect to lobby?
+        health.classList.add("hide");
+        gameOver.classList.add("hide");
+        bloodBlur.classList.add("hide");
+        socket.close();
+        FSM.transite("LOBBY");
       }
     }
   } // end of process method
