@@ -143,9 +143,11 @@ function displayGameLose() {
     gameOverSound.play();
   }
   gameOver.classList.remove("hide");
+  redirect.classList.remove("hide");
 }
 
 function displayGameWin() {
   GAME_OVER = true;
   gameWin.classList.remove("hide");
+  redirect.classList.remove("hide");
 }

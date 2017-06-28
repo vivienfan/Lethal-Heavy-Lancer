@@ -398,6 +398,7 @@ function disposeScene(callback) {
   bloodBlur.classList.add("hide");
   gameOver.classList.add("hide");
   gameWin.classList.add("hide");
+  redirect.classList.add("hide");
 
   engine.stopRenderLoop();
   engine.displayLoadingUI();

@@ -93,6 +93,13 @@
   width: 50%;
 }
 
+#redirect {
+  left: 60%;
+  top: 90%;
+  font-size: 30px;
+  z-index: 1;
+}
+
 html, body, #canvas {
   width: 100%;
   height: 100%;
