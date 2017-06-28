@@ -1,7 +1,7 @@
 // global constants
 var socket;
 
-var canvas, healthBar, health, bloodBlur, gameOver;
+var canvas, healthBar, health, bloodBlur, gameOver, stats, npcStats, playerStats;
 
 var engine, scene, camera, avatar, cameraTarget, playerMesh, npcMesh, ground, skybox, highlight;
 
@@ -10,7 +10,7 @@ var inputManager = new InputManager();
 var npcSoundEffects = {};
 var shootingSound, npcSound, alarmSound, burningSound, explosionSound, gameOverSound, bgm;
 
-var ALIVE = true;
+var GAME_OVER = false;
 var SPACESHIP_ELLIPSOID;
 
 var playerStatus = { };
@@ -28,8 +28,11 @@ window.onload = function() {
   engine = new BABYLON.Engine(canvas, true, { stencil: true });
   engine.displayLoadingUI();
 
-  healthBar = document.getElementById("health-bar");
   health = document.getElementById("health");
+  healthBar = document.getElementById("health-bar");
+  stats = document.getElementById("stats");
+  npcStats = document.getElementById("npc-stats");
+  playerStats = document.getElementById("player-stats");
   bloodBlur = document.getElementById("blood-blur");
   gameOver = document.getElementById("game-over");
 

@@ -13,6 +13,7 @@ function startGame() {
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:
         updateCharacters(data.mission.characters);
+        updateGameState(data.mission.numPlayers, data.mission.remainingEnemies, data.mission.totalEnemies);
         break;
       case CONSTANTS.MESSAGE_TYPE.FIRE:
         displayPlayerFire(data.data.id);
@@ -33,4 +34,9 @@ function initWorld(player, mission, map) {
   console.log("init world");
   playerStatus = new Player(player, mission);
   createGameScene(map);
+}
+
+function updateGameState(numPlayers, remainingEnemies, totalEnemies) {
+  npcStats.innerHTML = remainingEnemies + "/" + totalEnemies;
+  playerStats.innerHTML = numPlayers;
 }
