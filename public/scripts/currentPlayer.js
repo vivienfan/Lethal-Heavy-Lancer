@@ -52,10 +52,9 @@ function castRay(){
     -Math.cos(avatar.rotation.y) * Math.abs(Math.cos(avatar.rotation.x + CONSTANTS.AIM_OFFSET)));
   createBeam(cameraTarget.position, direction, -2);
 
+  var ray = new BABYLON.Ray(origin, direction, length);
+  var hit = scene.pickWithRay(ray);
   if (FSM.STATE === "GAME") {
-    var ray = new BABYLON.Ray(origin, direction, length);
-    var hit = scene.pickWithRay(ray);
-
     var msg = {
       type: CONSTANTS.MESSAGE_TYPE.FIRE,
       target: {}
@@ -64,6 +63,12 @@ function castRay(){
       msg.target.id = hit.pickedMesh.name;
     }
     socket.send(JSON.stringify(msg));
+  }
+
+  if (FSM.STATE === "TUTORIAL") {
+    if (hit.pickedMesh) {
+      removeNPC(hit.pickedMesh.name);
+    }
   }
 }
 
@@ -130,6 +135,13 @@ function displayGameLose() {
   healthBar.style.width = "0%";
   bloodBlur.style.opacity = 0.7;
   alarmSound.dispose();
+  if (!gameOverSound.isPlaying) {
+    scene.soundTracks[0].soundCollection.forEach(function(sound) {
+      sound.setVolume(0.2);
+    });
+    gameOverSound.setVolume(1.5);
+    gameOverSound.play();
+  }
   gameOver.classList.remove("hide");
 }
 

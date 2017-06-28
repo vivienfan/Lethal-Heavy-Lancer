@@ -88,7 +88,7 @@ function removeNPC(id) {
   deadNPC.push({counter: 5, mesh: mesh, particleSystems: null, sound: newExplosionSound}); // 10 frames
 }
 
-function updateCharacterOriendtation() {
+function updateCharacterOrientation() {
   characterStatus.forEach(function(character) {
     if (character.id !== playerStatus.id) {
       var char = scene.getMeshByName(character.id);

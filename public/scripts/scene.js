@@ -48,14 +48,58 @@ function createLounge() {
 
 function createTutorialScene() {
   var map = [];
-  for (var x = -100; x <= 100; x++) {
-    for (var z = -100; z <= 100; z++) {
+  for (var x = 0; x < 10; x++) {
+    var row = [];
+    for (var z = 0; z < 25; z++) {
       var point = { isObstacle: false };
-      if (x === -100 || x === 100 || z === -100 || z === 100) {
+      if (x === 0 || x === 9 || z === 0) {
+        // edge
         point.isObstacle = true;
       }
+      if (z === 7 && (x === 4 || x === 5 || x === 6)) {
+        // collision demo building
+        point.isObstacle = true;
+      }
+      if (z === 10 && x !== 5) {
+        // room seperate
+        point.isObstacle = true;
+      }
+      if (z === 17 && x !== 5) {
+        // room seperate
+        point.isObstacle = true;
+      }
+      if (z === 24 && x !== 5) {
+        point.isObstacle = true;
+      }
+      row.push(point);
     }
+    map.push(row);
   }
+
+  scene = new BABYLON.Scene(engine);
+  loadAudio();
+
+  createSkybox();
+  createSun();
+  createGround();
+  createBuildings(map);
+
+  createNPCMesh();
+  createPlayerMesh();
+  createAvatar();
+
+  highlight = new BABYLON.HighlightLayer("npcHighlight", scene);
+
+  scene.executeWhenReady(function() {
+    engine.hideLoadingUI();
+    engine.runRenderLoop(function() {
+      scene.render();
+    });
+  });
+
+  scene.registerBeforeRender(function() {
+    updateTutorialScene();
+  });
 }
 
 function createGameScene(map) {
@@ -71,6 +115,8 @@ function createGameScene(map) {
   createNPCMesh();
   createPlayerMesh();
   createAvatar();
+
+  highlight = new BABYLON.HighlightLayer("npcHighlight", scene);
 
   scene.executeWhenReady(function() {
     socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
@@ -95,7 +141,7 @@ function createGameScene(map) {
 
 function loadAudio() {
   bgm = new BABYLON.Sound("bgm", "assets/audio/moon.mp3", scene, null, {loop: true, autoplay: true});
-  bgm.setVolume(1.2);
+  bgm.setVolume(1.5);
 
   shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
   shootingSound.setVolume(0.2);
@@ -111,6 +157,8 @@ function loadAudio() {
 
   explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
   explosionSound.setVolume(0.8);
+
+  gameOverSound = new BABYLON.Sound("gameOver", "assets/audio/game_over.mp3", scene, null, {loop: false, autoplay: false});
 }
 
 function createSkybox() {
@@ -139,6 +187,8 @@ function createSun() {
   sun.diffuse = new BABYLON.Color3(0.5, 0.5, 0.5);
   sun.specular = new BABYLON.Color3(0.5, 0.5, 0.5);
   sun.groundColor = new BABYLON.Color3(0, 0, 0);
+  sun.intensity = 0.7;
+
 }
 
 function createGround() {
@@ -224,6 +274,11 @@ function updateCharacters(characters) {
         char_mesh.rotation = character.rotation;
         if (character.type === CONSTANTS.CHAR_TYPE.ENEMY) {
           char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
+          if(character.aggro) {
+            highlight.addMesh(char_mesh, BABYLON.Color3.Red());
+          } else {
+            highlight.removeMesh(char_mesh);
+          }
         } else if (character.type === CONSTANTS.CHAR_TYPE.PLAYER){
           char_mesh.position.y = 0;
         }
@@ -235,27 +290,33 @@ function updateCharacters(characters) {
         }
       }
     } else {  // update client info
-      var healthPercent = Math.round((character.currentHealth / character.totalHealth) * 100);
-      healthBar.style.width = healthPercent + "%";
-      if (healthPercent >= 80) {
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.FULL;
-      } else if (healthPercent >= 60) {
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HIGH;
-      } else if (healthPercent >= 40) {
-        if (!alarmSound.isPlaying) {
-          alarmSound.play();
-        }
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HALF;
-      } else if (healthPercent >= 20) {
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.LOW;
-      } else {
-        healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.VERY_LOW;
-      }
-      if (healthPercent <= 75) {
-        bloodBlur.style.opacity = (1 - healthPercent / 100) * 0.7;
-      }
+      updateHealthBar(character.currentHealth, character.totalHealth);
     }
   });
+}
+
+function updateHealthBar(currentHealth, totalHealth) {
+  var healthPercent = Math.round((currentHealth / totalHealth) * 100);
+  healthBar.style.width = healthPercent + "%";
+  if (healthPercent >= 80) {
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.FULL;
+  } else if (healthPercent >= 60) {
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HIGH;
+  } else if (healthPercent >= 40) {
+    if (!alarmSound.isPlaying) {
+      alarmSound.play();
+    }
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.HALF;
+  } else if (healthPercent >= 20) {
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.LOW;
+  } else {
+    healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.VERY_LOW;
+  }
+  if (healthPercent <= 75) {
+    bloodBlur.style.opacity = (1 - healthPercent / 100) * 0.7;
+  } else {
+    bloodBlur.style.opacity = 0;
+  }
 }
 
 function updateScene() {
@@ -264,7 +325,7 @@ function updateScene() {
       updatePlayerOrientation();
     }
     sendPlayerState();
-    updateCharacterOriendtation();
+    updateCharacterOrientation();
     deadNPCAnimation();
   }
 }
@@ -274,4 +335,21 @@ function updateLobbyScene() {
     updatePlayerOrientation();
     checkPlayerChoice();
   }
+}
+
+function updateTutorialScene() {
+  if (scene && scene.getAnimationRatio() && scene.activeCamera) {
+    checkTutorialStage();
+    updatePlayerOrientation();
+    deadNPCAnimation();
+  }
+}
+
+function disposeScene(callback) {
+  engine.stopRenderLoop();
+  engine.displayLoadingUI();
+  setTimeout(function () {
+    scene.dispose();
+    callback();
+  }, 5);
 }
