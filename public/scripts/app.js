@@ -1,7 +1,7 @@
 // global constants
 var socket;
 
-var canvas, healthBar, health, bloodBlur, gameOver, gameWin, stats, npcStats, playerStats;
+var canvas, instruction, healthBar, health, bloodBlur, gameOver, gameWin, stats, npcStats, playerStats;
 
 var engine, scene, camera, avatar, cameraTarget, playerMesh, npcMesh, ground, skybox, highlight;
 
@@ -28,6 +28,7 @@ window.onload = function() {
   engine = new BABYLON.Engine(canvas, true, { stencil: true });
   engine.displayLoadingUI();
 
+  instruction = document.getElementById("instruction");
   health = document.getElementById("health");
   healthBar = document.getElementById("health-bar");
   stats = document.getElementById("stats");

@@ -90,7 +90,7 @@ function InputManager() {
             }
             break;
           case " ":
-            if ( type === "keydown" && !this.isPressed[event.key] && (FSM.STATE === "TUTORIAL" || FSM.STATE === "GAME")) {
+            if ( type === "keydown" && !this.isPressed[event.key]) {
               this.isPressed[event.key] = true
               castRay();
               shootingSound.play();

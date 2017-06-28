@@ -93,6 +93,9 @@ function simulateBattle() {
   var npc_mesh = scene.getMeshByName("dummyNPC");
 
   highlight.addMesh(npc_mesh, BABYLON.Color3.Red());
+  highlight.innerGlow = false;
+  highlight.blurHorizontalSize = 0.5;
+  highlight.blurVerticalSize = 0.5;
 
   setTimeout(function() {
     displayPlayerFire("dummyPlayer");

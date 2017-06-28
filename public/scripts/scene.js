@@ -14,6 +14,8 @@ function createLobbyScene() {
   createLounge();
 
   scene.executeWhenReady(function() {
+    instruction.classList.remove("hide");
+
     engine.hideLoadingUI();
     engine.runRenderLoop(function() {
       if (scene && scene.activeCamera) {
@@ -118,6 +120,8 @@ function createTutorialScene() {
   highlight = new BABYLON.HighlightLayer("npcHighlight", scene);
 
   scene.executeWhenReady(function() {
+    instruction.classList.remove("hide");
+
     engine.hideLoadingUI();
     engine.runRenderLoop(function() {
       scene.render();
@@ -173,6 +177,9 @@ function createGameScene(map) {
 function loadLobbyAudio() {
   bgm = new BABYLON.Sound("bgm", "assets/audio/moon.mp3", scene, null, {loop: true, autoplay: true});
   bgm.setVolume(1.5);
+
+  shootingSound = new BABYLON.Sound("laserBeam", "assets/audio/laser_beam.wav", scene);
+  shootingSound.setVolume(0.2);
 }
 
 function loadAudio() {
@@ -312,6 +319,9 @@ function updateCharacters(characters) {
           char_mesh.rotation.y = character.rotation.y - Math.PI / 2;
           if(character.aggro) {
             highlight.addMesh(char_mesh, BABYLON.Color3.Red());
+            highlight.innerGlow = false;
+            highlight.blurHorizontalSize = 0.5;
+            highlight.blurVerticalSize = 0.5;
           } else {
             highlight.removeMesh(char_mesh);
           }
@@ -382,6 +392,7 @@ function updateTutorialScene() {
 }
 
 function disposeScene(callback) {
+  instruction.classList.add("hide");
   health.classList.add("hide");
   stats.classList.add("hide");
   bloodBlur.classList.add("hide");

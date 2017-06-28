@@ -6,6 +6,18 @@
   display: none;
 }
 
+.text {
+  color: white;
+  font-size: 18px;
+  font-family: Courier New;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
 #health {
   margin: 5px;
   height: 10px;
@@ -31,10 +43,28 @@
   margin-left: 5px;
   border-radius: 8px;
   padding: 5px;
-  color: white;
-  font-size: 18px;
-  font-family: Courier New;
   background: rgba(0, 0, 0, 0.35);
+}
+
+#instruction {
+  margin-top: 7px;
+  margin-left: 79%;
+  border-radius: 8px;
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.35);
+  width: 20%;
+}
+
+#wasd {
+  width: 25%;
+}
+
+#arrow {
+  width: 25%;
+}
+
+#space {
+  width: 45%;
 }
 
 #blood-blur {
