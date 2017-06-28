@@ -392,6 +392,8 @@ function updateTutorialScene() {
 }
 
 function disposeScene(callback) {
+  player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
+
   instruction.classList.add("hide");
   health.classList.add("hide");
   stats.classList.add("hide");
