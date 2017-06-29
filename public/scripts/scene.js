@@ -222,7 +222,7 @@ function loadAudio() {
   alarmSound.setVolume(0.2);
 
   burningSound = new BABYLON.Sound("burning", "assets/audio/burning.wav", scene, null, { loop: true, autoplay: false, maxDistance: 200});
-  burningSound.setVolume(1);
+  burningSound.setVolume(0.5);
 
   explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
   explosionSound.setVolume(0.8);
