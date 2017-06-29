@@ -63,8 +63,9 @@ class Mission {
       this.addCharacter(player)
 
       if (this.totalEnemies < CONSTANTS.MISSION.MIN_ENEMIES * this.numPlayers) {
-        this.remainingEnemies += this.map.GetRandom(CONSTANTS.MISSION.MIN_ENEMIES, CONSTANTS.MISSION.MAX_ENEMIES)
-        this.totalEnemies += CONSTANTS.MISSION.MIN_ENEMIES
+        let increase = this.map.GetRandom(CONSTANTS.MISSION.MIN_ENEMIES, CONSTANTS.MISSION.MAX_ENEMIES)
+        this.remainingEnemies += increase
+        this.totalEnemies += increase
       }
       console.log('remaining:', this.remainingEnemies)
       if (this.enemies.length < Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES)) {

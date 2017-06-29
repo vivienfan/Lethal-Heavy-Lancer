@@ -41,13 +41,10 @@ wss.broadcast = function broadcast(data, except) {
 wss.on('connection', (ws) => {
   console.log('Client connected')
   const player = new Player({ws: ws})
-  // console.log(player)
   const playerCharacter = new Character(player)
-  // console.log(player.)
 
   let existingMission = findOpenMission()
   if (existingMission) {
-    // player.joinMission(existingMission)
     existingMission.addPlayer(player)
   } else {
     existingMission = player.joinMission(mission)
