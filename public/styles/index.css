@@ -9,13 +9,23 @@
 .text {
   color: white;
   font-size: 18px;
-  font-family: Courier New;
+  font-family: 'Anton', sans-serif;
+  /*Courier New;*/
 }
 
 .container {
   display: flex;
   align-items: center;
   padding: 5px;
+}
+
+#welcome {
+  left: 20px;
+  top: 20px;
+  font-size: 35px;
+  border-radius: 8px;
+  padding: 5px 25px 5px 25px;
+  background: rgba(0, 0, 0, 0.35);
 }
 
 #health {
@@ -48,7 +58,7 @@
 
 #instruction {
   margin-top: 7px;
-  margin-left: 79%;
+  margin-left: 82%;
   border-radius: 8px;
   padding: 5px;
   background: rgba(0, 0, 0, 0.35);

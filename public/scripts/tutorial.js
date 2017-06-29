@@ -90,6 +90,7 @@ function checkTutorialStage() {
 }
 
 function simulateBattle() {
+  scene.getMeshByName("stage1").dispose();
   var npc_mesh = scene.getMeshByName("dummyNPC");
 
   highlight.addMesh(npc_mesh, BABYLON.Color3.Red());
@@ -110,9 +111,13 @@ function simulateBattle() {
   }, 1600);
 
   setTimeout(function() {
+    displayPlayerFire("dummyPlayer");
+  }, 2300);
+
+  setTimeout(function() {
     removePlayer("dummyPlayer");
     highlight.removeMesh(npc_mesh);
-  }, 2500);
+  }, 3200);
 }
 
 function simulateDamage() {

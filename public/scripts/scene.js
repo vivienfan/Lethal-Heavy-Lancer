@@ -15,6 +15,7 @@ function createLobbyScene() {
 
   scene.executeWhenReady(function() {
     instruction.classList.remove("hide");
+    welcome.classList.remove("hide");
 
     engine.hideLoadingUI();
     engine.runRenderLoop(function() {
@@ -50,6 +51,9 @@ function createLounge() {
   gameLounge.material = sphereMat;
   gameLounge.position = new BABYLON.Vector3(30, 0, 150);
 
+  ground.material.reflectionTexture.renderList.push(tutorialLounge);
+  ground.material.reflectionTexture.renderList.push(gameLounge);
+
   var canvas2d = new BABYLON.ScreenSpaceCanvas2D(scene, { id: "ScreenCanvas" });
 
   new BABYLON.Group2D({
@@ -74,6 +78,7 @@ function createLounge() {
 }
 
 function createTutorialScene() {
+  console.log(Date.now());
   GAME_OVER = false;
 
   var map = [];
@@ -117,9 +122,28 @@ function createTutorialScene() {
   createPlayerMesh();
   createAvatar();
 
+  var dividerMat = new BABYLON.StandardMaterial("dividerMat", scene);
+  dividerMat.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+  dividerMat.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.7);
+  dividerMat.specularColor = new BABYLON.Color3(0, 0, 0);
+  dividerMat.alpha = 0.8;
+
+  var divider0 = BABYLON.Mesh.CreatePlane("stage1", 40.0, scene);
+  divider0.position = new BABYLON.Vector3(115, 3, 230);
+  divider0.scaling.y = 0.2;
+  divider0.backFaceCulling = false;
+  divider0.material = dividerMat;
+
+  var divider1 = BABYLON.Mesh.CreatePlane("stage2", 40.0, scene);
+  divider1.position = new BABYLON.Vector3(115, 3, 405);
+  divider1.scaling.y = 0.2;
+  divider1.backFaceCulling = false;
+  divider1.material = dividerMat;
+
   highlight = new BABYLON.HighlightLayer("npcHighlight", scene);
 
   scene.executeWhenReady(function() {
+    console.log(Date.now());
     instruction.classList.remove("hide");
 
     engine.hideLoadingUI();
@@ -134,6 +158,7 @@ function createTutorialScene() {
 }
 
 function createGameScene(map) {
+  console.log(Date.now());
   GAME_OVER = false;
 
   scene = new BABYLON.Scene(engine);
@@ -153,6 +178,7 @@ function createGameScene(map) {
   highlight = new BABYLON.HighlightLayer("npcHighlight", scene);
 
   scene.executeWhenReady(function() {
+    console.log(Date.now());
     socket.send(JSON.stringify({type: CONSTANTS.MESSAGE_TYPE.PLAYER_READY}));
 
     health.classList.remove("hide");
@@ -195,8 +221,8 @@ function loadAudio() {
   alarmSound = new BABYLON.Sound("alarm", "assets/audio/alarm.wav", scene, null, { loop: true, autoplay: false, playbackRate: 2});
   alarmSound.setVolume(0.2);
 
-  burningSound = new BABYLON.Sound("burning", "assets/audio/burning.wav", scene, null, { loop: true, autoplay: false, maxDistance: 250});
-  burningSound.setVolume(2);
+  burningSound = new BABYLON.Sound("burning", "assets/audio/burning.wav", scene, null, { loop: true, autoplay: false, maxDistance: 200});
+  burningSound.setVolume(1);
 
   explosionSound = new BABYLON.Sound("explosion", "assets/audio/explosion.wav", scene, null, {loop: false, autoplay: false, maxDistance: 250});
   explosionSound.setVolume(0.8);
@@ -252,6 +278,7 @@ function createGround() {
 }
 
 function createBuildings(map) {
+  var counter = 0;
   var materials = [];
   for( var i = 0; i < CONSTANTS.TOTAL_BUILDINGS; i++) {
     var newMaterial = new BABYLON.StandardMaterial("buildingMaterial" + i, scene);
@@ -301,9 +328,11 @@ function createBuildings(map) {
         newObstacleBase.position.y = CONSTANTS.WORLD_OFFSET;
         newObstacleBase.position.z = newObstacle.position.z;
         ground.material.reflectionTexture.renderList.push(newObstacleBase);
+        counter++;
       }
     });
   });
+  console.log(counter);
 }
 
 function updateCharacters(characters) {
@@ -359,6 +388,7 @@ function updateHealthBar(currentHealth, totalHealth) {
     healthBar.style.backgroundColor = CONSTANTS.HEALTH_COLOR.VERY_LOW;
   }
   if (healthPercent <= 75) {
+    bloodBlur.classList.remove("hide");
     bloodBlur.style.opacity = (1 - healthPercent / 100) * 0.7;
   } else {
     bloodBlur.style.opacity = 0;
@@ -392,6 +422,9 @@ function updateTutorialScene() {
 }
 
 function disposeScene(callback) {
+  player = {fwdSpeed: 0, sideSpeed: 0, rotationY: 0, rotationX: 0, rotYSpeed: 0, rotXSpeed: 0}
+
+  welcome.classList.add("hide");
   instruction.classList.add("hide");
   health.classList.add("hide");
   stats.classList.add("hide");
