@@ -54,3 +54,8 @@ crashlytics-build.properties
 fabric.properties
 
 .env
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
