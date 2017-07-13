@@ -9,7 +9,6 @@ function startGame() {
     var data = JSON.parse(event.data);
     switch(data.type) {
       case CONSTANTS.MESSAGE_TYPE.PLAYER_INFO:
-        console.log('game init')
         initWorld(data.data, data.mission, data.map.grid);
         break;
       case CONSTANTS.MESSAGE_TYPE.GAME_STATE:

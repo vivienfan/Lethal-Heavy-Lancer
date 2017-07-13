@@ -67,7 +67,6 @@ class Mission {
         this.remainingEnemies += increase
         this.totalEnemies += increase
       }
-      console.log('remaining:', this.remainingEnemies)
       if (this.enemies.length < Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES)) {
         this.spawnEnemies(Math.min(this.remainingEnemies, CONSTANTS.MISSION.CONCURRENT_ENEMIES) - this.enemies.length)
       }
@@ -205,10 +204,8 @@ class Mission {
 
         target = this.findCharacter(target)
         if ( target && target.id ) {
-          console.log("fire on!")
           if ( this.canHit(origin, target) ) {
             target.takeDamage(origin.damage);
-            console.log('tookDamage! damage:', origin.damage,'target health:', target.currentHealth)
           }
           if (target.isDead()) {
             this.removeCharacter(target)
