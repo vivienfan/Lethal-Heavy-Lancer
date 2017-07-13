@@ -61,6 +61,7 @@ function castRay(){
     }
     if (hit.pickedMesh){
       msg.target.id = hit.pickedMesh.name;
+      console.log('hit detected, id:', hit.pickedMesh.name)
     }
     socket.send(JSON.stringify(msg));
   }

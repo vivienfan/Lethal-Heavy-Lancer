@@ -32,6 +32,7 @@ function displayPlayerFire(id) {
 }
 
 function buildNewNPC(character) {
+  console.log('build npc, is:', character.id)
   var newNPC = npcMesh.clone(character.id);
   newNPC.position = character.position;
   newNPC.rotation = character.rotation;
@@ -44,6 +45,7 @@ function buildNewNPC(character) {
   newNPCSound.autoplay = true;
   npcSoundEffects[character.id] = newNPCSound;
   ground.material.reflectionTexture.renderList.push(newNPC);
+  console.log('newNpc name:', newNPC.name)
 }
 
 function buildNewPlayer(character) {
