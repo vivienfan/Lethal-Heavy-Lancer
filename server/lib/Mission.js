@@ -208,6 +208,7 @@ class Mission {
           console.log("fire on!")
           if ( this.canHit(origin, target) ) {
             target.takeDamage(origin.damage);
+            console.log('tookDamage!')
           }
           if (target.isDead()) {
             this.removeCharacter(target)
