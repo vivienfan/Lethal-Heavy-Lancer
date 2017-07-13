@@ -7,7 +7,6 @@ const WebSocket     = require('ws');
 const SocketServer  = WebSocket.Server;
 const uuidV4        = require('uuid/v4');
 const app           = express();
-const bcrypt        = require("bcrypt");
 const CONSTANTS     = require("./public/scripts/lib/constants");
 const Mission       = require('./server/lib/Mission.js');
 const Player        = require('./server/lib/Player');
