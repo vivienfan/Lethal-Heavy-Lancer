@@ -2,6 +2,7 @@ function startGame() {
   console.log("start game");
 
   socket = new WebSocket(`ws://${window.location.hostname}:8081`);
+  console.log('sent socket request')
   socket.onopen = function (event) {
     console.log('socket open')
   }

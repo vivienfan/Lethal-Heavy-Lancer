@@ -205,6 +205,7 @@ class Mission {
 
         target = this.findCharacter(target)
         if ( target && target.id ) {
+          console.log("fire on!")
           if ( this.canHit(origin, target) ) {
             target.takeDamage(origin.damage);
           }
