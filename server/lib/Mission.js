@@ -255,6 +255,13 @@ class Mission {
     });
   }
 
+  destroy() {
+    clearInterval(this.timer)
+    // for (var i = characters.length - 1; i >= 0; i--) {
+    //   delete characters[i]
+    // }
+  }
+
   missionTimer() {
     return setInterval(()=> {
       let triggers = []

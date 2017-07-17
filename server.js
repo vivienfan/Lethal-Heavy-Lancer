@@ -92,6 +92,7 @@ wss.on('connection', (ws) => {
     player.currentMission.removePlayer(player)
     console.log('Client disconnected, numPlayers:', missions[index].numPlayers)
     if (index > -1 && missions[index].numPlayers <= 0) {
+      missions[index].destroy()
       console.log('removed mission from list')
       missions.splice(index, 1)
     }
